@@ -1,7 +1,7 @@
 #ifndef Color_hpp
 #define Color_hpp
 
-#include "global.hpp"
+#include <SDL2/SDL.h>
 
 class Color
 {
