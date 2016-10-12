@@ -4,8 +4,6 @@
 #include "Geometry.hpp"
 #include "Polygon.hpp"
 
-#include <sstream>
-
 // Static definitions
 // Matrix3F RenderManager::s_TransformScreenSpace = Matrix3F();
 
@@ -90,11 +88,7 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 	x_e *= m_WIDTH;
 	y_e *= m_HEIGHT;
 
-	console("Start = (" << x_s << ", " << y_s << ")" << "\t" << "End = (" << x_e << ", " << y_e << ") color = " << color);
-
-	// // Draw the start and end points first
-	// SetPixel( int( std::round(x_s) ), int( std::round(y_s) ), Color::Pink );
-	// SetPixel( int( std::round(x_e) ), int( std::round(y_e) ), Color::Pink );
+	// console("Start = (" << x_s << ", " << y_s << ")" << "\t" << "End = (" << x_e << ", " << y_e << ") color = " << color);
 
 	// If the start and end are the same, there's nothing else to be done
 	if (x_s == x_e && y_s == y_e)
@@ -193,28 +187,26 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 	else
 	{
 		// Now the real (no pun intended) work begins: deal with the octants
-		// TODO: BLaaa DDA isn't looking right. Just implement Bresenham.
 
 		float m = dy/dx;
 		console("m = " << m);
 
 		if (m < -1.0) // |dy| > |dx|, so approximate x component
 		{
+			m = 1/m;
+
 			if (dy < 0.0) // Octant 0
 			{
 				std::swap(x_s, x_e);
 				std::swap(y_s, y_e);
 			}
 			// else, Octant 4
-			
-			std::stringstream ss;
+
 			float x = x_s;
 			for (int y = int(y_s); y < y_e; ++y, x += m)
 			{
-				ss << "(" << x << ", " << y << ") ";
-				SetPixel(int(std::round(x)), y, Color::Pink);
+				SetPixel(int(std::round(x)), y, color);
 			}
-			console(ss.str());
 		}
 		else if (m > -1.0 && m < 0.0) // |dy| < |dx|, so approximate y component
 		{
@@ -248,6 +240,8 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 		}
 		else if (m > 1.0) // |dy| > |dx|, so approximate x component
 		{
+			m = 1/m;
+
 			if (dy < 0.0) // Octant 7
 			{
 				std::swap(x_s, x_e);
@@ -266,75 +260,6 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 			errlog("Should never reach here.");
 			assert(false);
 		}
-
-		// // |dy| > |dx|
-		// // Approximate x component
-
-
-		// // 0 <= m <= 1
-		// // Approximate y component
-		// if (m >= 0.0 && m <= 1.0)
-		// {
-		// 	float y = y_s;
-		// 	for (int x = int(x_s); x < x_e; ++x, y += m)
-		// 	{
-		// 		SetPixel(x, int( std::round(y) ), color);
-		// 	}
-		// }
-		// // m > 1
-		// // Approximate x component
-		// else if (m > 1.0)
-		// {
-		// 	float x = x_s;
-		// 	for (int y = int(y_s); y < y_e; --y, x += m)
-		// 	{
-		// 		SetPixel( int( std::round(x) ), y, color);
-		// 	}
-		// }
-		// // -1 <= m < 0
-		// else if (m < 0.0 && m >= -1.0)
-		// {
-		// 	console("BLAAA")
-		// 	float y = y_s;
-		// 	for (int x = int(x_s); x > x_e; --x, y -= m)
-		// 	{
-		// 		SetPixel(x, int( std::round(y) ), color);
-		// 	}
-		// }
-		// // m < -1
-		// else
-		// {
-		// 	float x = x_s;
-		// 	for (int y = int(y_s); y > y_e; --y, x -= m)
-		// 	{
-		// 		SetPixel( int( std::round(x) ), y, color);
-		// 	}
-		// }
-
-		// // dx > dy, so dy/dx < 1
-		// // Approximate y component
-		// if ( std::abs(dx) > std::abs(dy) )
-		// {
-		// 	float m = dy/std::abs(dx);
-		// 	console("m = " << m);
-		// 	float y = y_s;
-		// 	for (int x = int(x_s); x < x_e; ++x, y += m)
-		// 	{
-		// 		SetPixel(x, int( std::round(y) ), color);
-		// 	}
-		// }
-		// // dx < dy, so dy/dx > 1
-		// // Approximate x component
-		// else
-		// {
-		// 	float m = dx/std::abs(dy);
-		// 	console("m = " << m);
-		// 	float x = x_s;
-		// 	for (int y = int(y_s); y < y_e; ++y, x += m)
-		// 	{
-		// 		SetPixel( int( std::round(x) ), y, color);
-		// 	}
-		// }
 	}
 
 }
