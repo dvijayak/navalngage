@@ -1,7 +1,11 @@
+#include <cmath>
+
 #include "SDLManager.hpp"
 #include "Color.hpp"
 
 #include "Polygon.hpp"
+
+constexpr float PI = 3.14159265358979323846;
 
 int main (int argc, char** argv)
 {	
@@ -22,6 +26,13 @@ int main (int argc, char** argv)
 		Point3F(0.6, 0.7),
 		Point3F(0.27, 0.75)
 		);
+	Polygon3F* pTestPoly2 = Polygon3FFactory::CreateQuad(
+		Point3F(0.1, 0.675),
+		Point3F(0.19, 0.235),
+		Point3F(0.75, 0.290),
+		Point3F(0.81, 0.89)
+		);
+	constexpr float poly_r = 2;
 
 	// Game loop
 	bool bExit = false; // Changing this flag performs a 'lazy' quit. Use bExitImmediately and break to exit the loop immediately
@@ -50,6 +61,18 @@ int main (int argc, char** argv)
 
 		// TODO: Run all systems (drawing system should be the last one)
 
+		// For now, just animate the polygons
+		for (auto& seg : pTestPoly->edges)
+		{
+			seg.start.x += 0.01;
+			seg.end.x += 0.01;
+		}
+		for (auto& seg : pTestPoly2->edges)
+		{
+			seg.start.x -= 0.01;
+			seg.end.x -= 0.01;
+		}
+
 		// Render screen
 		pRM->FillScreenBackground();
 
@@ -64,16 +87,18 @@ int main (int argc, char** argv)
 		// pRM->DrawLine(0.2, 0.8, 0.8, 0.2, Color::Cyan);
 		// pRM->DrawLine(0.8, 0.4, 0.4, 0.8, Color::Red);
 		pRM->DrawPolygon(*pTestPoly, Color::Green);
+		pRM->DrawPolygon(*pTestPoly2, Color::Pink);
 
 		pRM->Render();
 
 		// Sleep!
 		Uint32 current = SDL_GetTicks();
-		SDL_Delay(1600);
+		SDL_Delay(16);
 		Uint32 elapsed = SDL_GetTicks() - current;
 		console("elapsed: " << elapsed);
 	}
 	delete pTestPoly;
+	delete pTestPoly2;
 
 	// Destroy managers/singletons and other resources
 	SDLManager::Destroy();
