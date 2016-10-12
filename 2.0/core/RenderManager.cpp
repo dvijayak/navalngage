@@ -2,6 +2,9 @@
 
 #include "WindowManager.hpp"
 #include "Geometry.hpp"
+#include "Polygon.hpp"
+
+#include <sstream>
 
 // Static definitions
 // Matrix3F RenderManager::s_TransformScreenSpace = Matrix3F();
@@ -77,17 +80,6 @@ void RenderManager::FillScreenBackground (Uint32 color)
 
 void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32 color)
 {
-	// Handle potential negative slopes
-	// (Of course, we assume that all coordinates in screen space are non-negative)
-	if (x_s > x_e || y_s < y_e)
-	{
-		// std::swap(x_s, x_e);
-		// std::swap(y_s, y_e);
-	}
-	// if (y_s > y_e)
-	// {
-	// }
-	
 	// Transform to screen space
 	// Point3F P_s = s_TransformScreenSpace * line.start;  
 	// Point3F P_e = s_TransformScreenSpace * line.end;
@@ -100,9 +92,9 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 
 	console("Start = (" << x_s << ", " << y_s << ")" << "\t" << "End = (" << x_e << ", " << y_e << ") color = " << color);
 
-	// Draw the start and end points first
-	SetPixel( int( std::round(x_s) ), int( std::round(y_s) ), color );
-	SetPixel( int( std::round(x_e) ), int( std::round(y_e) ), color );
+	// // Draw the start and end points first
+	// SetPixel( int( std::round(x_s) ), int( std::round(y_s) ), Color::Pink );
+	// SetPixel( int( std::round(x_e) ), int( std::round(y_e) ), Color::Pink );
 
 	// If the start and end are the same, there's nothing else to be done
 	if (x_s == x_e && y_s == y_e)
@@ -114,14 +106,14 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 	float dx = x_e - x_s;
 	float dy = y_e - y_s;
 
-	console("dx = " << dx << "\t" << "dy = " << dy);
+	console("dx = " << dx << "    " << "dy = " << dy);
 
 	// Corner case 1: dy = 0, so dx/dy = n.d
 	// Simply fill up every single pixel along the x-axis
-	if (dy == 0)
+	if (dy == 0.0)
 	{
 		int y = int(y_s);
-		if (dx < 0)
+		if (dx < 0.0)
 		{
 			for (int x = int(x_s); x > x_e; --x)
 			{
@@ -138,10 +130,10 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 	}
 	// Corner case 2: dx = 0, so dy/dx = n.d
 	// Simply fill up every single pixel along the y-axis
-	else if (dx == 0)
+	else if (dx == 0.0)
 	{
 		int x = int(x_s);
-		if (dy < 0)
+		if (dy < 0.0)
 		{
 			for (int y = int(y_s); y > y_e; --y)
 			{
@@ -158,43 +150,200 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 	}
 	// Corner case 3: dx = dy, so dy/dx = 1
 	// Rarely occurs, but why not handle it?
-	else if (dx == dy)
+	else if (std::abs(dx) == std::abs(dy))
 	{
-		for (int x = int( std::round(x_s) ), y = int( std::round(y_s) ); x < x_e && y < y_e; ++x, ++y)
+		int x = int(std::round(x_s));
+		int y = int(std::round(y_s));
+
+		if (dy > 0.0)
 		{
-			SetPixel(x, y, color);
+			if (dx > 0.0)
+			{
+				for (; x < x_e && y < y_e; ++x, ++y)
+				{
+					SetPixel(x, y, color);
+				}
+			}
+			else // dx < 0
+			{
+				for (; x > x_e && y < y_e; --x, ++y)
+				{
+					SetPixel(x, y, color);
+				}
+			}
+		}
+		else // dy < 0
+		{
+			if (dx > 0.0)
+			{
+				for (; x < x_e && y > y_e; ++x, --y)
+				{
+					SetPixel(x, y, color);
+				}
+			}
+			else // dx < 0
+			{
+				for (; x > x_e && y > y_e; --x, --y)
+				{
+					SetPixel(x, y, color);
+				}
+			}
 		}
 	}
 	else
 	{
-		// TODO: My approximation algorithm is not correct
+		// Now the real (no pun intended) work begins: deal with the octants
+		// TODO: BLaaa DDA isn't looking right. Just implement Bresenham.
 
-		// dx > dy, so dy/dx < 1
-		// Approximate y component
-		if ( std::abs(dx) > std::abs(dy) )
+		float m = dy/dx;
+		console("m = " << m);
+
+		if (m < -1.0) // |dy| > |dx|, so approximate x component
 		{
-			float m = dy/std::abs(dx);
-			console("m = " << m);
-			float y = y_s;
-			for (int x = int(x_s); x < x_e; ++x, y += m)
+			if (dy < 0.0) // Octant 0
 			{
-				SetPixel(x, int( std::round(y) ), color);
+				std::swap(x_s, x_e);
+				std::swap(y_s, y_e);
 			}
-		}
-		// dx < dy, so dy/dx > 1
-		// Approximate x component
-		else
-		{
-			float m = dx/std::abs(dy);
-			console("m = " << m);
+			// else, Octant 4
+			
+			std::stringstream ss;
 			float x = x_s;
 			for (int y = int(y_s); y < y_e; ++y, x += m)
 			{
-				SetPixel( int( std::round(x) ), y, color);
+				ss << "(" << x << ", " << y << ") ";
+				SetPixel(int(std::round(x)), y, Color::Pink);
+			}
+			console(ss.str());
+		}
+		else if (m > -1.0 && m < 0.0) // |dy| < |dx|, so approximate y component
+		{
+			if (dy > 0.0) // Octant 5
+			{
+				std::swap(x_s, x_e);
+				std::swap(y_s, y_e);
+			}
+			// else, Octant 1
+			
+			float y = y_s;
+			for (int x = int(x_s); x < x_e; ++x, y += m)
+			{
+				SetPixel(x, int(std::round(y)), color);
 			}
 		}
+		else if (m > 0.0 && m < 1.0) // |dy| < |dx|, so approximate y component
+		{
+			if (dy < 0.0) // Octant 6
+			{
+				std::swap(x_s, x_e);
+				std::swap(y_s, y_e);
+			}
+			// else, Octant 2
+			
+			float y = y_s;
+			for (int x = int(x_s); x < x_e; ++x, y += m)
+			{
+				SetPixel(x, int(std::round(y)), color);
+			}
+		}
+		else if (m > 1.0) // |dy| > |dx|, so approximate x component
+		{
+			if (dy < 0.0) // Octant 7
+			{
+				std::swap(x_s, x_e);
+				std::swap(y_s, y_e);
+			}
+			// else, Octant 3
+			
+			float x = x_s;
+			for (int y = int(y_s); y < y_e; ++y, x += m)
+			{
+				SetPixel(int(std::round(x)), y, color);
+			}
+		}
+		else
+		{
+			errlog("Should never reach here.");
+			assert(false);
+		}
+
+		// // |dy| > |dx|
+		// // Approximate x component
+
+
+		// // 0 <= m <= 1
+		// // Approximate y component
+		// if (m >= 0.0 && m <= 1.0)
+		// {
+		// 	float y = y_s;
+		// 	for (int x = int(x_s); x < x_e; ++x, y += m)
+		// 	{
+		// 		SetPixel(x, int( std::round(y) ), color);
+		// 	}
+		// }
+		// // m > 1
+		// // Approximate x component
+		// else if (m > 1.0)
+		// {
+		// 	float x = x_s;
+		// 	for (int y = int(y_s); y < y_e; --y, x += m)
+		// 	{
+		// 		SetPixel( int( std::round(x) ), y, color);
+		// 	}
+		// }
+		// // -1 <= m < 0
+		// else if (m < 0.0 && m >= -1.0)
+		// {
+		// 	console("BLAAA")
+		// 	float y = y_s;
+		// 	for (int x = int(x_s); x > x_e; --x, y -= m)
+		// 	{
+		// 		SetPixel(x, int( std::round(y) ), color);
+		// 	}
+		// }
+		// // m < -1
+		// else
+		// {
+		// 	float x = x_s;
+		// 	for (int y = int(y_s); y > y_e; --y, x -= m)
+		// 	{
+		// 		SetPixel( int( std::round(x) ), y, color);
+		// 	}
+		// }
+
+		// // dx > dy, so dy/dx < 1
+		// // Approximate y component
+		// if ( std::abs(dx) > std::abs(dy) )
+		// {
+		// 	float m = dy/std::abs(dx);
+		// 	console("m = " << m);
+		// 	float y = y_s;
+		// 	for (int x = int(x_s); x < x_e; ++x, y += m)
+		// 	{
+		// 		SetPixel(x, int( std::round(y) ), color);
+		// 	}
+		// }
+		// // dx < dy, so dy/dx > 1
+		// // Approximate x component
+		// else
+		// {
+		// 	float m = dx/std::abs(dy);
+		// 	console("m = " << m);
+		// 	float x = x_s;
+		// 	for (int y = int(y_s); y < y_e; ++y, x += m)
+		// 	{
+		// 		SetPixel( int( std::round(x) ), y, color);
+		// 	}
+		// }
 	}
 
+}
+
+void RenderManager::DrawLine (const LineSegment3F& seg, Uint32 color)
+{
+	// Forget 3D for now
+
+	DrawLine(seg.start.x, seg.start.y, seg.end.x, seg.end.y, color);
 }
 
 void RenderManager::DrawPolygon (const Polygon3F& poly, Uint32 color)
@@ -202,6 +351,6 @@ void RenderManager::DrawPolygon (const Polygon3F& poly, Uint32 color)
 	// Render each edge of the polygon
 	for (int i = 0; i < poly.nVert; ++i)
 	{
-		// RenderLine(poly.edges[i], color);
+		DrawLine(poly.edges[i], color);
 	}
 }
