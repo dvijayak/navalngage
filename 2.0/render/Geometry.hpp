@@ -39,11 +39,11 @@ std::ostream& operator<< (std::ostream& os, const LineSegment3F& line);
 
 //// Polygons
 
-#include "Polygon.hpp"
+// #include "Polygon.hpp"
 
 /// Geometry
 
-class Geometry {};
+// class Geometry {};
 // {
 // public:
 // 	Geometry (){};

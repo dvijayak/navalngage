@@ -7,6 +7,7 @@
 // #include "MatrixF.hpp"
 
 class Polygon3F;
+class LineSegment3F;
 
 class WindowManager;
 
@@ -26,6 +27,7 @@ public:
 	void Render () const;
 	void FillScreenBackground (Uint32 color=Color::Black);
 	void DrawLine (float, float, float, float, Uint32 color=Color::White);
+	void DrawLine (const LineSegment3F& seg, Uint32 color=Color::White);
 	void DrawPolygon (const Polygon3F& poly, Uint32 color=Color::White);
 
 	// static Matrix3F s_TransformScreenSpace;
