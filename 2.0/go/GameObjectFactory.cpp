@@ -1,20 +1,14 @@
 #include "GameObjectFactory.hpp"
 
-GameObjectFactory* GameObjectFactory::s_pInstance = 0;
+#include <cassert>
+
+bool GameObjectFactory::s_bAlreadyCreated = false;
 GOSuid GameObjectFactory::s_nextAvailableSuid = 1;
 
-GameObjectFactory& GameObjectFactory::Instance ()
-{
-	if (!s_pInstance)
-	{
-		s_pInstance = new GameObjectFactory(); // TODO: Who will delete?
-	}
-
-	return *s_pInstance;
-}
-
 GameObjectFactory::GameObjectFactory ()
-{}
+{
+	assert(!s_bAlreadyCreated); // ensures singletonian creation
+}
 
 GameObjectFactory::~GameObjectFactory ()
 {

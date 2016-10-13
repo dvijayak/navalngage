@@ -26,7 +26,7 @@ AUTODEPSFLAGS = -MM $(CXXFLAGS)
 EXE := navalngage
 TARGETS += $(EXE)
 
-SRCDIRS :=common core render components go systems
+SRCDIRS :=common core render components go systems game
 
 # For convenience, allow all of our source directories to be valid include paths
 define ADD_INCLUDE
@@ -78,6 +78,22 @@ $(2)/%.o: $(1)/%.cpp
 	@rm -f $(3)/$$*.d.tmp
 endef
 
+### Templatize the non-recursive make code when needed
+# # Non-recursive make technique courtesy of https://evbergen.home.xs4all.nl/nonrecursive-make.html
+
+# ### Push ###
+# sp := $(sp).x
+# dirstack_$(sp) := $(d)
+# d := $(dir)
+
+# ### BEGIN ###
+
+# ### END ###
+
+# ### Pop ###
+# d := $(dirstack_$(sp))
+# sp := $(basename $(sp))
+
 ### Run root directory rules ###
 
 SRCDIR := .
@@ -87,10 +103,12 @@ $(eval $(call COMPILE_TEMPLATE,$(SRCDIR),$(OBJDIR),$(DEPSDIR)))
 
 ### Run subdirectory rules ###
 
-define INCLUDE_MAKEFILES
-include $(1)/Makefile
-endef
-$(foreach dir,$(SRCDIRS),$(eval $(call INCLUDE_MAKEFILES,$(dir))))
+$(foreach dir,$(SRCDIRS),$(eval $(call COMPILE_TEMPLATE,$(dir)/$(SRCDIR),$(dir)/$(OBJDIR),$(dir)/$(DEPSDIR))))
+
+# define INCLUDE_MAKEFILES
+# include $(1)/Makefile
+# endef
+# $(foreach dir,$(SRCDIRS),$(eval $(call INCLUDE_MAKEFILES,$(dir))))
 
 ### Main rules ###
 
@@ -113,4 +131,4 @@ clean:
 	@echo Removing targets...
 	rm -f $(TARGETS)
 	@echo Removing directories...
-	rmdir $(CLEAN_DIRS)
+	rm -rf $(CLEAN_DIRS)
