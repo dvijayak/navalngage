@@ -1,5 +1,7 @@
 #include "RenderManager.hpp"
 
+#include <cmath>
+
 #include "WindowManager.hpp"
 #include "Geometry.hpp"
 #include "Polygon.hpp"
@@ -100,7 +102,7 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 	float dx = x_e - x_s;
 	float dy = y_e - y_s;
 
-	console("dx = " << dx << "    " << "dy = " << dy);
+	// console("dx = " << dx << "    " << "dy = " << dy);
 
 	// Corner case 1: dy = 0, so dx/dy = n.d
 	// Simply fill up every single pixel along the x-axis
@@ -189,7 +191,7 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 		// Now the real (no pun intended) work begins: deal with the octants
 
 		float m = dy/dx;
-		console("m = " << m);
+		// console("m = " << m);
 
 		if (m < -1.0) // |dy| > |dx|, so approximate x component
 		{

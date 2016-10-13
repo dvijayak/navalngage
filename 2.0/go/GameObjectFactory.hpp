@@ -9,6 +9,7 @@
 class GameObjectFactory
 {
 public:
+	GameObjectFactory ();
 	~GameObjectFactory ();
 
 	/// Constructs a new empty game object. The caller must then add components.
@@ -22,16 +23,16 @@ public:
 	// Example: ShipBuilder, CannonballBuilder
 	// GameObject& Create (GOBuilder* pBuilder);
 
+	// TODO
 	bool Destroy (GOSuid go_id);
 	GameObject& Resolve (GOSuid go_id);
 
-	static GameObjectFactory& Instance ();
+	std::vector<GameObject*> const& GetAllGameObjects () const { return m_gameObjects; }
 
 private:
 	std::vector<GameObject*> m_gameObjects; // TODO: abstract away the collection implementation
 
-	GameObjectFactory ();
-	static GameObjectFactory* s_pInstance;
+	static bool s_bAlreadyCreated;
 
 	static GOSuid s_nextAvailableSuid;
 };
