@@ -7,7 +7,9 @@ GOSuid GameObjectFactory::s_nextAvailableSuid = 1;
 
 GameObjectFactory::GameObjectFactory ()
 {
-	assert(!s_bAlreadyCreated); // ensures singletonian creation
+	// Ensure singletonian creation
+	assert(!s_bAlreadyCreated); 
+	s_bAlreadyCreated = true;
 }
 
 GameObjectFactory::~GameObjectFactory ()

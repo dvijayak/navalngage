@@ -210,6 +210,23 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 				SetPixel(int(std::round(x)), y, color);
 			}
 		}
+		else if (m > 1.0) // |dy| > |dx|, so approximate x component
+		{
+			m = 1/m;
+
+			if (dy < 0.0) // Octant 7
+			{
+				std::swap(x_s, x_e);
+				std::swap(y_s, y_e);
+			}
+			// else, Octant 3
+			
+			float x = x_s;
+			for (int y = int(y_s); y < y_e; ++y, x += m)
+			{
+				SetPixel(int(std::round(x)), y, color);
+			}
+		}
 		else if (m > -1.0 && m < 0.0) // |dy| < |dx|, so approximate y component
 		{
 			if (dy > 0.0) // Octant 5
@@ -238,23 +255,6 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 			for (int x = int(x_s); x < x_e; ++x, y += m)
 			{
 				SetPixel(x, int(std::round(y)), color);
-			}
-		}
-		else if (m > 1.0) // |dy| > |dx|, so approximate x component
-		{
-			m = 1/m;
-
-			if (dy < 0.0) // Octant 7
-			{
-				std::swap(x_s, x_e);
-				std::swap(y_s, y_e);
-			}
-			// else, Octant 3
-			
-			float x = x_s;
-			for (int y = int(y_s); y < y_e; ++y, x += m)
-			{
-				SetPixel(int(std::round(x)), y, color);
 			}
 		}
 		else
