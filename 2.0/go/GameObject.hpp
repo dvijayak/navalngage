@@ -35,11 +35,14 @@ private:
 	// Construction is always done at the factory
 	GameObject ();
 	friend class GameObjectFactory;
+	
+	friend std::ostream& operator<< (std::ostream&, GameObject const&);
 };
 
 template <class T> T* GameObject::GetComponent () const
 {
 	return dynamic_cast<T*>(GetComponent(T::NAME));
 }
+
 
 #endif

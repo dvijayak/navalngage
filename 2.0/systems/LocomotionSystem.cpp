@@ -11,5 +11,8 @@ LocomotionSystem::~LocomotionSystem ()
 
 void LocomotionSystem::Update (size_t dt, GameObjectFactory const& factory)
 {
-	console("Running the locomotion system by " << dt << " ms.");
+	// for (auto& pGo : factory.GetAllGameObjects())
+	// {
+		// console("Running the locomotion system by " << dt << " ms.");
+	// }
 }

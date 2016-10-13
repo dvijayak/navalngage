@@ -6,8 +6,8 @@
 #include "Color.hpp"
 // #include "MatrixF.hpp"
 
-class Polygon3F;
-class LineSegment3F;
+struct Polygon3F;
+struct LineSegment3F;
 
 class WindowManager;
 

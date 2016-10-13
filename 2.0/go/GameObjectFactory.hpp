@@ -1,9 +1,11 @@
 #ifndef GameObjectFactory_HPP
 #define GameObjectFactory_HPP
 
-#include <vector>
+#include <map>
 
 #include "GameObject.hpp"
+
+class IGameObjectBuilder;
 
 /// Singleton which constructs GOs and manages the lifetime thereof.
 class GameObjectFactory
@@ -17,20 +19,22 @@ public:
 	///    GameObject& go = GameObjectFactory::Instance().Create();
 	///    go.AddComponent(new PositionComponent());
 	///    // etc.
-	GameObject& Create ();
+	GameObject& Create (bool bAdd=true);
 
-	// TODO: Support builders for specific object/entity types
+	// Support builders for specific object/entity types
 	// Example: ShipBuilder, CannonballBuilder
-	// GameObject& Create (GOBuilder* pBuilder);
+	GameObject& Create (IGameObjectBuilder&);
 
-	// TODO
-	bool Destroy (GOSuid go_id);
-	GameObject& Resolve (GOSuid go_id);
+	bool Destroy (GOSuid);
+	GameObject* Resolve (GOSuid);
 
-	std::vector<GameObject*> const& GetAllGameObjects () const { return m_gameObjects; }
+	typedef std::map<GOSuid, GameObject*> GOContainerType;
+	GOContainerType const& GetAllGameObjects () const { return m_gameObjects; }
 
 private:
-	std::vector<GameObject*> m_gameObjects; // TODO: abstract away the collection implementation
+	void Add (GameObject*);
+
+	GOContainerType m_gameObjects; // TODO: abstract away the collection implementation
 
 	static bool s_bAlreadyCreated;
 

@@ -3,12 +3,15 @@
 #include "Color.hpp"
 #include "Polygon.hpp"
 
+#include "ShipBuilder.hpp"
+
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
 
 Game::Game ()
 	: m_targetFrameRate(60)
 	, m_fixedUpdateTimeStep(1000/m_targetFrameRate)
+	, m_pRenderer(0)
 {}
 
 Game::~Game ()
@@ -86,6 +89,7 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 
 int Game::Run ()
 {
+	/// TEST Polygon drawing
 	Polygon3F* pTestPoly = Polygon3FFactory::CreateQuad(
 		Point3F(0.2, 0.3),
 		Point3F(0.8, 0.15),
@@ -98,6 +102,19 @@ int Game::Run ()
 		Point3F(0.75, 0.290),
 		Point3F(0.81, 0.89)
 		);
+
+	/// TEST GO
+	ShipBuilder sb(m_factory);
+	sb.MakeDefault();
+	GameObject& go = m_factory.Create(sb);
+	console(go);
+
+	GameObject* pResolvedGO = m_factory.Resolve(1);
+	assert(pResolvedGO);
+	console(*pResolvedGO);
+	m_factory.Destroy(1);
+	pResolvedGO = m_factory.Resolve(1);
+	assert(!pResolvedGO);
 
 	//// Game loop ////
 
@@ -119,7 +136,7 @@ int Game::Run ()
 		elapsed = current - previous;
 		lag += elapsed;
 		previous = current;
-		console("elapsed = " << elapsed << "  lag = " << lag);
+		// console("elapsed = " << elapsed << "  lag = " << lag);
 
 		// TODO: Process events
 		SDL_Event event;

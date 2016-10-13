@@ -46,6 +46,9 @@ else ifeq ($(CXX), clang++)
 	DEBUG := lldb
 endif
 
+MEMCHECK := valgrind
+MEMCHECKFLAGS := --leak-check=full --track-origins=yes
+
 ### Templates ###
 
 define COMPILE_TEMPLATE
@@ -112,10 +115,14 @@ $(foreach dir,$(SRCDIRS),$(eval $(call COMPILE_TEMPLATE,$(dir)/$(SRCDIR),$(dir)/
 
 ### Main rules ###
 
-.PHONY: default build run debug clean
+.PHONY: default vg run build clean
 
 debug:
 	$(DEBUG) -f $(EXE) -s lldb
+
+vg: build
+	@echo Running memcheck on $(EXE)...
+	$(MEMCHECK) $(MEMCHECKFLAGS) ./$(EXE)
 
 run: build
 	@echo Running $(EXE)...
@@ -124,7 +131,7 @@ run: build
 build: $(EXE)
 
 $(EXE): $(TARGETS_OBJ)
-	@echo Linking $^...
+	@echo Linking object files to create target $@...
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 clean:
