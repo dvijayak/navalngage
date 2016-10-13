@@ -1,6 +1,7 @@
 #include "GameObject.hpp"
 
 #include <cassert>
+#include <ostream>
 
 GameObject::GameObject ()
 {
@@ -69,4 +70,17 @@ bool GameObject::RemoveComponent (IComponent* pComp)
 	}
 
 	return false;
+}
+
+std::ostream& operator<< (std::ostream& os, GameObject const& go)
+{
+	os << "[";
+	os << "GameObject #" << go.m_suid;
+	if (!go.m_components.empty())
+	{
+		os << ": components = ";
+		// TODO: Add ostream support for all components as well
+	}
+	os << "]";
+	return os;
 }

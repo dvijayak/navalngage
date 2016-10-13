@@ -17,10 +17,15 @@ int main (int argc, char** argv)
 	RenderManager* pRM = pSDLMgr->GetRenderManager();
 
 	// Initialize and run the game
-	Game game;
-	game.RegisterSystem(new LocomotionSystem());
-	game.SetRenderer(pRM);
-	int rc = game.Run();
+	// The block ensures that game-related resources are released as soon as the game
+	// finishes running. This is done via RAII.
+	int rc;
+	{
+		Game game;
+		game.RegisterSystem(new LocomotionSystem());
+		game.SetRenderer(pRM);
+		rc = game.Run();
+	}
 
 	// Destroy managers/singletons and other resources
 	SDLManager::Destroy();

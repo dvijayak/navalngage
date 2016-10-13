@@ -1,6 +1,9 @@
 #include "GameObjectFactory.hpp"
 
 #include <cassert>
+#include <algorithm>
+
+#include "IGameObjectBuilder.hpp"
 
 bool GameObjectFactory::s_bAlreadyCreated = false;
 GOSuid GameObjectFactory::s_nextAvailableSuid = 1;
@@ -15,20 +18,66 @@ GameObjectFactory::GameObjectFactory ()
 GameObjectFactory::~GameObjectFactory ()
 {
 	// Simply destroy all extant GOs
-	for (auto& pGo : m_gameObjects)
+	for (auto& p : m_gameObjects)
 	{
-		delete pGo;
+		delete p.second;
 	}
 }
 
-GameObject& GameObjectFactory::Create ()
+void GameObjectFactory::Add (GameObject* pGo)
 {
-	GameObject* pGo = new GameObject();
+	assert(pGo);
 
 	// TODO: Make thread-safe
 	pGo->m_suid = s_nextAvailableSuid++;
 
-	m_gameObjects.push_back(pGo);
+	// First, destroy an existing GO with the same id if it exists
+	// Note: this situation should never arise but you never know
+	Destroy(pGo->m_suid);
 
+	// Then, throw the new GO into our container
+	m_gameObjects[pGo->m_suid] = pGo;
+}
+
+GameObject& GameObjectFactory::Create (bool bAdd)
+{
+	GameObject* pGo = new GameObject();
+	if (bAdd)
+	{
+		Add(pGo);
+	}
 	return *pGo;
+}
+
+GameObject& GameObjectFactory::Create (IGameObjectBuilder& builder)
+{
+	GameObject* pGo = builder.GetResult();
+	assert(pGo);
+	Add(pGo);
+	return *pGo;
+}
+
+bool GameObjectFactory::Destroy (GOSuid id)
+{
+	auto it = m_gameObjects.find(id);
+	if (it != m_gameObjects.end())
+	{
+		delete it->second;
+		m_gameObjects.erase(it);
+		return true;
+	}
+
+	return false;
+}
+
+GameObject* GameObjectFactory::Resolve (GOSuid id)
+{
+	auto it = m_gameObjects.find(id);
+	if (it != m_gameObjects.end())
+	{
+		assert(it->second); // we should never have a null GO in the factory
+		return it->second;
+	}
+
+	return 0;
 }
