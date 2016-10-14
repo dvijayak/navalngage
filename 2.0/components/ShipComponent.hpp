@@ -3,9 +3,10 @@
 
 #include "IComponent.hpp"
 
-struct ShipComponent
+class ShipComponent
 	: virtual public IComponent
 {
+public:
 	static const IComponent::Name NAME;
 
 	enum Class
@@ -15,15 +16,17 @@ struct ShipComponent
 		MANOFWAR
 	};
 
-	ShipComponent (int klass = SWOOP)
-		: ship_class(klass)
-	{}
+	ShipComponent (int klass = SWOOP) : m_class(klass)	{}
 	~ShipComponent () {}
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
 
-	int ship_class;
+	int GetShipClass () const { return m_class; }
+	void SetShipClass (int klass) { m_class = klass; }
+
+private:
+	int m_class;
 };
 const IComponent::Name ShipComponent::NAME = "ShipComponent";
 

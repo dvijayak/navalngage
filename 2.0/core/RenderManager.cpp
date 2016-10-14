@@ -3,8 +3,6 @@
 #include <cmath>
 
 #include "WindowManager.hpp"
-#include "Geometry.hpp"
-#include "Polygon.hpp"
 
 // Static definitions
 // Matrix3F RenderManager::s_TransformScreenSpace = Matrix3F();
@@ -81,8 +79,8 @@ void RenderManager::FillScreenBackground (Uint32 color)
 void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32 color)
 {
 	// Transform to screen space
-	// Point3F P_s = s_TransformScreenSpace * line.start;  
-	// Point3F P_e = s_TransformScreenSpace * line.end;
+	// PointF P_s = s_TransformScreenSpace * line.start;  
+	// PointF P_e = s_TransformScreenSpace * line.end;
 	//
 	// For now, just multiply by width and height
 	x_s *= m_WIDTH;
@@ -266,18 +264,20 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 
 }
 
-void RenderManager::DrawLine (const LineSegment3F& seg, Uint32 color)
+void RenderManager::DrawLine (const LineSegment2F& seg, Uint32 color)
 {
 	// Forget 3D for now
 
 	DrawLine(seg.start.x, seg.start.y, seg.end.x, seg.end.y, color);
 }
 
-void RenderManager::DrawPolygon (const Polygon3F& poly, Uint32 color)
+void RenderManager::DrawPolygon (const Polygon2F& poly, Uint32 color)
 {
 	// Render each edge of the polygon
-	for (int i = 0; i < poly.nVert; ++i)
+	std::vector<LineSegment2F> edges;
+	poly.ComputeEdges(edges);
+	for (auto& edge : edges)
 	{
-		DrawLine(poly.edges[i], color);
+		DrawLine(edge.start.x, edge.start.y, edge.end.x, edge.end.y, color);
 	}
 }

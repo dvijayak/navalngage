@@ -2,22 +2,26 @@
 #define MovementComponent_hpp
 
 #include "IComponent.hpp"
+#include "Vector2F.hpp"
 
-struct MovementComponent
+class MovementComponent
 	: virtual public IComponent
 {
+public:
 	static const IComponent::Name NAME;
 
-	MovementComponent (float _speed = 0.0f, float _heading = 0.0f)
-		: speed(_speed), heading(_heading)
-	{}
+	MovementComponent (Vector2F const& velocity) : m_velocity(velocity) {}
 	~MovementComponent () {}
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
 
-	float speed;
-	float heading; // 0 - 359 degrees
+	Vector2F const& GetVelocity () const { return m_velocity; }
+	Vector2F& GetVelocityMod () { return m_velocity; }
+	void SetVelocity (Vector2F const& velocity) { m_velocity = velocity; }
+
+private:
+	Vector2F m_velocity;
 };
 const IComponent::Name MovementComponent::NAME = "MovementComponent";
 

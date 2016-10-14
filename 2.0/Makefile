@@ -26,7 +26,7 @@ AUTODEPSFLAGS = -MM $(CXXFLAGS)
 EXE := navalngage
 TARGETS += $(EXE)
 
-SRCDIRS :=common core render components go systems game
+SRCDIRS :=common core render components go systems game math
 
 # For convenience, allow all of our source directories to be valid include paths
 define ADD_INCLUDE
