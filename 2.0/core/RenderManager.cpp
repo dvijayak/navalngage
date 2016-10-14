@@ -264,17 +264,17 @@ void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32
 
 }
 
-void RenderManager::DrawLine (const LineSegment2F& seg, Uint32 color)
+void RenderManager::DrawLine (const LineSegmentF& seg, Uint32 color)
 {
 	// Forget 3D for now
 
 	DrawLine(seg.start.x, seg.start.y, seg.end.x, seg.end.y, color);
 }
 
-void RenderManager::DrawPolygon (const Polygon2F& poly, Uint32 color)
+void RenderManager::DrawPolygon (const PolygonF& poly, Uint32 color)
 {
 	// Render each edge of the polygon
-	std::vector<LineSegment2F> edges;
+	std::vector<LineSegmentF> edges;
 	poly.ComputeEdges(edges);
 	for (auto& edge : edges)
 	{

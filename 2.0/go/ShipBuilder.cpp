@@ -2,8 +2,6 @@
 
 #include "global.hpp"
 
-#include "Vector2F.hpp"
-
 #include "GameObject.hpp"
 #include "GameObjectFactory.hpp"
 
@@ -31,8 +29,8 @@ ShipBuilder::~ShipBuilder ()
 
 void ShipBuilder::MakeDefault ()
 {
-	AddPosition(Vector2F());
-	AddMovement(Vector2F());
+	AddPosition(VectorF());
+	AddMovement(VectorF());
 	AddRotation(0.0);
 	AddShip(ShipComponent::Class::SWOOP);
 	AddMass(10.0); // TODO: Control mass based on ship class
@@ -40,10 +38,10 @@ void ShipBuilder::MakeDefault ()
 
 void ShipBuilder::AddPosition (float x, float y)
 {
-	AddPosition(Vector2F(x, y));
+	AddPosition(VectorF(x, y));
 }
 
-void ShipBuilder::AddPosition (Vector2F const& pos)
+void ShipBuilder::AddPosition (VectorF const& pos)
 {
 	if ( !(m_pGo->AddComponent(new PositionComponent(pos))) )
 	{
@@ -51,7 +49,7 @@ void ShipBuilder::AddPosition (Vector2F const& pos)
 	}
 }
 
-void ShipBuilder::AddMovement (Vector2F const& velocity)
+void ShipBuilder::AddMovement (VectorF const& velocity)
 {
 	if ( !(m_pGo->AddComponent(new MovementComponent(velocity))) )
 	{

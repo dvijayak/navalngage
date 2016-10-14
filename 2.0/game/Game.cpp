@@ -2,7 +2,7 @@
 
 #include "Color.hpp"
 #include "Geometry.hpp"
-#include "Vector2F.hpp"
+#include "VectorF.hpp"
 
 #include "ShipBuilder.hpp"
 
@@ -120,12 +120,12 @@ int Game::Run ()
 	assert(!pResolvedGO);
 
 	/// TEST Vectors
-	Vector2F v1;
+	VectorF v1;
 	console(v1);
-	Vector2F v2(2.34, 1.23);
+	VectorF v2(2.34, 1.23);
 	console(v2);
 	console(v2.NormalizeCopy());
-	Vector2F v3(10, 12);
+	VectorF v3(10, 12);
 	console(v3);
 	console(v2 + v3);
 	console(v2 - v3);
