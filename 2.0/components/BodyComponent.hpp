@@ -11,7 +11,7 @@ public:
 	static const IComponent::Name NAME;
 
 	BodyComponent (PolygonF const& surface) : m_surface(surface) {}
-	~BodyComponent () {}
+	~BodyComponent () {} // TODO: Keep in mind the delete responsibility of surface polygon. Maybe it makes more sense to store a pointer instead of the object itself so that we can use RAII?
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
