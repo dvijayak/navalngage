@@ -5,6 +5,9 @@
 #include <ostream>
 #include <array>
 
+class Vector2F;
+typedef Vector2F VectorF;
+
 class Vector2F
 {
 public:
