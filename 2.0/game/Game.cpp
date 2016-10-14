@@ -1,7 +1,8 @@
 #include "Game.hpp"
 
 #include "Color.hpp"
-#include "Polygon.hpp"
+#include "Geometry.hpp"
+#include "Vector2F.hpp"
 
 #include "ShipBuilder.hpp"
 
@@ -89,19 +90,21 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 
 int Game::Run ()
 {
-	/// TEST Polygon drawing
-	Polygon3F* pTestPoly = Polygon3FFactory::CreateQuad(
-		Point3F(0.2, 0.3),
-		Point3F(0.8, 0.15),
-		Point3F(0.6, 0.7),
-		Point3F(0.27, 0.75)
+	/// TEST Polygon drawing (consequently, also tests points and lines)
+	PolygonF* pTestPoly = PolygonF::CreateQuad(
+		PointF(0.2, 0.3),
+		PointF(0.8, 0.15),
+		PointF(0.6, 0.7),
+		PointF(0.27, 0.75)
 		);
-	Polygon3F* pTestPoly2 = Polygon3FFactory::CreateQuad(
-		Point3F(0.1, 0.675),
-		Point3F(0.19, 0.235),
-		Point3F(0.75, 0.290),
-		Point3F(0.81, 0.89)
+	console(*pTestPoly);
+	PolygonF* pTestPoly2 = PolygonF::CreateQuad(
+		PointF(0.1, 0.675),
+		PointF(0.19, 0.235),
+		PointF(0.75, 0.290),
+		PointF(0.81, 0.89)
 		);
+	console(*pTestPoly2);
 
 	/// TEST GO
 	ShipBuilder sb(m_factory);
@@ -115,6 +118,24 @@ int Game::Run ()
 	m_factory.Destroy(1);
 	pResolvedGO = m_factory.Resolve(1);
 	assert(!pResolvedGO);
+
+	/// TEST Vectors
+	Vector2F v1;
+	console(v1);
+	Vector2F v2(2.34, 1.23);
+	console(v2);
+	console(v2.NormalizeCopy());
+	Vector2F v3(10, 12);
+	console(v3);
+	console(v2 + v3);
+	console(v2 - v3);
+	console(v2 * v3);
+	console(v3 * 10.2);
+	console(v2.NormalizeCopy().Angle(v3));
+	console(v2.NormalizeCopy().Angle(v3.NormalizeCopy()));
+	console(v2 / 2);
+	console(v2.IsOrthogonalTo(v3));
+	console(v1.IsOrthogonalTo(v3));
 
 	//// Game loop ////
 
@@ -173,15 +194,13 @@ int Game::Run ()
 		}
 
 		// For now, have a fake system - just animate the polygons
-		for (auto& seg : pTestPoly->edges)
+		for (auto& v : pTestPoly->vertices)
 		{
-			seg.start.x += 0.001;
-			seg.end.x += 0.001;
+			v.x += 0.001;
 		}
-		for (auto& seg : pTestPoly2->edges)
+		for (auto& v : pTestPoly2->vertices)
 		{
-			seg.start.x -= 0.01;
-			seg.end.x -= 0.01;
+			v.x -= 0.01;
 		}
 
 		// TODO: Pass the (normalized?) lag to the renderer and use it

@@ -2,6 +2,8 @@
 
 #include "global.hpp"
 
+#include "Vector2F.hpp"
+
 #include "GameObject.hpp"
 #include "GameObjectFactory.hpp"
 
@@ -14,7 +16,9 @@
 ShipBuilder::ShipBuilder (GameObjectFactory& factory)
 	: m_pGo(&(factory.Create(false))) // CANIMPROVE: change GOFactory::Create API to return pointer instead? What's the value in returning a reference, anyway?
 	, m_bConstructionCompleted(false)
-{}
+{
+	assert(m_pGo);
+}
 
 ShipBuilder::~ShipBuilder ()
 {
@@ -27,8 +31,8 @@ ShipBuilder::~ShipBuilder ()
 
 void ShipBuilder::MakeDefault ()
 {
-	AddPosition(0.0, 0.0);
-	AddMovement(0.0, 0.0);
+	AddPosition(Vector2F());
+	AddMovement(Vector2F());
 	AddRotation(0.0);
 	AddShip(ShipComponent::Class::SWOOP);
 	AddMass(10.0); // TODO: Control mass based on ship class
@@ -36,18 +40,22 @@ void ShipBuilder::MakeDefault ()
 
 void ShipBuilder::AddPosition (float x, float y)
 {
-	// TODO: Implement ostream ops for GO
-	if ( !(m_pGo->AddComponent(new PositionComponent(x, y))) )
+	AddPosition(Vector2F(x, y));
+}
+
+void ShipBuilder::AddPosition (Vector2F const& pos)
+{
+	if ( !(m_pGo->AddComponent(new PositionComponent(pos))) )
 	{
-		errlog("Failed to add position component to object using parameters: x = " << x << ", y = " << y);
+		errlog("Failed to add position component to object " << *m_pGo << " using parameters: " << pos);
 	}
 }
 
-void ShipBuilder::AddMovement (float speed, float heading)
+void ShipBuilder::AddMovement (Vector2F const& velocity)
 {
-	if ( !(m_pGo->AddComponent(new MovementComponent(speed, heading))) )
+	if ( !(m_pGo->AddComponent(new MovementComponent(velocity))) )
 	{
-		errlog("Failed to add movement component to object using parameters: speed = " << speed << ", heading = " << heading);
+		errlog("Failed to add movement component to object " << *m_pGo << " using parameters: " << velocity);
 	}
 }
 
@@ -55,7 +63,7 @@ void ShipBuilder::AddRotation (float angular_speed)
 {
 	if ( !(m_pGo->AddComponent(new RotationComponent(angular_speed))) )
 	{
-		errlog("Failed to add rotation component to object using parameters: angular_speed = " << angular_speed);
+		errlog("Failed to add rotation component to object " << *m_pGo << " using parameters: angular_speed = " << angular_speed);
 	}
 }
 
@@ -63,7 +71,7 @@ void ShipBuilder::AddShip (int ship_class)
 {
 	if ( !(m_pGo->AddComponent(new ShipComponent(ship_class))) )
 	{
-		errlog("Failed to add ship component to object using parameters: ship class/type = " << ship_class);
+		errlog("Failed to add ship component to object " << *m_pGo << " using parameters: ship class/type = " << ship_class);
 	}
 }
 
@@ -71,7 +79,7 @@ void ShipBuilder::AddMass (float mass)
 {
 	if ( !(m_pGo->AddComponent(new MassComponent(mass))) )
 	{
-		errlog("Failed to add mass component to object using parameters: mass = " << mass);
+		errlog("Failed to add mass component to object " << *m_pGo << " using parameters: mass = " << mass);
 	}
 }
 

@@ -1,13 +1,13 @@
 #include "Geometry.hpp"
 
-std::ostream& operator<< (std::ostream& os, const Point3F& point)
+std::ostream& operator<< (std::ostream& os, const Point2F& point)
 {
-	os << "(" << point.x << ", " << point.y << ", " << point.z << ")";
+	os << "(" << point.x << ", " << point.y << ")";
 	return os;
 }
 
-std::ostream& operator<< (std::ostream& os, const LineSegment3F& line)
+std::ostream& operator<< (std::ostream& os, const Point3F& point)
 {
-	os << "(" << line.start << ", " << line.end << ")";
+	os << "(" << point.x << ", " << point.y << ", " << point.z << ")";
 	return os;
 }

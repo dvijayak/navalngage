@@ -3,20 +3,25 @@
 
 #include "IComponent.hpp"
 
-struct RotationComponent
+class RotationComponent
 	: virtual public IComponent
 {
+public:
 	static const IComponent::Name NAME;
 
 	RotationComponent (float omega = 0.0f)
-		: angular_speed(omega)
+		: m_angular_speed(omega)
 	{}
 	~RotationComponent () {}
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
 
-	float angular_speed;
+	float GetAngularSpeed () const { return m_angular_speed; }
+	void SetAngularSpeeed (float omega) { m_angular_speed = omega; }
+
+private:
+	float m_angular_speed;
 };
 const IComponent::Name RotationComponent::NAME = "RotationComponent";
 

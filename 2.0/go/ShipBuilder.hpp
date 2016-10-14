@@ -5,6 +5,7 @@
 
 class GameObject;
 class GameObjectFactory;
+class Vector2F;
 
 class ShipBuilder
 	: virtual public IGameObjectBuilder
@@ -19,7 +20,8 @@ public:
 	virtual GameObject* GetResult ();
 
 	void AddPosition (float, float);
-	void AddMovement (float, float);
+	void AddPosition (Vector2F const&);
+	void AddMovement (Vector2F const&);
 	void AddRotation (float);
 	void AddShip (int ship_class);
 	void AddMass (float);
