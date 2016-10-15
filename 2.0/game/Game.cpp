@@ -9,11 +9,26 @@
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
 
+// For now, specify our default world dimensions here. We'll later refactor this 
+// into a better place in the code
+constexpr float WORLD_WIDTH  = 6000;
+constexpr float WORLD_HEIGHT = 3000;
+
 Game::Game ()
 	: m_targetFrameRate(60)
 	, m_fixedUpdateTimeStep(1000/m_targetFrameRate)
 	, m_pRenderer(0)
-{}
+	, m_world(WORLD_WIDTH, WORLD_HEIGHT) // origin = (0,0)
+{
+	// Initialize the viewport in the center of the world
+	PointF origin = m_world.GetOrigin();
+	m_viewPort = PolygonF::CreateQuad(
+		PolygonF::vertex_type(origin.x - width/2.0, origin.y + height/2.0),
+		PolygonF::vertex_type(origin.x + width/2.0, origin.y + height/2.0),
+		PolygonF::vertex_type(origin.x + width/2.0, origin.y - height/2.0),
+		PolygonF::vertex_type(origin.x - width/2.0, origin.y - height/2.0)
+	);
+}
 
 Game::~Game ()
 {
@@ -91,20 +106,22 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 int Game::Run ()
 {
 	/// TEST Polygon drawing (consequently, also tests points and lines)
-	PolygonF* pTestPoly = PolygonF::CreateQuad(
+	PolygonF poly1 = PolygonF::CreateQuad(
 		PointF(0.2, 0.3),
 		PointF(0.8, 0.15),
 		PointF(0.6, 0.7),
 		PointF(0.27, 0.75)
 		);
-	console(*pTestPoly);
-	PolygonF* pTestPoly2 = PolygonF::CreateQuad(
+	console(poly1);
+	console(sizeof(poly1));
+	console(sizeof(std::array<PointF, 2>));
+	PolygonF poly2 = PolygonF::CreateQuad(
 		PointF(0.1, 0.675),
 		PointF(0.19, 0.235),
 		PointF(0.75, 0.290),
 		PointF(0.81, 0.89)
 		);
-	console(*pTestPoly2);
+	console(poly2);
 
 	/// TEST GO
 	ShipBuilder sb(m_factory);
@@ -194,11 +211,11 @@ int Game::Run ()
 		}
 
 		// For now, have a fake system - just animate the polygons
-		for (auto& v : pTestPoly->vertices)
+		for (auto& v : poly1.vertices)
 		{
 			v.x += 0.001;
 		}
-		for (auto& v : pTestPoly2->vertices)
+		for (auto& v : poly2.vertices)
 		{
 			v.x -= 0.01;
 		}
@@ -208,18 +225,8 @@ int Game::Run ()
 		// Render screen
 		m_pRenderer->FillScreenBackground();
 
-		// m_pRenderer->DrawLine(0.2, 0.2, 0.6, 0.6, Color::Yellow);
-		// m_pRenderer->DrawLine(0.2, 0.2, 0.6, 0.2345, Color::Yellow);
-		// m_pRenderer->DrawLine(0.2, 0.2, 0.6, 0.21, Color::Yellow);
-		// m_pRenderer->DrawLine(0.1124, 0.2345, 0.567, 0.6123, Color::Red);
-		// m_pRenderer->DrawLine(0.1124, 0.2345, 0.567, 0.7123, Color::Red);
-		// m_pRenderer->DrawLine(0.1124, 0.2345, 0.1124, 0.7345, Color::Red);
-		// m_pRenderer->DrawLine(0.2, 0.2, 0.6, 0.6, Color::Orange);
-		// m_pRenderer->DrawLine(0.8, 0.8, 0.4, 0.4, Color::Pink);
-		// m_pRenderer->DrawLine(0.2, 0.8, 0.8, 0.2, Color::Cyan);
-		// m_pRenderer->DrawLine(0.8, 0.4, 0.4, 0.8, Color::Red);
-		m_pRenderer->DrawPolygon(*pTestPoly, Color::Green);
-		m_pRenderer->DrawPolygon(*pTestPoly2, Color::Pink);
+		m_pRenderer->DrawPolygon(poly1, Color::Green);
+		m_pRenderer->DrawPolygon(poly2, Color::Pink);
 
 		m_pRenderer->Render();
 
@@ -228,9 +235,6 @@ int Game::Run ()
 		// For now, just disable it
 		// SDL_Delay(m_fixedUpdateTimeStep);
 	}
-
-	delete pTestPoly;
-	delete pTestPoly2;
 
 	return rc;
 }

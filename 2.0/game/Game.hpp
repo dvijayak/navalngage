@@ -9,6 +9,9 @@
 #include "GameObjectFactory.hpp"
 #include "ISystem.hpp"
 
+#include "World.hpp"
+#include "Geometry.hpp"
+
 class Game
 {
 public:
@@ -51,6 +54,9 @@ private:
 	size_t m_fixedUpdateTimeStep; // milliseconds, normally synced to target frame rate
 
 	RenderManager* m_pRenderer;
+
+	World m_world;
+	PolygonF m_viewPort; // the same dimensions as the display area/screen
 };
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#include <cassert>
 #include <ostream>
 #include <vector>
 
@@ -67,25 +68,28 @@ std::ostream& operator<< (std::ostream& os, LineSegment<Point> const& line)
 template <class Vertex>
 struct Polygon
 {
+	typedef Polygon<Vertex> polygon_type;
 	typedef Vertex vertex_type;
 	typedef std::vector<Vertex> vertex_container_type;
 
 	size_t n; // Number of vertices
 	vertex_container_type vertices;
 
+	/// Note: we should get the rule of five for free, including move semantics
+
 	void ComputeEdges (std::vector< LineSegment<Vertex> >& result) const;
 
 	// Caller is always responsible for freeing memory for the following create methods
 
-	static Polygon* CreateNPolygon (Vertex vertices[], size_t _n = 4);
-	static Polygon* CreateNPolygon (vertex_container_type const& _vertices); // CANIMPROVE: use std::back_inserter (although I feel that this might be overkill)
+	static Polygon CreateNPolygon (Vertex vertices[], size_t _n = 4);
+	static Polygon CreateNPolygon (vertex_container_type const& _vertices); // CANIMPROVE: use std::back_inserter (although I feel that this might be overkill)
 
 	// TODO:
-	// static Polygon* CreateTriangle (Vertex v[3]) { return CreateQuad(v[0], v[1], v[2]); }
-	// static Polygon* CreateTriangle (Vertex v1, Vertex v2, Vertex v3);
+	// static Polygon CreateTriangle (Vertex v[3]) { return CreateQuad(v[0], v[1], v[2]); }
+	// static Polygon CreateTriangle (Vertex v1, Vertex v2, Vertex v3);
 
-	static Polygon* CreateQuad (Vertex v[4]) { return CreateQuad(v[0], v[1], v[2], v[3]); }
-	static Polygon* CreateQuad (Vertex v1, Vertex v2, Vertex v3, Vertex v4);
+	static Polygon CreateQuad (Vertex v[4]) { return CreateQuad(v[0], v[1], v[2], v[3]); }
+	static Polygon CreateQuad (Vertex v1, Vertex v2, Vertex v3, Vertex v4);
 };
 
 // Useful typedefs
@@ -109,58 +113,52 @@ void Polygon<Vertex>::ComputeEdges (std::vector< LineSegment<Vertex> >& result) 
 }
 
 template <class Vertex>
-Polygon<Vertex>* Polygon<Vertex>::CreateNPolygon (Vertex vertices[], size_t n)
+Polygon<Vertex> Polygon<Vertex>::CreateNPolygon (Vertex vertices[], size_t n)
 {
-	Polygon<Vertex>* p = 0;
-
 	// Create a polygon with at least 3 vertices
-	if (n >= 3)
-	{
-		p = new Polygon<Vertex>;
-		p->n = n;
+	assert(n >= 3);
 
-		// Set vertices
-		p->vertices = vertex_container_type(n);
-		for (size_t i = 0; i < n; ++i)
-		{
-			p->vertices[i] = vertices[i];
-		}
-	}
-
-	return p;
-}
-
-template <class Vertex>
-Polygon<Vertex>* Polygon<Vertex>::CreateNPolygon (vertex_container_type const& vertices)
-{
-	Polygon<Vertex>* p = 0;
-
-	// Create a polygon with at least 3 vertices
-	size_t n = vertices.size();
-	if (!vertices.empty() && n >= 3)
-	{
-		p = new Polygon<Vertex>;
-		p->n = n;
-
-		// Set vertices
-		p->vertices = vertices;
-	}
-
-	return p;
-}
-
-template <class Vertex>
-Polygon<Vertex>* Polygon<Vertex>::CreateQuad (Vertex v1, Vertex v2, Vertex v3, Vertex v4)
-{
-	Polygon<Vertex>* p = new Polygon<Vertex>;
-	p->n = 4;
+	polygon_type p;
+	p.n = n;
 
 	// Set vertices
-	p->vertices = vertex_container_type(4);
-	p->vertices[0] = v1;
-	p->vertices[1] = v2;
-	p->vertices[2] = v3;
-	p->vertices[3] = v4;
+	p.vertices = vertex_container_type(n);
+	for (size_t i = 0; i < n; ++i)
+	{
+		p.vertices[i] = vertices[i];
+	}
+
+	return p;
+}
+
+template <class Vertex>
+Polygon<Vertex> Polygon<Vertex>::CreateNPolygon (vertex_container_type const& vertices)
+{
+	// Create a polygon with at least 3 vertices
+	size_t n = vertices.size();
+	assert(!vertices.empty() && n >= 3);
+
+	polygon_type p;
+	p.n = n;
+
+	// Set vertices
+	p.vertices = vertices;
+
+	return p;
+}
+
+template <class Vertex>
+Polygon<Vertex> Polygon<Vertex>::CreateQuad (Vertex v1, Vertex v2, Vertex v3, Vertex v4)
+{
+	polygon_type p;
+	p.n = 4;
+
+	// Set vertices
+	p.vertices = vertex_container_type(4);
+	p.vertices[0] = v1;
+	p.vertices[1] = v2;
+	p.vertices[2] = v3;
+	p.vertices[3] = v4;
 
 	return p;
 }
