@@ -5,6 +5,8 @@
 #include <ostream>
 #include <array>
 
+#include "Geometry.hpp"
+
 class Vector2F;
 typedef Vector2F VectorF;
 
@@ -16,6 +18,8 @@ public:
 	Vector2F (float x=0.0, float y=0.0) : m_components({{x, y}}) {} // double curly braces needed in C++11 for some reason
 	Vector2F (Vector2F const& other) : m_components(other.m_components) {}
 	Vector2F& operator= (Vector2F const& other);
+	Vector2F (Point2F const& from, Point2F const& to)
+		: m_components({{to.x-from.x, to.y-from.y}}) {}
 	~Vector2F () {}
 
 	/// Standard arithmetic ops

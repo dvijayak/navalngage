@@ -67,9 +67,9 @@ void RenderManager::Render () const
 
 void RenderManager::FillScreenBackground (Uint32 color)
 {
-	for (int w = 0; w < m_WIDTH; ++w)
+	for (size_t w = 0; w < m_WIDTH; ++w)
 	{
-		for (int h = 0; h < m_HEIGHT; ++h)
+		for (size_t h = 0; h < m_HEIGHT; ++h)
 		{
 			SetPixel(w, h, color);
 		}
@@ -273,7 +273,7 @@ void RenderManager::DrawLine (const LineSegmentF& seg, Uint32 color)
 
 void RenderManager::DrawPolygon (const PolygonF& poly, Uint32 color)
 {
-	// Render each edge of the polygon
+	// Render each edge of the polygon.
 	std::vector<LineSegmentF> edges;
 	poly.ComputeEdges(edges);
 	for (auto& edge : edges)

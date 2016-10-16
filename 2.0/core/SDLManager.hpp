@@ -6,8 +6,8 @@
 #include "WindowManager.hpp"
 #include "RenderManager.hpp"
 
-const int MAX_WIDTH = 800;
-const int MAX_HEIGHT = 600;
+const int MAX_WIDTH = 1024;
+const int MAX_HEIGHT = 768;
 
 class SDLManager
 {

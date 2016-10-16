@@ -24,6 +24,8 @@ int main (int argc, char** argv)
 		Game game;
 		game.RegisterSystem(new LocomotionSystem());
 		game.SetRenderer(pRM);
+		game.SetScreenWidth(pSDLMgr->GetWindowManager()->GetWidth());
+		game.SetScreenHeight(pSDLMgr->GetWindowManager()->GetHeight());
 		rc = game.Run();
 	}
 
