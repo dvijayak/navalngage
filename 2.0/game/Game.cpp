@@ -1,6 +1,7 @@
 #include "Game.hpp"
 
 #include "Color.hpp"
+
 #include "Geometry.hpp"
 #include "VectorF.hpp"
 
@@ -11,23 +12,50 @@ constexpr size_t MIN_FPS = 15;
 
 // For now, specify our default world dimensions here. We'll later refactor this 
 // into a better place in the code
-constexpr float WORLD_WIDTH  = 6000;
-constexpr float WORLD_HEIGHT = 3000;
+constexpr float WORLD_RATIO = 1.6; // 16:10
+constexpr float WORLD_WIDTH  = WORLD_RATIO * 4000;
+constexpr float WORLD_HEIGHT = WORLD_RATIO * 3000;
+constexpr float CAMERA_SCALE  = 15;
+constexpr float CAMERA_WIDTH  = WORLD_WIDTH/CAMERA_SCALE;
+constexpr float CAMERA_HEIGHT = WORLD_HEIGHT/CAMERA_SCALE;
+
+/// TEST Polygon drawing (consequently, also tests points and lines)
+// PolygonF poly1 = PolygonF::CreateRect(50, -25, 100, -50);
+// PolygonF poly2 = PolygonF::CreateRect(25, -80, 45, -76);
+PolygonF poly1 = PolygonF::CreateQuad(
+	PointF(50, -25),
+	PointF(150, -5),
+	PointF(134, -123),
+	PointF(67, -120)
+	);
+PolygonF poly2 = PolygonF::CreateNPolygon({
+	PointF(-15, -100),
+	PointF(13, -123),
+	PointF(0, -134),
+	PointF(-45, -113),
+	PointF(-40, -100),
+	PointF(-25, -95)
+	});
+std::vector<PolygonF> polys{poly1, poly2};
 
 Game::Game ()
 	: m_targetFrameRate(60)
 	, m_fixedUpdateTimeStep(1000/m_targetFrameRate)
 	, m_pRenderer(0)
 	, m_world(WORLD_WIDTH, WORLD_HEIGHT) // origin = (0,0)
+	, m_cameraRectWidth(CAMERA_WIDTH)
+	, m_cameraRectHeight(CAMERA_HEIGHT)
+	, m_cameraRectSizeScale(CAMERA_SCALE)
 {
-	// Initialize the viewport in the center of the world
-	PointF origin = m_world.GetOrigin();
-	m_viewPort = PolygonF::CreateQuad(
-		PolygonF::vertex_type(origin.x - width/2.0, origin.y + height/2.0),
-		PolygonF::vertex_type(origin.x + width/2.0, origin.y + height/2.0),
-		PolygonF::vertex_type(origin.x + width/2.0, origin.y - height/2.0),
-		PolygonF::vertex_type(origin.x - width/2.0, origin.y - height/2.0)
-	);
+	// For now, initialize camera at the center of the world;
+	PointF cameraPos = m_world.GetOrigin();
+	cameraPos.y += 100;
+	cameraPos.x -= 150;
+	m_cameraRect = PolygonF::CreateRect(cameraPos, m_cameraRectWidth, m_cameraRectHeight);
+
+	// m_pCamera = &m_factory.Create();
+	// m_pCamera->AddComponent(new BodyComponent(PolygonF::CreateRect(cameraPos, CAMERA_WIDTH, CAMERA_HEIGHT)))
+	// console(*m_pCamera)
 }
 
 Game::~Game ()
@@ -105,54 +133,11 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 
 int Game::Run ()
 {
-	/// TEST Polygon drawing (consequently, also tests points and lines)
-	PolygonF poly1 = PolygonF::CreateQuad(
-		PointF(0.2, 0.3),
-		PointF(0.8, 0.15),
-		PointF(0.6, 0.7),
-		PointF(0.27, 0.75)
-		);
+	console(m_world.GetRect());
+	console(m_cameraRect);
+
 	console(poly1);
-	console(sizeof(poly1));
-	console(sizeof(std::array<PointF, 2>));
-	PolygonF poly2 = PolygonF::CreateQuad(
-		PointF(0.1, 0.675),
-		PointF(0.19, 0.235),
-		PointF(0.75, 0.290),
-		PointF(0.81, 0.89)
-		);
 	console(poly2);
-
-	/// TEST GO
-	ShipBuilder sb(m_factory);
-	sb.MakeDefault();
-	GameObject& go = m_factory.Create(sb);
-	console(go);
-
-	GameObject* pResolvedGO = m_factory.Resolve(1);
-	assert(pResolvedGO);
-	console(*pResolvedGO);
-	m_factory.Destroy(1);
-	pResolvedGO = m_factory.Resolve(1);
-	assert(!pResolvedGO);
-
-	/// TEST Vectors
-	VectorF v1;
-	console(v1);
-	VectorF v2(2.34, 1.23);
-	console(v2);
-	console(v2.NormalizeCopy());
-	VectorF v3(10, 12);
-	console(v3);
-	console(v2 + v3);
-	console(v2 - v3);
-	console(v2 * v3);
-	console(v3 * 10.2);
-	console(v2.NormalizeCopy().Angle(v3));
-	console(v2.NormalizeCopy().Angle(v3.NormalizeCopy()));
-	console(v2 / 2);
-	console(v2.IsOrthogonalTo(v3));
-	console(v1.IsOrthogonalTo(v3));
 
 	//// Game loop ////
 
@@ -195,6 +180,45 @@ int Game::Run ()
 					break;
 				}
 			}
+			else if (event.type == SDL_KEYDOWN)
+			{
+				float inc = 1;
+				switch (event.key.keysym.sym)
+				{
+					case SDLK_w:
+					{
+						m_cameraRect[0].y += inc;
+						break;
+					}
+					case SDLK_a:
+					{
+						m_cameraRect[0].x -= inc;
+						break;
+					}
+					case SDLK_s:
+					{
+						m_cameraRect[0].y -= inc;
+						break;
+					}
+					case SDLK_d:
+					{
+						m_cameraRect[0].x += inc;
+						break;
+					}
+				}
+			}
+			else if (event.type == SDL_MOUSEWHEEL)
+			{
+				float inc = event.wheel.y;
+				float width = m_cameraRectWidth, height = m_cameraRectHeight;
+
+				width += inc;
+				height += inc;
+				m_cameraRect = PolygonF::CreateRect(m_cameraRect[0].x+inc, m_cameraRect[0].y+inc, width, height);
+
+				m_cameraRectWidth = width;
+				m_cameraRectHeight = height;
+			}
 		}
 		if (bExit) break; // exit the game loop
 
@@ -218,17 +242,10 @@ int Game::Run ()
 		for (auto& v : poly2.vertices)
 		{
 			v.x -= 0.01;
-		}
+		}		
 
-		// TODO: Pass the (normalized?) lag to the renderer and use it
-
-		// Render screen
-		m_pRenderer->FillScreenBackground();
-
-		m_pRenderer->DrawPolygon(poly1, Color::Green);
-		m_pRenderer->DrawPolygon(poly2, Color::Pink);
-
-		m_pRenderer->Render();
+		// Render the game using the normalized lag
+		DrawWorld(float(lag)/float(m_fixedUpdateTimeStep));
 
 		// Consider sleeping a bit after a cycle to save power.energy on the host platform
 		// TODO: Make this a configurable setting
@@ -237,4 +254,61 @@ int Game::Run ()
 	}
 
 	return rc;
+}
+
+void Game::DrawWorld (float dt)
+{
+	m_pRenderer->FillScreenBackground();
+
+	// Draw only the visible objects in the viewport
+	// (For now, all objects are visible)
+	size_t c_i = 0;
+	for (auto& p : polys)
+	{
+		// A point is considered to be included by a rectangle if the x and y components
+		// of the vector from the rectangle's origin (top-left vertex) to the point is
+		// less than or equal to the width and height of the rectangle, respectively.
+		bool pass = false;
+		for (auto const& v : p.vertices)
+		{
+			if (std::abs(v.x - m_cameraRect[0].x) <= m_cameraRectWidth &&
+				 std::abs(v.y - m_cameraRect[0].y) <= m_cameraRectHeight)
+			{
+				pass = true;
+				break; // For now, we draw a polygon if at least one of its vertices is included
+			}
+		}
+
+		if (!pass)
+		{
+			continue;
+		}
+
+		// Apply transformations to all vertices
+		PolygonF finalPoly(p);
+		for (auto& v : finalPoly.vertices)
+		{
+			// v => screen space
+			// 1. translate to camera position (??)
+			v.x = v.x - m_cameraRect[0].x;
+			v.y = v.y - m_cameraRect[0].y;
+			// 2. reflect over the x-axis 
+			// (Since screen space origin is 0,0 on top-left corner with +x rightwards 
+			// and +y downwards)
+			v.y = -v.y;
+
+			// v => normalized device coordinates (we choose the range as [0,1])
+			v.x /= m_cameraRectWidth;
+			v.y /= m_cameraRectHeight;			
+		}
+
+		// Draw away!
+		Uint32 color = (c_i % 2) == 0 ? Color::Green : Color::Pink;
+		m_pRenderer->DrawPolygon(finalPoly, color);
+
+		c_i++;
+	}
+
+	// Final step - send the frame buffer to the video device
+	m_pRenderer->Render();
 }

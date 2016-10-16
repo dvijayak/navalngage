@@ -44,6 +44,11 @@ public:
 
 	void SetRenderer (RenderManager* pRM) { m_pRenderer = pRM; }
 
+	void SetScreenWidth (float width) { m_screenWidth = width; }
+	void SetScreenHeight (float height) { m_screenHeight = height; }
+
+	void DrawWorld (float dt); // dt => normalized lag, i.e. how far into the next frame update cycle the game loop is currently in
+
 private:
 	GameObjectFactory m_factory;
 
@@ -56,7 +61,18 @@ private:
 	RenderManager* m_pRenderer;
 
 	World m_world;
-	PolygonF m_viewPort; // the same dimensions as the display area/screen
+
+	GameObject* m_pCamera;
+
+	PolygonF m_cameraRect;
+	float m_cameraRectWidth;
+	float m_cameraRectHeight;
+	float m_cameraRectSizeScale;
+
+	// TODO: these should update as the window is resized. I should probably implement
+	// the Observer pattern in due time...
+	float m_screenWidth;
+	float m_screenHeight;
 };
 
 #endif

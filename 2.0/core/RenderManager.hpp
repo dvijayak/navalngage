@@ -19,8 +19,8 @@ public:
 	SDL_Renderer* GetRenderer () const;
 	SDL_Texture* GetTexture () const;
 
-	void SetPixel (int index, Uint32 color=Color::Black);
-	void SetPixel (int x, int y, Uint32 color=Color::Black);
+	void SetPixel (size_t index, Uint32 color=Color::Black);
+	void SetPixel (size_t x, size_t y, Uint32 color=Color::Black);
 
 	void Render () const;
 	void FillScreenBackground (Uint32 color=Color::Black);
@@ -31,8 +31,8 @@ public:
 	// static Matrix3F s_TransformScreenSpace;
 
 private:
-	int m_WIDTH;
-	int m_HEIGHT;
+	size_t m_WIDTH;
+	size_t m_HEIGHT;
 
 	// We possess ownership of screen pixels, screen texture and screen renderer
 	Uint32* m_pPixels;
@@ -40,14 +40,15 @@ private:
 	SDL_Texture* m_pTexture;
 };
 
-inline void RenderManager::SetPixel (int index, Uint32 color)
+inline void RenderManager::SetPixel (size_t index, Uint32 color)
 {
-	m_pPixels[ index % (m_WIDTH*m_HEIGHT) ] = color;
+	if (index >= m_WIDTH*m_HEIGHT) return;
+	m_pPixels[index] = color;
 }
 
-inline void RenderManager::SetPixel (int x, int y, Uint32 color)
+inline void RenderManager::SetPixel (size_t x, size_t y, Uint32 color)
 {
-	m_pPixels[ (y%m_HEIGHT)*m_WIDTH + (x%m_WIDTH) ] = color;
+	SetPixel(y*m_WIDTH + x, color);
 }
 
 #endif

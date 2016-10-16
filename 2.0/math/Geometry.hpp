@@ -79,6 +79,9 @@ struct Polygon
 
 	void ComputeEdges (std::vector< LineSegment<Vertex> >& result) const;
 
+	/// Obtain the vertex at the given index
+	Vertex& operator[] (const size_t i)	{ assert(i <= n); return vertices[i]; }
+
 	// Caller is always responsible for freeing memory for the following create methods
 
 	static Polygon CreateNPolygon (Vertex vertices[], size_t _n = 4);
@@ -90,6 +93,9 @@ struct Polygon
 
 	static Polygon CreateQuad (Vertex v[4]) { return CreateQuad(v[0], v[1], v[2], v[3]); }
 	static Polygon CreateQuad (Vertex v1, Vertex v2, Vertex v3, Vertex v4);
+
+	static Polygon CreateRect (Vertex const& o, float width, float height);
+	static Polygon CreateRect (float x, float y, float width, float height) { return CreateRect(Vertex(x, y), width, height); }
 };
 
 // Useful typedefs
@@ -159,6 +165,36 @@ Polygon<Vertex> Polygon<Vertex>::CreateQuad (Vertex v1, Vertex v2, Vertex v3, Ve
 	p.vertices[1] = v2;
 	p.vertices[2] = v3;
 	p.vertices[3] = v4;
+
+	return p;
+}
+
+template <class Vertex>
+Polygon<Vertex> Polygon<Vertex>::CreateRect (Vertex const& o, float width, float height)
+{
+	polygon_type p;
+	p.n = 4;
+
+	//
+	// Given the standard x-y axes (+x rightwards, +y upwards):
+	//
+	//    0                             1
+	// (o.x, o.y)                     (o.x + width, o.y)
+	//    *-----------------------------*
+	//    |                             |
+	//    |                             |
+	//    |                             |
+	//    *-----------------------------*
+	// (o.x, o.y - height)            (o.x + width, o.y - height)
+	//    3                             2
+	//
+
+	// Set vertices
+	p.vertices = vertex_container_type(4);
+	p.vertices[0] = o;
+	p.vertices[1] = Vertex(o.x + width, o.y);
+	p.vertices[2] = Vertex(o.x + width, o.y - height);
+	p.vertices[3] = Vertex(o.x, o.y - height);
 
 	return p;
 }
