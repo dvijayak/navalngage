@@ -5,9 +5,13 @@
 #include "Geometry.hpp"
 #include "VectorF.hpp"
 
+#include "GameObjectFactory.hpp"
+#include "ShipBuilder.hpp"
+
 #include "CameraComponent.hpp"
 #include "PositionComponent.hpp"
 #include "MovementComponent.hpp"
+#include "BodyComponent.hpp"
 
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
@@ -17,28 +21,6 @@ constexpr size_t MIN_FPS = 15;
 constexpr float WORLD_RATIO = 1.6; // 16:10
 constexpr float WORLD_WIDTH  = WORLD_RATIO * 4000;
 constexpr float WORLD_HEIGHT = WORLD_RATIO * 3000;
-constexpr float CAMERA_SCALE  = 15;
-constexpr float CAMERA_WIDTH  = WORLD_WIDTH/CAMERA_SCALE;
-constexpr float CAMERA_HEIGHT = WORLD_HEIGHT/CAMERA_SCALE;
-
-/// TEST Polygon drawing (consequently, also tests points and lines)
-// PolygonF poly1 = PolygonF::CreateRect(50, -25, 100, -50);
-// PolygonF poly2 = PolygonF::CreateRect(25, -80, 45, -76);
-PolygonF poly1 = PolygonF::CreateQuad(
-	PointF(50, -25),
-	PointF(150, -5),
-	PointF(134, -123),
-	PointF(67, -120)
-	);
-PolygonF poly2 = PolygonF::CreateNPolygon({
-	PointF(-15, -100),
-	PointF(13, -123),
-	PointF(0, -134),
-	PointF(-45, -113),
-	PointF(-40, -100),
-	PointF(-25, -95)
-	});
-std::vector<PolygonF> polys{poly1, poly2};
 
 Game::Game ()
 	: m_targetFrameRate(60)
@@ -50,12 +32,12 @@ Game::Game ()
 	
 	// For now, position camera at the center of the world;
 	PointF cameraPos = m_world.GetOrigin();
-	// cameraPos.y += 100;
-	// cameraPos.x -= 150;
+	cameraPos.y += 100;
+	cameraPos.x -= 150;
 
 	// Construct the camera
 	m_pCamera = &(m_factory.Create());
-	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y, CAMERA_WIDTH, CAMERA_HEIGHT));
+	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new MovementComponent(Vector2F(2, 2)));
 	console(m_pCamera->GetComponent<CameraComponent>())
@@ -135,9 +117,45 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 }
 
 int Game::Run ()
-{	
-	console(poly1);
-	console(poly2);
+{
+	//// Create some test objects ////
+
+	// TODO: implement the systems that involve Position, Movement and Body!!!
+	// Recall: Movement affects Position, Position affects Body (surface polygon)!!
+
+	ShipBuilder sb1(m_factory);
+	sb1.MakeDefault();
+	sb1.AddBody(PolygonF::CreateQuad(
+		PointF(50, -25),
+		PointF(150, -5),
+		PointF(134, -123),
+		PointF(67, -120)
+	), Color::Orange);
+	GameObject& ship1 = m_factory.Create(sb1);
+	console(ship1);
+
+	ShipBuilder sb2(m_factory);
+	sb2.MakeDefault();
+	sb2.AddBody(PolygonF::CreateNPolygon({
+		PointF(-15, -100),
+		PointF(13, -123),
+		PointF(0, -134),
+		PointF(-45, -113),
+		PointF(-40, -100),
+		PointF(-25, -95)
+	}), Color::Red);
+	GameObject& ship2 = m_factory.Create(sb2);
+	console(ship2);
+
+	ShipBuilder sb3(m_factory);
+	sb3.MakeDefault();
+	sb3.AddBody(PolygonF::CreateTriangle(
+		PointF(40, -300),
+		PointF(60, -365),
+		PointF(12, -365)
+	), Color::Cyan);
+	GameObject& ship3 = m_factory.Create(sb3);
+	console(ship3);
 
 	//// Game loop ////
 
@@ -161,7 +179,7 @@ int Game::Run ()
 		previous = current;
 		// console("elapsed = " << elapsed << "  lag = " << lag);
 
-		// TODO: Process events
+		// TODO: Process events in a clean manner
 		SDL_Event event;
 		while (!bExit && SDL_PollEvent(&event))
 		{
@@ -245,11 +263,16 @@ void Game::DrawWorld (float dt)
 {
 	m_pRenderer->FillScreenBackground();
 
-	// Draw only the visible objects in the viewport
-	// (For now, all objects are visible)
+	// Draw only drawable objects that are visible by the camera
+	// For now, a drawable object is one that has a surface polygon via a BodyComponent
 	size_t c_i = 0;
-	for (auto& p : polys)
+	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.HasComponent<BodyComponent>(); } ))
 	{
+		// Access the object's surface polygon and color
+		BodyComponent* pBody = pGo->GetComponent<BodyComponent>();
+		PolygonF const& p = pBody->GetSurface();
+		Uint32 color = pBody->GetSurfaceColor();
+
 		bool pass = false;
 		for (auto const& v : p.vertices)
 		{
@@ -272,10 +295,8 @@ void Game::DrawWorld (float dt)
 			// v => normalized device coordinates
 			m_pCamera->GetComponent<CameraComponent>()->WorldToScreen(v);			
 		}
-		console(finalPoly);
 
 		// Draw away!
-		Uint32 color = (c_i % 2) == 0 ? Color::Green : Color::Pink;
 		m_pRenderer->DrawPolygon(finalPoly, color);
 
 		c_i++;

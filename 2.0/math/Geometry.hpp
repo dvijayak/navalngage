@@ -87,9 +87,8 @@ struct Polygon
 	static Polygon CreateNPolygon (Vertex vertices[], size_t _n = 4);
 	static Polygon CreateNPolygon (vertex_container_type const& _vertices); // CANIMPROVE: use std::back_inserter (although I feel that this might be overkill)
 
-	// TODO:
-	// static Polygon CreateTriangle (Vertex v[3]) { return CreateQuad(v[0], v[1], v[2]); }
-	// static Polygon CreateTriangle (Vertex v1, Vertex v2, Vertex v3);
+	static Polygon CreateTriangle (Vertex v[3]) { return CreateTriangle(v[0], v[1], v[2]); }
+	static Polygon CreateTriangle (Vertex v1, Vertex v2, Vertex v3);
 
 	static Polygon CreateQuad (Vertex v[4]) { return CreateQuad(v[0], v[1], v[2], v[3]); }
 	static Polygon CreateQuad (Vertex v1, Vertex v2, Vertex v3, Vertex v4);
@@ -149,6 +148,21 @@ Polygon<Vertex> Polygon<Vertex>::CreateNPolygon (vertex_container_type const& ve
 
 	// Set vertices
 	p.vertices = vertices;
+
+	return p;
+}
+
+template <class Vertex>
+Polygon<Vertex> Polygon<Vertex>::CreateTriangle (Vertex v1, Vertex v2, Vertex v3)
+{
+	polygon_type p;
+	p.n = 3;
+
+	// Set vertices
+	p.vertices = vertex_container_type(4);
+	p.vertices[0] = v1;
+	p.vertices[1] = v2;
+	p.vertices[2] = v3;
 
 	return p;
 }

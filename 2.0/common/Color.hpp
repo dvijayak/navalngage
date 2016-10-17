@@ -21,6 +21,8 @@ public:
 	{
 		return ( (r & 0xFF) << 24 ) + ( (g & 0xFF) << 16 ) + ( (b & 0xFF) << 8) + 0xFF;
 	}
+
+	// TODO: Implement color to hex string function so logs are more useful
 };
 
 #endif

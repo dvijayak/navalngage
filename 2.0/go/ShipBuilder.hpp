@@ -3,6 +3,8 @@
 
 #include "IGameObjectBuilder.hpp"
 #include "VectorF.hpp"
+#include "Color.hpp"
+#include "Geometry.hpp"
 
 class GameObject;
 class GameObjectFactory;
@@ -16,7 +18,7 @@ public:
 	~ShipBuilder ();
 
 	/// IGameObjectBuilder
-	virtual void MakeDefault ();
+	virtual void MakeDefault (); // Note: a body isn't created by default!
 	virtual GameObject* GetResult ();
 
 	void AddPosition (float, float);
@@ -25,6 +27,7 @@ public:
 	void AddRotation (float);
 	void AddShip (int ship_class);
 	void AddMass (float);
+	void AddBody (PolygonF const& poly, Uint32 color=Color::Green);
 
 private:
 	GameObject* m_pGo;

@@ -81,3 +81,20 @@ GameObject* GameObjectFactory::Resolve (GOSuid id)
 
 	return 0;
 }
+
+GameObjectFactory::GOResultListType GameObjectFactory::ResolveObjects (FilterType filter) const
+{
+	GOResultListType result;
+
+	for (auto& p : m_gameObjects)
+	{
+		// p.first => GOSuid, p.second => GO pointer
+		assert(p.second);
+		if (filter(*(p.second)))
+		{
+			result.push_back(p.second);
+		}
+	}
+
+	return result;
+}
