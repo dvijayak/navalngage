@@ -10,6 +10,7 @@
 #include "RotationComponent.hpp"
 #include "ShipComponent.hpp"
 #include "MassComponent.hpp"
+#include "BodyComponent.hpp"
 
 ShipBuilder::ShipBuilder (GameObjectFactory& factory)
 	: m_pGo(&(factory.Create(false))) // CANIMPROVE: change GOFactory::Create API to return pointer instead? What's the value in returning a reference, anyway?
@@ -34,6 +35,8 @@ void ShipBuilder::MakeDefault ()
 	AddRotation(0.0);
 	AddShip(ShipComponent::Class::SWOOP);
 	AddMass(10.0); // TODO: Control mass based on ship class
+
+	// Note that a body isn't created by default!
 }
 
 void ShipBuilder::AddPosition (float x, float y)
@@ -79,6 +82,14 @@ void ShipBuilder::AddMass (float mass)
 	{
 		errlog("Failed to add mass component to object " << *m_pGo << " using parameters: mass = " << mass);
 	}
+}
+
+void ShipBuilder::AddBody (PolygonF const& poly, Uint32 color)
+{
+	if ( !(m_pGo->AddComponent(new BodyComponent(poly, color))) )
+	{
+		errlog("Failed to add body component to object " << *m_pGo << " using parameters: polygon = " << poly << ", color = " << color);
+	}	
 }
 
 GameObject* ShipBuilder::GetResult ()

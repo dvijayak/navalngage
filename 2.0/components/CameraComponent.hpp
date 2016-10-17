@@ -15,7 +15,7 @@ class CameraComponent
 public:
 	static const IComponent::Name NAME;
 
-	CameraComponent (World* pWorld=0, float x=0, float y=0, float w=0, float h=0);
+	CameraComponent (World* pWorld=0, float x=0, float y=0, float scale=1);
 	CameraComponent (World* pWorld, RectangleF const& rect);
 	~CameraComponent () {}
 

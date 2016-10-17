@@ -10,16 +10,16 @@ static constexpr float MAX_SPEED = 10; // m/s
 
 const IComponent::Name CameraComponent::NAME = "CameraComponent";
 
-CameraComponent::CameraComponent (World* pWorld, float x, float y, float w, float h)
+CameraComponent::CameraComponent (World* pWorld, float x, float y, float scale)
 	: m_pWorld(pWorld)
-	, m_viewRectangle(x, y, w, h)
+	, m_viewRectangle(x, y, 0, 0)
 	, m_minViewScale(MIN_VIEWSCALE)
 	, m_maxViewScale(MAX_VIEWSCALE)
-	, m_viewScale(m_minViewScale)
+	, m_viewScale(scale)
 	, m_minMoveSpeed(MIN_SPEED)
 	, m_maxMoveSpeed(MAX_SPEED)
 {
-	UpdateView();
+	SetViewScale(scale); // validate the provided scale before creating the view rect
 }
 
 CameraComponent::CameraComponent (World* pWorld, RectangleF const& rect)
@@ -73,6 +73,7 @@ void CameraComponent::Zoom (float val, bool bIsIncrement)
 
 void CameraComponent::Pan (float dx, float dy)
 {
+	// TODO: Do world bounds check so that camera doesn't move out of the world
 	m_viewRectangle.x += dx;
 	m_viewRectangle.y += dy;
 }

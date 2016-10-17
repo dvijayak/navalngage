@@ -2,8 +2,12 @@
 #define GameObjectFactory_HPP
 
 #include <map>
+#include <vector>
+#include <functional>
 
 #include "GameObject.hpp"
+
+// struct 
 
 class IGameObjectBuilder;
 
@@ -13,6 +17,8 @@ class GameObjectFactory
 public:
 	GameObjectFactory ();
 	~GameObjectFactory ();
+
+	typedef std::map<GOSuid, GameObject*> GOContainerType;
 
 	/// Constructs a new empty game object. The caller must then add components.
 	/// Synopsis:
@@ -28,8 +34,9 @@ public:
 	bool Destroy (GOSuid);
 	GameObject* Resolve (GOSuid);
 
-	typedef std::map<GOSuid, GameObject*> GOContainerType;
-	GOContainerType const& GetAllGameObjects () const { return m_gameObjects; }
+	typedef std::vector<GameObject*> GOResultListType;
+	typedef std::function<bool(GameObject const&)> FilterType;
+	GOResultListType ResolveObjects (FilterType filter=[] (GameObject const& go) { return true; }) const; // Move semantics should kick in
 
 private:
 	void Add (GameObject*);

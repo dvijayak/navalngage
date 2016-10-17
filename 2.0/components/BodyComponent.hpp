@@ -27,6 +27,5 @@ private:
 	PolygonF m_surface;
 	Uint32 m_color;
 };
-const IComponent::Name BodyComponent::NAME = "BodyComponent";
 
 #endif

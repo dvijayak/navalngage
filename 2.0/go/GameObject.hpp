@@ -17,6 +17,7 @@ public:
 	GOSuid GetSuid () const { return m_suid; };
 
 	bool HasComponent (IComponent::Name const& name) const;
+	template <class T> bool HasComponent () const;
 	IComponent* GetComponent (IComponent::Name const& name) const;
 	template <class T> T* GetComponent () const;
 
@@ -42,6 +43,11 @@ private:
 template <class T> T* GameObject::GetComponent () const
 {
 	return dynamic_cast<T*>(GetComponent(T::NAME));
+}
+
+template <class T> bool GameObject::HasComponent () const
+{
+	return HasComponent(T::NAME);
 }
 
 
