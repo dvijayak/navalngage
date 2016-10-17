@@ -9,6 +9,9 @@
 class GameObject;
 class GameObjectFactory;
 
+// TODO: Builders should be able to inherit from other builders. Implement a
+// LocomotionBuilder which provides methods for constructing the position, movement
+// and rotation (and maybe mass as well?) components.
 class ShipBuilder
 	: virtual public IGameObjectBuilder
 {
@@ -32,6 +35,7 @@ public:
 private:
 	GameObject* m_pGo;
 
+	// TODO: This is too restrictive. Figure out how to allow builder object reuse
 	bool m_bConstructionCompleted;
 };
 
