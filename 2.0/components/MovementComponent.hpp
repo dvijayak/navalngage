@@ -23,6 +23,5 @@ public:
 private:
 	VectorF m_velocity;
 };
-const IComponent::Name MovementComponent::NAME = "MovementComponent";
 
 #endif

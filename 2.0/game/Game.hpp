@@ -64,11 +64,6 @@ private:
 
 	GameObject* m_pCamera;
 
-	PolygonF m_cameraRect;
-	float m_cameraRectWidth;
-	float m_cameraRectHeight;
-	float m_cameraRectSizeScale;
-
 	// TODO: these should update as the window is resized. I should probably implement
 	// the Observer pattern in due time...
 	float m_screenWidth;

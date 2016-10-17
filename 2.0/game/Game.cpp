@@ -5,7 +5,9 @@
 #include "Geometry.hpp"
 #include "VectorF.hpp"
 
-#include "ShipBuilder.hpp"
+#include "CameraComponent.hpp"
+#include "PositionComponent.hpp"
+#include "MovementComponent.hpp"
 
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
@@ -43,19 +45,20 @@ Game::Game ()
 	, m_fixedUpdateTimeStep(1000/m_targetFrameRate)
 	, m_pRenderer(0)
 	, m_world(WORLD_WIDTH, WORLD_HEIGHT) // origin = (0,0)
-	, m_cameraRectWidth(CAMERA_WIDTH)
-	, m_cameraRectHeight(CAMERA_HEIGHT)
-	, m_cameraRectSizeScale(CAMERA_SCALE)
 {
-	// For now, initialize camera at the center of the world;
+	console(m_world.GetRect());
+	
+	// For now, position camera at the center of the world;
 	PointF cameraPos = m_world.GetOrigin();
-	cameraPos.y += 100;
-	cameraPos.x -= 150;
-	m_cameraRect = PolygonF::CreateRect(cameraPos, m_cameraRectWidth, m_cameraRectHeight);
+	// cameraPos.y += 100;
+	// cameraPos.x -= 150;
 
-	// m_pCamera = &m_factory.Create();
-	// m_pCamera->AddComponent(new BodyComponent(PolygonF::CreateRect(cameraPos, CAMERA_WIDTH, CAMERA_HEIGHT)))
-	// console(*m_pCamera)
+	// Construct the camera
+	m_pCamera = &(m_factory.Create());
+	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y, CAMERA_WIDTH, CAMERA_HEIGHT));
+	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
+	m_pCamera->AddComponent(new MovementComponent(Vector2F(2, 2)));
+	console(m_pCamera->GetComponent<CameraComponent>())
 }
 
 Game::~Game ()
@@ -132,10 +135,7 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 }
 
 int Game::Run ()
-{
-	console(m_world.GetRect());
-	console(m_cameraRect);
-
+{	
 	console(poly1);
 	console(poly2);
 
@@ -182,27 +182,27 @@ int Game::Run ()
 			}
 			else if (event.type == SDL_KEYDOWN)
 			{
-				float inc = 1;
+				float inc = 5;
 				switch (event.key.keysym.sym)
 				{
 					case SDLK_w:
 					{
-						m_cameraRect[0].y += inc;
+						m_pCamera->GetComponent<CameraComponent>()->Pan(0, inc);
 						break;
 					}
 					case SDLK_a:
 					{
-						m_cameraRect[0].x -= inc;
+						m_pCamera->GetComponent<CameraComponent>()->Pan(-inc, 0);
 						break;
 					}
 					case SDLK_s:
 					{
-						m_cameraRect[0].y -= inc;
+						m_pCamera->GetComponent<CameraComponent>()->Pan(0, -inc);
 						break;
 					}
 					case SDLK_d:
 					{
-						m_cameraRect[0].x += inc;
+						m_pCamera->GetComponent<CameraComponent>()->Pan(inc, 0);
 						break;
 					}
 				}
@@ -210,14 +210,8 @@ int Game::Run ()
 			else if (event.type == SDL_MOUSEWHEEL)
 			{
 				float inc = event.wheel.y;
-				float width = m_cameraRectWidth, height = m_cameraRectHeight;
-
-				width += inc;
-				height += inc;
-				m_cameraRect = PolygonF::CreateRect(m_cameraRect[0].x+inc, m_cameraRect[0].y+inc, width, height);
-
-				m_cameraRectWidth = width;
-				m_cameraRectHeight = height;
+				// m_pCamera->GetComponent<CameraComponent>()->Pan(inc, inc);
+				m_pCamera->GetComponent<CameraComponent>()->Zoom(inc);
 			}
 		}
 		if (bExit) break; // exit the game loop
@@ -234,15 +228,6 @@ int Game::Run ()
 			lag -= m_fixedUpdateTimeStep;
 		}
 
-		// For now, have a fake system - just animate the polygons
-		for (auto& v : poly1.vertices)
-		{
-			v.x += 0.001;
-		}
-		for (auto& v : poly2.vertices)
-		{
-			v.x -= 0.01;
-		}		
 
 		// Render the game using the normalized lag
 		DrawWorld(float(lag)/float(m_fixedUpdateTimeStep));
@@ -265,14 +250,10 @@ void Game::DrawWorld (float dt)
 	size_t c_i = 0;
 	for (auto& p : polys)
 	{
-		// A point is considered to be included by a rectangle if the x and y components
-		// of the vector from the rectangle's origin (top-left vertex) to the point is
-		// less than or equal to the width and height of the rectangle, respectively.
 		bool pass = false;
 		for (auto const& v : p.vertices)
 		{
-			if (std::abs(v.x - m_cameraRect[0].x) <= m_cameraRectWidth &&
-				 std::abs(v.y - m_cameraRect[0].y) <= m_cameraRectHeight)
+			if (m_pCamera->GetComponent<CameraComponent>()->Includes(v))
 			{
 				pass = true;
 				break; // For now, we draw a polygon if at least one of its vertices is included
@@ -288,19 +269,10 @@ void Game::DrawWorld (float dt)
 		PolygonF finalPoly(p);
 		for (auto& v : finalPoly.vertices)
 		{
-			// v => screen space
-			// 1. translate to camera position (??)
-			v.x = v.x - m_cameraRect[0].x;
-			v.y = v.y - m_cameraRect[0].y;
-			// 2. reflect over the x-axis 
-			// (Since screen space origin is 0,0 on top-left corner with +x rightwards 
-			// and +y downwards)
-			v.y = -v.y;
-
-			// v => normalized device coordinates (we choose the range as [0,1])
-			v.x /= m_cameraRectWidth;
-			v.y /= m_cameraRectHeight;			
+			// v => normalized device coordinates
+			m_pCamera->GetComponent<CameraComponent>()->WorldToScreen(v);			
 		}
+		console(finalPoly);
 
 		// Draw away!
 		Uint32 color = (c_i % 2) == 0 ? Color::Green : Color::Pink;

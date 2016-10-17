@@ -24,6 +24,5 @@ public:
 private:
 	VectorF m_position;
 };
-const IComponent::Name PositionComponent::NAME = "PositionComponent";
 
 #endif

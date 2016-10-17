@@ -28,6 +28,5 @@ public:
 private:
 	int m_class;
 };
-const IComponent::Name ShipComponent::NAME = "ShipComponent";
 
 #endif

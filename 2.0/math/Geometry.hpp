@@ -215,4 +215,33 @@ std::ostream& operator<< (std::ostream& os, Polygon<Vertex> const& polygon)
 	return os;
 }
 
+class Vector2F;
+struct Rectangle2F
+{
+	float x, y;
+	float width, height;
+
+	Rectangle2F (float _x=0, float _y=0, float w=0, float h=0) : x(_x), y(_y), width(w), height(h) {}
+	Rectangle2F (Point2F const& p, float w, float h) : x(p.x), y(p.y), width(w), height(h) {}
+	Rectangle2F (Vector2F const& v, float w, float h);
+	// Rectangle2F (Rectangle2F const& other) : x(other.x), y(other.y), width(other.width), height(other.height) {}
+	// Rectangle2F& operator= (Rectangle2F const& other);
+
+	// TODO:
+	// template <class Vertex>
+	// Polygon<Vertex> ToPolygon () const;
+};
+typedef Rectangle2F RectangleF;
+
+std::ostream& operator<< (std::ostream& os, Rectangle2F const& rect);
+
+// inline Rectangle2F& Rectangle2F::operator= (Rectangle2F const& other)
+// {
+// 	x = other.x;
+// 	y = other.y;
+// 	width = other.width;
+// 	height = other.height;
+// 	return *this;
+// }
+
 #endif

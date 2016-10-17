@@ -5,7 +5,6 @@
 
 #include "Color.hpp"
 #include "Geometry.hpp"
-// #include "MatrixF.hpp"
 
 class WindowManager;
 
@@ -24,11 +23,11 @@ public:
 
 	void Render () const;
 	void FillScreenBackground (Uint32 color=Color::Black);
-	void DrawLine (float, float, float, float, Uint32 color=Color::White);
+
+	/// All draw functions are expect normalized device coordinates of range [0, 1]
+	void DrawLine (float, float, float, float, Uint32 color=Color::White); 
 	void DrawLine (const LineSegmentF& seg, Uint32 color=Color::White);
 	void DrawPolygon (const PolygonF& poly, Uint32 color=Color::White);
-
-	// static Matrix3F s_TransformScreenSpace;
 
 private:
 	size_t m_WIDTH;
@@ -42,7 +41,6 @@ private:
 
 inline void RenderManager::SetPixel (size_t index, Uint32 color)
 {
-	if (index >= m_WIDTH*m_HEIGHT) return;
 	m_pPixels[index] = color;
 }
 
