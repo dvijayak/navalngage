@@ -23,6 +23,5 @@ public:
 private:
 	float m_angular_speed;
 };
-const IComponent::Name RotationComponent::NAME = "RotationComponent";
 
 #endif

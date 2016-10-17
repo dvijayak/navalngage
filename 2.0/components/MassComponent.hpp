@@ -23,6 +23,5 @@ public:
 private:
 	float m_mass; // kgs
 };
-const IComponent::Name MassComponent::NAME = "MassComponent";
 
 #endif

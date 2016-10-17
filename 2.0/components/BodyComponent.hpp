@@ -3,6 +3,7 @@
 
 #include "IComponent.hpp"
 #include "Geometry.hpp"
+#include "Color.hpp"
 
 class BodyComponent
 	: virtual public IComponent
@@ -10,8 +11,8 @@ class BodyComponent
 public:
 	static const IComponent::Name NAME;
 
-	BodyComponent (PolygonF const& surface) : m_surface(surface) {}
-	~BodyComponent () {} // TODO: Keep in mind the delete responsibility of surface polygon. Maybe it makes more sense to store a pointer instead of the object itself so that we can use RAII?
+	BodyComponent (PolygonF const& surface, Uint32 color=Color::Green) : m_surface(surface), m_color(color) {}
+	~BodyComponent () {}
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
@@ -20,8 +21,11 @@ public:
 	PolygonF& GetSurfaceMod () { return m_surface; }
 	void SetSurface (PolygonF const& surface) { m_surface = surface; }
 
+	Uint32 GetSurfaceColor () const { return m_color; }
+
 private:
 	PolygonF m_surface;
+	Uint32 m_color;
 };
 const IComponent::Name BodyComponent::NAME = "BodyComponent";
 

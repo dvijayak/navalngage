@@ -78,17 +78,34 @@ void RenderManager::FillScreenBackground (Uint32 color)
 
 void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32 color)
 {
-	// Transform to screen space
-	// PointF P_s = s_TransformScreenSpace * line.start;  
-	// PointF P_e = s_TransformScreenSpace * line.end;
-	//
-	// For now, just multiply by width and height
+	// Transform the normalized device coordinates to actual device positions
 	x_s *= m_WIDTH;
 	y_s *= m_HEIGHT;
 	x_e *= m_WIDTH;
 	y_e *= m_HEIGHT;
 
-	// console("Start = (" << x_s << ", " << y_s << ")" << "\t" << "End = (" << x_e << ", " << y_e << ") color = " << color);
+ 	// console("Start = (" << x_s << ", " << y_s << ")" << "\t" << "End = (" << x_e << ", " << y_e << ") color = " << color);
+
+ 	// Cut short points that extend beyond the display's dimensions
+ 	// TODO: This is a TERRIBLE algorithm. I need to implement a much more realistic one.
+ 	if (x_s < 0)
+ 		x_s = 0; 
+ 	else if (x_s > m_WIDTH)
+ 		x_s = m_WIDTH-1;
+ 	if (x_e < 0)
+ 		x_e = 0;
+ 	else if (x_e > m_WIDTH)
+ 		x_e = m_WIDTH-1;
+ 	if (y_s < 0)
+ 		y_s = 0; 
+ 	else if (y_s > m_HEIGHT)
+ 		y_s = m_HEIGHT-1;
+ 	if (y_e < 0)
+ 		y_e = 0;
+ 	else if (y_e > m_HEIGHT)
+ 		y_e = m_HEIGHT-1;
+
+ 	// console("(Cut) Start = (" << x_s << ", " << y_s << ")" << "\t" << "End = (" << x_e << ", " << y_e << ") color = " << color);
 
 	// If the start and end are the same, there's nothing else to be done
 	if (x_s == x_e && y_s == y_e)
