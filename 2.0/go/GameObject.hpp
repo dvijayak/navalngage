@@ -33,7 +33,7 @@ private:
 	typedef std::map<IComponent::Name, IComponent*> ComponentContainer;
 	ComponentContainer m_components;
 
-	// Construction is always done at the factory
+	/// Construction is always done at the factory
 	GameObject ();
 	friend class GameObjectFactory;
 	

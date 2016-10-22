@@ -11,12 +11,12 @@ public:
 
 	enum Class
 	{
-		SWOOP,
+		SLOOP,
 		FRIGATE,
 		MANOFWAR
 	};
 
-	ShipComponent (int klass = SWOOP) : m_class(klass)	{}
+	ShipComponent (int klass = SLOOP) : m_class(klass)	{}
 	~ShipComponent () {}
 
 	/// IComponent

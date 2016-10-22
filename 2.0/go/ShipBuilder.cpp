@@ -33,7 +33,7 @@ void ShipBuilder::MakeDefault ()
 	AddPosition(VectorF());
 	AddMovement(VectorF());
 	AddRotation(0.0);
-	AddShip(ShipComponent::Class::SWOOP);
+	AddShip(ShipComponent::Class::SLOOP);
 	AddMass(10.0); // TODO: Control mass based on ship class
 
 	// Note that a body isn't created by default!

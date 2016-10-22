@@ -7,8 +7,6 @@
 
 #include "GameObject.hpp"
 
-// struct 
-
 class IGameObjectBuilder;
 
 /// Singleton which constructs GOs and manages the lifetime thereof.
