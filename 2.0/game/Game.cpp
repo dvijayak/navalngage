@@ -13,6 +13,8 @@
 #include "MovementComponent.hpp"
 #include "BodyComponent.hpp"
 
+#include "ShipComponent.hpp"
+
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
 
@@ -51,70 +53,6 @@ Game::~Game ()
 	}
 }
 
-void Game::SetTargetFrameRate (size_t fps)
-{
-	if (fps > MAX_FPS)
-	{
-		fps = MAX_FPS;
-	}
-	else if (fps < MIN_FPS)
-	{
-		fps = MIN_FPS;
-	}
-
-	m_targetFrameRate = fps;
-	m_fixedUpdateTimeStep = m_targetFrameRate/1000;
-}
-
-bool Game::RegisterSystem (ISystem* pSystem, int order)
-{
-	if (!pSystem)
-	{
-		return false;
-	}
-
-	bool rc = true;
-
-	switch (order)
-	{
-		case SystemUpdateOrder::FIRST:
-		{
-			// Make this system the new foremost system to be run
-			m_systems.insert(m_systems.begin(), std::make_pair(order, pSystem));		
-			break;
-		}
-		case SystemUpdateOrder::LAST:
-		{
-			// Make this system the new last-most system to be run
-			m_systems.push_back(std::make_pair(order, pSystem));		
-			break;
-		}
-		case SystemUpdateOrder::MIDDLE:
-		{
-			// We don't care about where this system is inserted so long as it is
-			// done so after the last FIRST system and before the first LAST system.
-			// Just insert before the first LAST system if such a system exists
-			// and if not, simply append.
-			for (SystemListType::iterator it = m_systems.begin();; ++it)
-			{
-				// first => order, second => system pointer
-				if (it == m_systems.end() || it->first == SystemUpdateOrder::LAST)
-				{
-					m_systems.insert(it, std::make_pair(order, pSystem));				
-					break;
-				}
-			}
-
-			break;
-		}
-		default:
-		{
-			rc = false;
-		}
-	}
-
-	return rc;
-}
 
 int Game::Run ()
 {
@@ -125,35 +63,44 @@ int Game::Run ()
 
 	ShipBuilder sb1(m_factory);
 	sb1.MakeDefault();
-	sb1.AddBody(PolygonF::CreateQuad(
-		PointF(50, -25),
-		PointF(150, -5),
-		PointF(134, -123),
-		PointF(67, -120)
-	), Color::Orange);
+	// sb1.AddPosition(15, -25);
+	sb1.AddBody(PolygonF::CreateNPolygon({
+		PointF(0, 3),
+		PointF(1, 2),
+		PointF(0.6, -1.5),
+		PointF(-0.6, -1.5),
+		PointF(-1, 2),
+	}), Color::Orange);
 	GameObject& ship1 = m_factory.Create(sb1);
 	console(ship1);
 
 	ShipBuilder sb2(m_factory);
 	sb2.MakeDefault();
+	sb2.AddShip(ShipComponent::FRIGATE);
+	// sb2.AddPosition(-15, -25);
 	sb2.AddBody(PolygonF::CreateNPolygon({
-		PointF(-15, -100),
-		PointF(13, -123),
-		PointF(0, -134),
-		PointF(-45, -113),
-		PointF(-40, -100),
-		PointF(-25, -95)
+		PointF(0, 6),
+		PointF(2.3, 1),
+		PointF(1.6, -3),
+		PointF(-1.6, -3),
+		PointF(-2.3, 1)
 	}), Color::Red);
 	GameObject& ship2 = m_factory.Create(sb2);
 	console(ship2);
 
 	ShipBuilder sb3(m_factory);
 	sb3.MakeDefault();
-	sb3.AddBody(PolygonF::CreateTriangle(
-		PointF(40, -300),
-		PointF(60, -365),
-		PointF(12, -365)
-	), Color::Cyan);
+	sb3.AddShip(ShipComponent::MANOFWAR);
+	// sb3.AddPosition(-50, -25);
+	sb3.AddBody(PolygonF::CreateNPolygon({
+		PointF(0, 11),
+		PointF(4, 4),
+		PointF(4, -7),
+		PointF(2, -10),
+		PointF(-2, -10),
+		PointF(-4, -7),
+		PointF(-4, 4)
+	}), Color::Cyan);
 	GameObject& ship3 = m_factory.Create(sb3);
 	console(ship3);
 
@@ -259,24 +206,90 @@ int Game::Run ()
 	return rc;
 }
 
+void Game::SetTargetFrameRate (size_t fps)
+{
+	if (fps > MAX_FPS)
+	{
+		fps = MAX_FPS;
+	}
+	else if (fps < MIN_FPS)
+	{
+		fps = MIN_FPS;
+	}
+
+	m_targetFrameRate = fps;
+	m_fixedUpdateTimeStep = m_targetFrameRate/1000;
+}
+
+bool Game::RegisterSystem (ISystem* pSystem, int order)
+{
+	if (!pSystem)
+	{
+		return false;
+	}
+
+	bool rc = true;
+
+	switch (order)
+	{
+		case SystemUpdateOrder::FIRST:
+		{
+			// Make this system the new foremost system to be run
+			m_systems.insert(m_systems.begin(), std::make_pair(order, pSystem));		
+			break;
+		}
+		case SystemUpdateOrder::LAST:
+		{
+			// Make this system the new last-most system to be run
+			m_systems.push_back(std::make_pair(order, pSystem));		
+			break;
+		}
+		case SystemUpdateOrder::MIDDLE:
+		{
+			// We don't care about where this system is inserted so long as it is
+			// done so after the last FIRST system and before the first LAST system.
+			// Just insert before the first LAST system if such a system exists
+			// and if not, simply append.
+			for (SystemListType::iterator it = m_systems.begin();; ++it)
+			{
+				// first => order, second => system pointer
+				if (it == m_systems.end() || it->first == SystemUpdateOrder::LAST)
+				{
+					m_systems.insert(it, std::make_pair(order, pSystem));				
+					break;
+				}
+			}
+
+			break;
+		}
+		default:
+		{
+			rc = false;
+		}
+	}
+
+	return rc;
+}
+
 void Game::DrawWorld (float dt)
 {
 	m_pRenderer->FillScreenBackground();
 
 	// Draw only drawable objects that are visible by the camera
 	// For now, a drawable object is one that has a surface polygon via a BodyComponent
-	size_t c_i = 0;
-	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.HasComponent<BodyComponent>(); } ))
+	CameraComponent* pCamera = m_pCamera->GetComponent<CameraComponent>();
+	assert(pCamera);
+	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.HasComponent<BodyComponent>() && go.HasComponent<PositionComponent>(); } ))
 	{
 		// Access the object's surface polygon and color
 		BodyComponent* pBody = pGo->GetComponent<BodyComponent>();
-		PolygonF const& p = pBody->GetSurface();
+		PolygonF p = pBody->ComputeSurface(pGo->GetComponent<PositionComponent>()->GetPosition());
 		Uint32 color = pBody->GetSurfaceColor();
 
 		bool pass = false;
 		for (auto const& v : p.vertices)
 		{
-			if (m_pCamera->GetComponent<CameraComponent>()->Includes(v))
+			if (pCamera->Includes(v))
 			{
 				pass = true;
 				break; // For now, we draw a polygon if at least one of its vertices is included
@@ -293,13 +306,11 @@ void Game::DrawWorld (float dt)
 		for (auto& v : finalPoly.vertices)
 		{
 			// v => normalized device coordinates
-			m_pCamera->GetComponent<CameraComponent>()->WorldToScreen(v);			
+			pCamera->WorldToScreen(v);			
 		}
 
 		// Draw away!
 		m_pRenderer->DrawPolygon(finalPoly, color);
-
-		c_i++;
 	}
 
 	// Final step - send the frame buffer to the video device

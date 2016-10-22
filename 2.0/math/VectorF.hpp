@@ -18,11 +18,16 @@ public:
 	Vector2F (float x=0.0, float y=0.0) : m_components({{x, y}}) {} // double curly braces needed in C++11 for some reason
 	Vector2F (Vector2F const& other) : m_components(other.m_components) {}
 	Vector2F& operator= (Vector2F const& other);
-	Vector2F (Point2F const& from, Point2F const& to)
-		: m_components({{to.x-from.x, to.y-from.y}}) {}
 	~Vector2F () {}
 
+	// /// A point p can be considered as a vector from (0,0) to p
+	// Vector2F (Point2F const& p) : m_components({{p.x, p.y}}) {}
+	/// Construct a vector from one point to another point
+	Vector2F (Point2F const& from, Point2F const& to)
+		: m_components({{to.x-from.x, to.y-from.y}}) {}
+
 	/// Standard arithmetic ops
+	Point2F operator+ (Point2F const& p) const;
 	Vector2F operator+ (Vector2F const& other) const;
 	Vector2F const& operator+= (Vector2F const& other);
 	Vector2F operator- (Vector2F const& other) const;
@@ -71,6 +76,11 @@ inline Vector2F& Vector2F::operator= (Vector2F const& other)
 {
 	m_components = other.m_components;
 	return *this;
+}
+
+inline Point2F Vector2F::operator+ (Point2F const& p) const
+{
+	return Point2F(m_components[0] + p.x, m_components[1] + p.y);
 }
 
 inline Vector2F Vector2F::operator+ (Vector2F const& other) const
