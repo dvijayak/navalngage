@@ -21,7 +21,7 @@ public:
 	void SetVelocity (VectorF const& velocity) { m_velocity = velocity; }
 
 private:
-	VectorF m_velocity;
+	VectorF m_velocity; // speed is in m/s
 };
 
 #endif
