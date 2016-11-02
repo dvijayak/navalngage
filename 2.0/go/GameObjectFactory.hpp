@@ -34,7 +34,7 @@ public:
 
 	typedef std::vector<GameObject*> GOResultListType;
 	typedef std::function<bool(GameObject const&)> FilterType;
-	GOResultListType ResolveObjects (FilterType filter=[] (GameObject const& go) { return true; }) const; // Move semantics should kick in
+	GOResultListType ResolveObjects (FilterType filter=[] (GameObject const&) { return true; }) const; // Move semantics should kick in
 
 private:
 	void Add (GameObject*);
