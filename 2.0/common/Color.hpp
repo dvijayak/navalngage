@@ -12,6 +12,7 @@ public:
 	static const Uint32 Red 		= 0xFF000000;
 	static const Uint32 Green 		= 0x00FF0000;
 	static const Uint32 Blue 		= 0x0000FF00;
+	static const Uint32 Purple		= 0xFF00FF00;
 	static const Uint32 Yellow 	= 0xFFFF0000;
 	static const Uint32 Orange 	= 0xFFA50000;
 	static const Uint32 Cyan 		= 0x00FFFF00;

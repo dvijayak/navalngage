@@ -100,13 +100,13 @@ int Game::Run ()
 		PointF(-2, -10),
 		PointF(-4, -7),
 		PointF(-4, 4)
-	}), Color::Cyan);
+	}), Color::Purple);
 	GameObject& ship3 = m_factory.Create(sb3);
 	console(ship3);
 
 	//// Game loop ////
 
-	bool bExit = false; // flag used to exit the game loop
+	bool exit = false; // flag used to exit the game loop
 	int rc = GameErrorCode::OK;
 
 	// Used in computing time-step
@@ -116,7 +116,7 @@ int Game::Run ()
 	size_t lag = 0;
 
 	// Spin away!
-	while (!bExit)
+	while (!exit)
 	{
 		// Calculate elapsed time-step
 		// (Courtesy of Game Programming Patterns by Robert Nystrom)
@@ -128,11 +128,11 @@ int Game::Run ()
 
 		// TODO: Process events in a clean manner
 		SDL_Event event;
-		while (!bExit && SDL_PollEvent(&event))
+		while (!exit && SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_QUIT)
 			{
-				bExit = true;
+				exit = true;
 				break;
 			}
 			else if (event.type == SDL_KEYUP)
@@ -141,7 +141,7 @@ int Game::Run ()
 				// 	&& event.key.keysym.sym == SDLK_q)
 				if (event.key.keysym.sym == SDLK_q || event.key.keysym.sym == SDLK_ESCAPE)
 				{
-					bExit = true;
+					exit = true;
 					break;
 				}
 			}
@@ -179,7 +179,7 @@ int Game::Run ()
 				m_pCamera->GetComponent<CameraComponent>()->Zoom(inc);
 			}
 		}
-		if (bExit) break; // exit the game loop
+		if (exit) break; // exit the game loop
 
 		// Update all systems using a series of fixed time-steps
 		while (lag >= m_fixedUpdateTimeStep)
@@ -192,7 +192,6 @@ int Game::Run ()
 
 			lag -= m_fixedUpdateTimeStep;
 		}
-
 
 		// Render the game using the normalized lag
 		DrawWorld(float(lag)/float(m_fixedUpdateTimeStep));
@@ -273,12 +272,42 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 
 void Game::DrawWorld (float dt)
 {
+	/// 1. Background
 	m_pRenderer->FillScreenBackground();
 
-	// Draw only drawable objects that are visible by the camera
-	// For now, a drawable object is one that has a surface polygon via a BodyComponent
+	/// 2. Wireframe/Axes
+	// Determine all lines which intersect the camera view rectangle.
+	// Construct line segments out of these then draw them
+	//
+	// x   x   x   x   x   x   x
+	// =   =   =   =   =   =   =
+	// 4   5   6   7   8   9   10
+	//
+	// |   |   |   |   |   |   |
+	// -------------------------  y = 3
+	// |   |   |   |   |   |   |
+	// ------CCCCCCCCCCCC-------  y = 2
+	// |   | C |   |   |C  |   |
+	// ------C----------C-------  y = 1
+	// |   | C |   |   |C  |   |
+	// ------CCCCCCCCCCCC-------  y = 0
+	// |   |   |   |   |   |   |
+	// -------------------------  y = -1
+	// |   |   |   |   |   |   |
+	// -------------------------  y = -2
+	// |   |   |   |   |   |   |
+	//
+	// In the above example, note the line segments formed by lines which intersect
+	// the view rectangle (y=2, y=1, y=0, x=6, x=7 and x=8).
 	CameraComponent* pCamera = m_pCamera->GetComponent<CameraComponent>();
 	assert(pCamera);
+
+
+
+
+	/// 3. World objects
+	// Draw only drawable objects that are visible by the camera
+	// For now, a drawable object is one that has a surface polygon via a BodyComponent
 	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.HasComponent<BodyComponent>() && go.HasComponent<PositionComponent>(); } ))
 	{
 		// Access the object's surface polygon and color
