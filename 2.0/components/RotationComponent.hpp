@@ -21,7 +21,7 @@ public:
 	void SetAngularSpeeed (float omega) { m_angular_speed = omega; }
 
 private:
-	float m_angular_speed;
+	float m_angular_speed; // +ve = clockwise; -ve = counter-clockwise; 0 = no rotation
 };
 
 #endif

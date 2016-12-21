@@ -48,13 +48,12 @@ bool GameObject::AddComponent (IComponent* pComp)
 
 bool GameObject::RemoveComponent (IComponent::Name const& name)
 {
-	// TODO
-
 	ComponentContainer::iterator it = m_components.find(name);
 	if (it != m_components.end())
 	{
 		delete it->second;
 		m_components.erase(it);
+		return true;
 	}
 
 	return false;
@@ -62,14 +61,12 @@ bool GameObject::RemoveComponent (IComponent::Name const& name)
 
 bool GameObject::RemoveComponent (IComponent* pComp)
 {
-	// TODO
-
 	if (!pComp)
 	{
 		return false;
 	}
 
-	return false;
+	return RemoveComponent(pComp->GetName());
 }
 
 std::ostream& operator<< (std::ostream& os, GameObject const& go)
@@ -78,7 +75,7 @@ std::ostream& operator<< (std::ostream& os, GameObject const& go)
 	os << "GameObject #" << go.m_suid;
 	if (!go.m_components.empty())
 	{
-		os << ": components = ";
+		os << ": components = TODO";
 		// TODO: Add ostream support for all components as well
 	}
 	os << "]";

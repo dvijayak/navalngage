@@ -18,7 +18,7 @@ public:
 	IComponent::Name GetName () const { return NAME; }
 
 	VectorF const& GetPosition () const { return m_position; }
-	VectorF& GetPositionMod () { return m_position; }
+	VectorF& GetPosition () { return m_position; }
 	void SetPosition (VectorF const& pos) { m_position = pos; }
 
 private:

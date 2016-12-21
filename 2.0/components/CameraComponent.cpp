@@ -1,7 +1,9 @@
 #include "CameraComponent.hpp"
 
 #include <cmath>
+#include "VectorF.hpp"
 #include "World.hpp"
+#include "global.hpp"
 
 static constexpr float MIN_VIEWSCALE = 10;
 static constexpr float MAX_VIEWSCALE = 60;
@@ -62,20 +64,17 @@ void CameraComponent::Attach (World* pWorld)
 
 void CameraComponent::Zoom (float val, bool bIsIncrement)
 {
-	if (!bIsIncrement)
+	if (bIsIncrement)
 	{
-		SetViewScale(val);
-		return;
+		val += m_viewScale;
 	}
 
-	SetViewScale(m_viewScale + val);
+	SetViewScale(val);
 }
 
-void CameraComponent::Pan (float dx, float dy)
+void CameraComponent::Pan (Vector2F& cameraPosition, float dx, float dy)
 {
-	// TODO: Do world bounds check so that camera doesn't move out of the world
-	m_viewRectangle.x += dx;
-	m_viewRectangle.y += dy;
+	cameraPosition += Vector2F(dx, dy);
 }
 
 void CameraComponent::WorldToScreen (Point2F& p) const
@@ -92,6 +91,27 @@ void CameraComponent::WorldToScreen (Point2F& p) const
 	// 3. normalized device coordinates (we choose the range as [0,1])
 	p.x /= m_viewRectangle.width;
 	p.y /= m_viewRectangle.height;
+}
+
+void CameraComponent::ScreenToWorld (Point2F& p) const
+{
+	// This should be the reverse (inverse?) of WorldToScreen
+
+	// // 1. 
+	// p.x *= m_viewRectangle.width;
+	// p.y *= m_viewRectangle.height;
+	// console(p);
+
+	// 2. reflect over the x-axis 
+	// (Since screen space origin is 0,0 on top-left corner with +x rightwards 
+	// and +y downwards)
+	p.y = -p.y;
+	console(p);
+
+	// 3. translate to camera position (is this what we're actually doing though???)
+	p.x += m_viewRectangle.x;
+	p.y += m_viewRectangle.y;
+	console(p);
 }
 
 bool CameraComponent::Includes (Point2F const& p) const

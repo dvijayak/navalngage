@@ -41,7 +41,7 @@ Game::Game ()
 	m_pCamera = &(m_factory.Create());
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
-	m_pCamera->AddComponent(new MovementComponent(Vector2F(2, 2)));
+	m_pCamera->AddComponent(new MovementComponent(Vector2F(0, 0)));
 	console(m_pCamera->GetComponent<CameraComponent>())
 }
 
@@ -115,6 +115,10 @@ int Game::Run ()
 	size_t elapsed = 0;
 	size_t lag = 0;
 
+	// Mouse state
+	Sint32 mouse_x = 0;
+	Sint32 mouse_y = 0;
+
 	// Spin away!
 	while (!exit)
 	{
@@ -133,7 +137,6 @@ int Game::Run ()
 			if (event.type == SDL_QUIT)
 			{
 				exit = true;
-				break;
 			}
 			else if (event.type == SDL_KEYUP)
 			{
@@ -142,32 +145,32 @@ int Game::Run ()
 				if (event.key.keysym.sym == SDLK_q || event.key.keysym.sym == SDLK_ESCAPE)
 				{
 					exit = true;
-					break;
 				}
 			}
 			else if (event.type == SDL_KEYDOWN)
 			{
 				float inc = 5;
+				VectorF& vel =  m_pCamera->GetComponent<MovementComponent>()->GetVelocity();
 				switch (event.key.keysym.sym)
 				{
 					case SDLK_w:
 					{
-						m_pCamera->GetComponent<CameraComponent>()->Pan(0, inc);
+						vel.SetY(vel.GetY() + inc);
 						break;
 					}
 					case SDLK_a:
 					{
-						m_pCamera->GetComponent<CameraComponent>()->Pan(-inc, 0);
+						vel.SetX(vel.GetX() - inc);
 						break;
 					}
 					case SDLK_s:
 					{
-						m_pCamera->GetComponent<CameraComponent>()->Pan(0, -inc);
+						vel.SetY(vel.GetY() - inc);
 						break;
 					}
 					case SDLK_d:
 					{
-						m_pCamera->GetComponent<CameraComponent>()->Pan(inc, 0);
+						vel.SetX(vel.GetX() + inc);
 						break;
 					}
 				}
@@ -175,8 +178,12 @@ int Game::Run ()
 			else if (event.type == SDL_MOUSEWHEEL)
 			{
 				float inc = event.wheel.y;
-				// m_pCamera->GetComponent<CameraComponent>()->Pan(inc, inc);
 				m_pCamera->GetComponent<CameraComponent>()->Zoom(inc);
+			}
+			else if (event.type == SDL_MOUSEMOTION)
+			{
+				mouse_x = event.motion.x;
+				mouse_y = event.motion.y;
 			}
 		}
 		if (exit) break; // exit the game loop
@@ -184,7 +191,7 @@ int Game::Run ()
 		// Update all systems using a series of fixed time-steps
 		while (lag >= m_fixedUpdateTimeStep)
 		{
-			for (auto& p : m_systems)
+			for (auto& p : m_systems) // order of iteration is significant!
 			{
 				assert(p.second); // system pointer is expected to be valid
 				p.second->Update(m_fixedUpdateTimeStep, m_factory);
@@ -196,7 +203,7 @@ int Game::Run ()
 		// Render the game using the normalized lag
 		DrawWorld(float(lag)/float(m_fixedUpdateTimeStep));
 
-		// Consider sleeping a bit after a cycle to save power.energy on the host platform
+		// Consider sleeping a bit after a cycle to save power/energy on the host platform
 		// TODO: Make this a configurable setting
 		// For now, just disable it
 		// SDL_Delay(m_fixedUpdateTimeStep);
