@@ -2,6 +2,7 @@
 #include "Game.hpp"
 
 #include "LocomotionSystem.hpp"
+#include "CameraSystem.hpp"
 
 int main (int argc, char** argv)
 {	
@@ -22,10 +23,17 @@ int main (int argc, char** argv)
 	int rc;
 	{
 		Game game;
+
+		// System registration (order is significant!)
 		game.RegisterSystem(new LocomotionSystem());
+		game.RegisterSystem(new CameraSystem());
+
+		// Configuration
 		game.SetRenderer(pRM);
 		game.SetScreenWidth(pSDLMgr->GetWindowManager()->GetWidth());
 		game.SetScreenHeight(pSDLMgr->GetWindowManager()->GetHeight());
+
+		// Go!
 		rc = game.Run();
 	}
 

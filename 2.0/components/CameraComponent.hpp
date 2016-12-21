@@ -8,6 +8,8 @@
 
 class World;
 class GameObject;
+class CameraSystem;
+class Vector2F;
 
 class CameraComponent
 	: virtual public IComponent
@@ -40,9 +42,10 @@ public:
 	void Zoom (float val, bool bIsIncrement=true);
 
 	/// Note that either of dx and dy can be zero if you wish to pan on only one axis
-	void Pan (float dx, float dy);
+	void Pan (Vector2F& cameraPosition, float dx, float dy);
 
 	void WorldToScreen (Point2F&) const;
+	void ScreenToWorld (Point2F&) const;
 
 	bool Includes (Point2F const&) const;
 
@@ -62,6 +65,8 @@ private:
 	float m_maxMoveSpeed;
 
 	GameObject* m_pFollowTarget;
+
+	friend CameraSystem;
 
 	friend std::ostream& operator<< (std::ostream& os, CameraComponent const& c);
 	friend std::ostream& operator<< (std::ostream& os, CameraComponent const* pC);

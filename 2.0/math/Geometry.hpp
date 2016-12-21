@@ -258,4 +258,6 @@ std::ostream& operator<< (std::ostream& os, Rectangle2F const& rect);
 // 	return *this;
 // }
 
+// LineSegment2F CalculateIntersection (Rectangle2F const&, )
+
 #endif
