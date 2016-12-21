@@ -70,9 +70,9 @@ CLEAN_DIRS +=$(2) $(3)
 
 $(2)/%.o: $(1)/%.cpp
 	@mkdir -p $(2) $(3)
-	@echo Compiling $$<...
+	@echo "\033[36mCompiling $$<...\033[0m"
 	$(CXX) $$< $(CXXFLAGS) -c -o $$@
-	@echo Generating dependencies for $$<...
+	@echo "\033[36mGenerating dependencies for $$<...\033[0m"
 	$(AUTODEPS) $$< $(AUTODEPSFLAGS) -o $(3)/$$*.d
 	@# Based on http://scottmcpeak.com/autodepend/autodepend.html
 	@mv -f $(3)/$$*.d $(3)/$$*.d.tmp
@@ -122,21 +122,22 @@ debug:
 	$(DEBUG) -f $(EXE) -s lldb
 
 vg: build
-	@echo Running memcheck on $(EXE)...
+	@echo "\033[90mRunning memcheck on $(EXE)...\033[0m"
 	$(MEMCHECK) $(MEMCHECKFLAGS) ./$(EXE)
 
 run: build
-	@echo Running $(EXE)...
+	@echo "\033[90mRunning $(EXE)...\033[0m"
 	./$(EXE)
 
 build: $(EXE)
 
 $(EXE): $(TARGETS_OBJ)
-	@echo Linking object files to create target $@...
+	@echo "\033[34mLinking object files to create target $@...\033[0m"
 	$(CXX) $^ $(LDFLAGS) -o $@
+	@echo "\033[32mSuccessfully built $(EXE)!\033[0m"
 
 clean:
-	@echo Removing targets...
+	@echo "\033[33mRemoving targets...\033[0m"
 	rm -f $(TARGETS)
-	@echo Removing directories...
+	@echo "\033[33mRemoving directories...\033[0m"
 	rm -rf $(CLEAN_DIRS)
