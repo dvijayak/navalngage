@@ -21,15 +21,18 @@ void LocomotionSystem::Update (size_t dt, GameObjectFactory const& factory)
 	for (auto& pGo : factory.ResolveObjects(filter))
 	{
 		MovementComponent* pMov = pGo->GetComponent<MovementComponent>();
-
-		// Note: the order of operations is significant
-
-		// TODO: Mass affects Rotation (angular velocity)
-		// TODO: Rotation affects Movement
-		// TODO: Mass affects Movement (acceleration or velocity? maybe the latter?)
-		// TODO: Implement acceleration
-
 		VectorF& vel = pMov->GetVelocity();
+
+		// TODO: Mass affects velocity increment, but this needs to be handled at the command level, i.e. the point of state change
+
+		// Scale the vector down to the speed upper bound
+		float speed = vel.Norm();
+		float maxSpeed = pMov->GetMaxSpeed();
+		// TODO: Should mass affect max speed?
+		if (speed > maxSpeed)
+		{
+			vel *= maxSpeed / speed;
+		}
 
 		// Movement (velocity) affects Position
 		// We know velocity and elapsed time, we need to find displacement
