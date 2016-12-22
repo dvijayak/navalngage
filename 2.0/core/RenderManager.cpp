@@ -76,6 +76,11 @@ void RenderManager::FillScreenBackground (Uint32 color)
 	}
 }
 
+void RenderManager::DrawPoint (PointF const& p, Uint32 color)
+{
+	SetPixel(p.x * m_WIDTH, p.y * m_HEIGHT, color);
+}
+
 void RenderManager::DrawLine (float x_s, float y_s, float x_e, float y_e, Uint32 color)
 {
 	// Transform the normalized device coordinates to actual device positions
