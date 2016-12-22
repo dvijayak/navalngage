@@ -26,9 +26,8 @@ void CameraSystem::Update (size_t dt, GameObjectFactory const& factory)
 		// Check if we want to follow an object
 		if (pCamera->m_pFollowTarget)
 		{
-			PositionComponent* pPosComp = pCamera->m_pFollowTarget->GetComponent<PositionComponent>();
-			assert(pPosComp); // we shouldn't attempt to follow an object that does not have position
-			pGo->GetComponent<PositionComponent>()->SetPosition(pPosComp->GetPosition());
+			assert(pCamera->m_pFollowTarget->HasComponent<PositionComponent>()); // we shouldn't attempt to follow an object that does not have position
+			pGo->GetComponent<PositionComponent>()->SetPosition(pCamera->m_pFollowTarget->GetComponent<PositionComponent>()->GetPosition());
 		}
 
 		// Update the camera's view rectangle based on the camera's position in the world. The position is 

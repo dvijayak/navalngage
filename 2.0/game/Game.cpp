@@ -29,6 +29,7 @@ Game::Game ()
 	, m_fixedUpdateTimeStep(1000/m_targetFrameRate)
 	, m_pRenderer(0)
 	, m_world(WORLD_WIDTH, WORLD_HEIGHT) // origin = (0,0)
+	, m_pCamera(0)
 {
 	console(m_world.GetRect());
 	
@@ -37,7 +38,7 @@ Game::Game ()
 	PointF cameraPos = m_world.GetOrigin(); // for now, position camera at the center of the world
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
-	m_pCamera->AddComponent(new MovementComponent(Vector2F(0, 0)));
+	m_pCamera->AddComponent(new MovementComponent(Vector2F(), 100.0));
 	console(m_pCamera->GetComponent<CameraComponent>())
 }
 
@@ -222,16 +223,9 @@ bool Game::ProcessEvents ()
 	static SDL_Event event; // watch out for thread-safety issues with static storage - currently should be fine since this function is only ever called on the main thread
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT)
+		if (event.type == SDL_QUIT || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE))
 		{
 			return true;
-		}
-		else if (event.type == SDL_KEYUP)
-		{
-			if (event.key.keysym.sym == SDLK_q || event.key.keysym.sym == SDLK_ESCAPE)
-			{
-				return true;
-			}
 		}
 		else if (event.type == SDL_KEYDOWN)
 		{
