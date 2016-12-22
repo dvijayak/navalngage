@@ -47,6 +47,10 @@ public:
 	void SetScreenWidth (float width) { m_screenWidth = width; }
 	void SetScreenHeight (float height) { m_screenHeight = height; }
 
+	/// Performed once normally at the beginning of each frame
+	bool ProcessEvents ();
+
+	/// Performed once normally at the end of each frame
 	void DrawWorld (float dt); // dt => normalized lag, i.e. how far into the next frame update cycle the game loop is currently in
 
 private:

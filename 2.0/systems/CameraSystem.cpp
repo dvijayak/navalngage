@@ -23,10 +23,18 @@ void CameraSystem::Update (size_t dt, GameObjectFactory const& factory)
 		CameraComponent* pCamera = pGo->GetComponent<CameraComponent>();
 		pCamera->UpdateView();
 
-		// Update the camera's view rectangle based on the camera's position in the world
-		// TODO: Do world bounds check so that camera doesn't move out of the world
+		// Check if we want to follow an object
+		if (pCamera->m_pFollowTarget)
+		{
+			PositionComponent* pPosComp = pCamera->m_pFollowTarget->GetComponent<PositionComponent>();
+			assert(pPosComp); // we shouldn't attempt to follow an object that does not have position
+			pGo->GetComponent<PositionComponent>()->SetPosition(pPosComp->GetPosition());
+		}
+
+		// Update the camera's view rectangle based on the camera's position in the world. The position is 
+		// interpreted as the center of its view rectangle.
 		VectorF const& pos = pGo->GetComponent<PositionComponent>()->GetPosition();
-		pCamera->m_viewRectangle.x = pos.GetX();
-		pCamera->m_viewRectangle.y = pos.GetY();
+		pCamera->m_viewRectangle.x = pos.GetX() - pCamera->m_viewRectangle.width/2.0;
+		pCamera->m_viewRectangle.y = pos.GetY() + pCamera->m_viewRectangle.height/2.0;
 	}
 }

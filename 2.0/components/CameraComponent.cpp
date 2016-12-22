@@ -20,6 +20,7 @@ CameraComponent::CameraComponent (World* pWorld, float x, float y, float scale)
 	, m_viewScale(scale)
 	, m_minMoveSpeed(MIN_SPEED)
 	, m_maxMoveSpeed(MAX_SPEED)
+	, m_pFollowTarget(0)
 {
 	SetViewScale(scale); // validate the provided scale before creating the view rect
 }
@@ -32,6 +33,7 @@ CameraComponent::CameraComponent (World* pWorld, RectangleF const& rect)
 	, m_viewScale(m_minViewScale)
 	, m_minMoveSpeed(MIN_SPEED)
 	, m_maxMoveSpeed(MAX_SPEED)
+	, m_pFollowTarget(0)
 {
 	UpdateView();
 }

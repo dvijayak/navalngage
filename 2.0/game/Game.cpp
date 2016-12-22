@@ -18,7 +18,7 @@
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
 
-// For now, specify our default world dimensions here. We'll later refactor this 
+// For now, specify our world dimensions here. We'll later refactor this 
 // into a better place in the code
 constexpr float WORLD_RATIO = 1.6; // 16:10
 constexpr float WORLD_WIDTH  = WORLD_RATIO * 4000;
@@ -32,13 +32,9 @@ Game::Game ()
 {
 	console(m_world.GetRect());
 	
-	// For now, position camera at the center of the world;
-	PointF cameraPos = m_world.GetOrigin();
-	cameraPos.y += 100;
-	cameraPos.x -= 150;
-
 	// Construct the camera
 	m_pCamera = &(m_factory.Create());
+	PointF cameraPos = m_world.GetOrigin(); // for now, position camera at the center of the world
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new MovementComponent(Vector2F(0, 0)));
@@ -77,7 +73,7 @@ int Game::Run ()
 	ShipBuilder sb2(m_factory);
 	sb2.MakeDefault();
 	sb2.AddShip(ShipComponent::FRIGATE);
-	// sb2.AddPosition(-15, -25);
+	sb2.AddPosition(-15, -25);
 	sb2.AddBody(PolygonF::CreateNPolygon({
 		PointF(0, 6),
 		PointF(2.3, 1),
@@ -91,7 +87,7 @@ int Game::Run ()
 	ShipBuilder sb3(m_factory);
 	sb3.MakeDefault();
 	sb3.AddShip(ShipComponent::MANOFWAR);
-	// sb3.AddPosition(-50, -25);
+	sb3.AddPosition(-50, -25);
 	sb3.AddBody(PolygonF::CreateNPolygon({
 		PointF(0, 11),
 		PointF(4, 4),
@@ -105,8 +101,7 @@ int Game::Run ()
 	console(ship3);
 
 	//// Game loop ////
-
-	bool exit = false; // flag used to exit the game loop
+	
 	int rc = GameErrorCode::OK;
 
 	// Used in computing time-step
@@ -115,12 +110,8 @@ int Game::Run ()
 	size_t elapsed = 0;
 	size_t lag = 0;
 
-	// Mouse state
-	Sint32 mouse_x = 0;
-	Sint32 mouse_y = 0;
-
 	// Spin away!
-	while (!exit)
+	while (true)
 	{
 		// Calculate elapsed time-step
 		// (Courtesy of Game Programming Patterns by Robert Nystrom)
@@ -129,64 +120,9 @@ int Game::Run ()
 		lag += elapsed;
 		previous = current;
 		// console("elapsed = " << elapsed << "  lag = " << lag);
-
-		// TODO: Process events in a clean manner
-		SDL_Event event;
-		while (!exit && SDL_PollEvent(&event))
-		{
-			if (event.type == SDL_QUIT)
-			{
-				exit = true;
-			}
-			else if (event.type == SDL_KEYUP)
-			{
-				// if ((event.key.keysym.mod == KMOD_LCTRL || event.key.keysym.mod == KMOD_RCTRL)
-				// 	&& event.key.keysym.sym == SDLK_q)
-				if (event.key.keysym.sym == SDLK_q || event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					exit = true;
-				}
-			}
-			else if (event.type == SDL_KEYDOWN)
-			{
-				float inc = 5;
-				VectorF& vel =  m_pCamera->GetComponent<MovementComponent>()->GetVelocity();
-				switch (event.key.keysym.sym)
-				{
-					case SDLK_w:
-					{
-						vel.SetY(vel.GetY() + inc);
-						break;
-					}
-					case SDLK_a:
-					{
-						vel.SetX(vel.GetX() - inc);
-						break;
-					}
-					case SDLK_s:
-					{
-						vel.SetY(vel.GetY() - inc);
-						break;
-					}
-					case SDLK_d:
-					{
-						vel.SetX(vel.GetX() + inc);
-						break;
-					}
-				}
-			}
-			else if (event.type == SDL_MOUSEWHEEL)
-			{
-				float inc = event.wheel.y;
-				m_pCamera->GetComponent<CameraComponent>()->Zoom(inc);
-			}
-			else if (event.type == SDL_MOUSEMOTION)
-			{
-				mouse_x = event.motion.x;
-				mouse_y = event.motion.y;
-			}
-		}
-		if (exit) break; // exit the game loop
+	
+		// Process all events in the SDL event queue; this is also the point at which the game loop can be exited
+		if (ProcessEvents()) break;
 
 		// Update all systems using a series of fixed time-steps
 		while (lag >= m_fixedUpdateTimeStep)
@@ -277,8 +213,103 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 	return rc;
 }
 
+bool Game::ProcessEvents ()
+{
+	// Mouse state
+	Sint32 mouse_x = 0;
+	Sint32 mouse_y = 0;
+
+	static SDL_Event event; // watch out for thread-safety issues with static storage - currently should be fine since this function is only ever called on the main thread
+	while (SDL_PollEvent(&event))
+	{
+		if (event.type == SDL_QUIT)
+		{
+			return true;
+		}
+		else if (event.type == SDL_KEYUP)
+		{
+			if (event.key.keysym.sym == SDLK_q || event.key.keysym.sym == SDLK_ESCAPE)
+			{
+				return true;
+			}
+		}
+		else if (event.type == SDL_KEYDOWN)
+		{
+			// TODO: super hacky control handling follows; this is of course to be improved
+
+			GameObject* pGo(0);
+			switch (event.key.keysym.sym)
+			{
+				case SDLK_w:
+				case SDLK_a:
+				case SDLK_s:
+				case SDLK_d:
+					pGo = m_factory.Resolve(2);
+					break;
+				case SDLK_UP:
+				case SDLK_LEFT:
+				case SDLK_DOWN:
+				case SDLK_RIGHT:
+					pGo = m_pCamera;
+					break;
+				case SDLK_f:
+					m_pCamera->GetComponent<CameraComponent>()->Follow(m_factory.Resolve(2));
+					break;
+				case SDLK_g:
+					m_pCamera->GetComponent<CameraComponent>()->UnFollow();
+					break;
+			}
+			if (!pGo) continue;
+
+			const float inc = 5;
+			VectorF& vel = pGo->GetComponent<MovementComponent>()->GetVelocity();
+			switch (event.key.keysym.sym)
+			{
+				case SDLK_w:
+				case SDLK_UP:
+				{
+					vel.SetY(vel.GetY() + inc);
+					break;
+				}
+				case SDLK_a:
+				case SDLK_LEFT:
+				{
+					vel.SetX(vel.GetX() - inc);
+					break;
+				}
+				case SDLK_s:
+				case SDLK_DOWN:
+				{
+					vel.SetY(vel.GetY() - inc);
+					break;
+				}
+				case SDLK_d:
+				case SDLK_RIGHT:
+				{
+					vel.SetX(vel.GetX() + inc);
+					break;
+				}
+			}
+		}
+		else if (event.type == SDL_MOUSEWHEEL)
+		{
+			float inc = event.wheel.y;
+			m_pCamera->GetComponent<CameraComponent>()->Zoom(inc);
+		}
+		else if (event.type == SDL_MOUSEMOTION)
+		{
+			mouse_x = event.motion.x;
+			mouse_y = event.motion.y;
+		}
+	}
+
+	return false; // in the normal case, we are NOT exiting the game loop
+}
+
 void Game::DrawWorld (float dt)
 {
+	// TODO: Use the normalized lag dt to produce a more accurate render
+
 	/// 1. Background
 	m_pRenderer->FillScreenBackground();
 
@@ -309,10 +340,15 @@ void Game::DrawWorld (float dt)
 	CameraComponent* pCamera = m_pCamera->GetComponent<CameraComponent>();
 	assert(pCamera);
 
+	/// 3. Point of world origin
+	PointF worldOrigin = m_world.GetOrigin();
+	if (pCamera->Includes(worldOrigin))
+	{
+		pCamera->WorldToScreen(worldOrigin);
+		m_pRenderer->DrawPoint(worldOrigin);
+	}
 
-
-
-	/// 3. World objects
+	/// 4. World objects
 	// Draw only drawable objects that are visible by the camera
 	// For now, a drawable object is one that has a surface polygon via a BodyComponent
 	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.HasComponent<BodyComponent>() && go.HasComponent<PositionComponent>(); } ))

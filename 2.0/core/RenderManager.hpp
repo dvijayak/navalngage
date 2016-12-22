@@ -24,7 +24,8 @@ public:
 	void Render () const;
 	void FillScreenBackground (Uint32 color=Color::Black);
 
-	/// All draw functions are expect normalized device coordinates of range [0, 1]
+	/// All draw functions expect normalized device coordinates of range [0, 1]
+	void DrawPoint (PointF const&, Uint32 color=Color::White);
 	void DrawLine (float, float, float, float, Uint32 color=Color::White); 
 	void DrawLine (const LineSegmentF& seg, Uint32 color=Color::White);
 	void DrawPolygon (const PolygonF& poly, Uint32 color=Color::White);
