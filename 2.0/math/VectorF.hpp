@@ -56,7 +56,7 @@ public:
 	/// its direction stays the same. This is very useful when you want a vector
 	/// for representing direction alone, such that the magnitude is irrelevant.
 	Vector2F& Normalize ();
-	Vector2F NormalizeCopy ();
+	Vector2F NormalizeCopy () const;
 
 	inline bool IsOrthogonalTo (Vector2F const& other) const { return Dot(other) == 0.0; }
 
@@ -143,7 +143,7 @@ inline Vector2F& Vector2F::Normalize ()
 	return *this;
 }
 
-inline Vector2F Vector2F::NormalizeCopy ()
+inline Vector2F Vector2F::NormalizeCopy () const
 {
 	float norm = Norm();
 	return operator/(norm);

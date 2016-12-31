@@ -23,11 +23,11 @@ Rectangle2F::Rectangle2F (Vector2F const& v, float w, float h)
 
 std::ostream& operator<< (std::ostream& os, Rectangle2F const& rect)
 {
-	os << "( ";
+	os << "[ ";
 	os << Point2F(rect.x, rect.y) << ", ";
 	os << Point2F(rect.x + rect.width, rect.y) << ", ";
 	os << Point2F(rect.x + rect.width, rect.y - rect.height) << ", ";
 	os << Point2F(rect.x, rect.y - rect.height);
-	os << " )";
+	os << " ]";
 	return os;
 }

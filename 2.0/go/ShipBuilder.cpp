@@ -31,8 +31,8 @@ ShipBuilder::~ShipBuilder ()
 void ShipBuilder::MakeDefault ()
 {
 	AddPosition(VectorF());
-	AddMovement(VectorF());
-	AddRotation(0.0);
+	AddMovement(VectorF(0.0, 1.0), 0.0, 30.0);
+	AddRotation(0.0, 15.0);
 	AddShip(ShipComponent::Class::SLOOP);
 	AddMass(10.0); // TODO: Control mass based on ship class
 
@@ -52,19 +52,19 @@ void ShipBuilder::AddPosition (VectorF const& pos)
 	}
 }
 
-void ShipBuilder::AddMovement (VectorF const& velocity)
+void ShipBuilder::AddMovement (VectorF const& direction, float speed, float maxSpeed)
 {
-	if ( !(m_pGo->AddComponent(new MovementComponent(velocity))) )
+	if ( !(m_pGo->AddComponent(new MovementComponent(direction, speed, maxSpeed))) )
 	{
-		errlog("Failed to add movement component to object " << *m_pGo << " using parameters: " << velocity);
+		errlog("Failed to add movement component to object " << *m_pGo << " using parameters: direction = " << direction << ", speed = " << speed << ", max speed = " << maxSpeed);
 	}
 }
 
-void ShipBuilder::AddRotation (float angular_speed)
+void ShipBuilder::AddRotation (float angularSpeed, float maxAngularSpeed)
 {
-	if ( !(m_pGo->AddComponent(new RotationComponent(angular_speed))) )
+	if ( !(m_pGo->AddComponent(new RotationComponent(angularSpeed, maxAngularSpeed))) )
 	{
-		errlog("Failed to add rotation component to object " << *m_pGo << " using parameters: angular_speed = " << angular_speed);
+		errlog("Failed to add rotation component to object " << *m_pGo << " using parameters: angular speed = " << angularSpeed << ", max angular speed = " << maxAngularSpeed);
 	}
 }
 

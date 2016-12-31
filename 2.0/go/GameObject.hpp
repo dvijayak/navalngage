@@ -18,7 +18,7 @@ public:
 
 	bool HasComponent (IComponent::Name const& name) const;
 	template <class T> bool HasComponent () const;
-	IComponent* GetComponent (IComponent::Name const& name) const;
+	IComponent* GetComponent (IComponent::Name const& name) const; // TODO: Return ref instead of pointer. Caller must rely on HasComponent to check for existence. TIP: Add assert in method to check for null pointer - this prevents segmentation fault which would be difficult to debug down the road
 	template <class T> T* GetComponent () const;
 
 	bool AddComponent (IComponent* pComp);

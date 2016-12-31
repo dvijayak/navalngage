@@ -15,6 +15,9 @@
 
 #include "ShipComponent.hpp"
 
+#include "Action.hpp"
+#include "MouseKeyHandler.hpp"
+
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
 
@@ -38,7 +41,7 @@ Game::Game ()
 	PointF cameraPos = m_world.GetOrigin(); // for now, position camera at the center of the world
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
-	m_pCamera->AddComponent(new MovementComponent(Vector2F(), 100.0));
+	m_pCamera->AddComponent(new MovementComponent(Vector2F(1,0), 0.0, 100.0));
 	console(m_pCamera->GetComponent<CameraComponent>())
 }
 
@@ -48,6 +51,9 @@ Game::~Game ()
 	{
 		delete p.second;
 	}
+
+	// Destroy relevant singletons/managers
+	MouseKeyHandler::Destroy();
 }
 
 
@@ -142,8 +148,7 @@ int Game::Run ()
 
 		// Consider sleeping a bit after a cycle to save power/energy on the host platform
 		// TODO: Make this a configurable setting
-		// For now, just disable it
-		// SDL_Delay(m_fixedUpdateTimeStep);
+		SDL_Delay(1);
 	}
 
 	return rc;
@@ -216,9 +221,9 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 
 bool Game::ProcessEvents ()
 {
-	// Mouse state
-	Sint32 mouse_x = 0;
-	Sint32 mouse_y = 0;
+	// // Mouse state
+	// Sint32 mouse_x = 0;
+	// Sint32 mouse_y = 0;
 
 	static SDL_Event event; // watch out for thread-safety issues with static storage - currently should be fine since this function is only ever called on the main thread
 	while (SDL_PollEvent(&event))
@@ -227,73 +232,28 @@ bool Game::ProcessEvents ()
 		{
 			return true;
 		}
-		else if (event.type == SDL_KEYDOWN)
-		{
-			// TODO: super hacky control handling follows; this is of course to be improved
 
-			GameObject* pGo(0);
-			switch (event.key.keysym.sym)
-			{
-				case SDLK_w:
-				case SDLK_a:
-				case SDLK_s:
-				case SDLK_d:
-					pGo = m_factory.Resolve(2);
-					break;
-				case SDLK_UP:
-				case SDLK_LEFT:
-				case SDLK_DOWN:
-				case SDLK_RIGHT:
-					pGo = m_pCamera;
-					break;
-				case SDLK_f:
-					m_pCamera->GetComponent<CameraComponent>()->Follow(m_factory.Resolve(2));
-					break;
-				case SDLK_g:
-					m_pCamera->GetComponent<CameraComponent>()->UnFollow();
-					break;
-			}
-			if (!pGo) continue;
+		std::vector<Action*> actions(1);
+		switch (event.type)
+		{
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+			case SDL_MOUSEMOTION:
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEWHEEL:
+				MouseKeyHandler::Instance().TranslateToAction(event, m_factory, actions);
+				break;
+		}
 
-			const float inc = 5;
-			VectorF& vel = pGo->GetComponent<MovementComponent>()->GetVelocity();
-			switch (event.key.keysym.sym)
+		for (auto& pAction : actions)
+		{
+			if (pAction)
 			{
-				case SDLK_w:
-				case SDLK_UP:
-				{
-					vel.SetY(vel.GetY() + inc);
-					break;
-				}
-				case SDLK_a:
-				case SDLK_LEFT:
-				{
-					vel.SetX(vel.GetX() - inc);
-					break;
-				}
-				case SDLK_s:
-				case SDLK_DOWN:
-				{
-					vel.SetY(vel.GetY() - inc);
-					break;
-				}
-				case SDLK_d:
-				case SDLK_RIGHT:
-				{
-					vel.SetX(vel.GetX() + inc);
-					break;
-				}
+				// TODO: Log the action, serialize for playback, etc.
+				pAction->Perform();
+				delete pAction;
 			}
-		}
-		else if (event.type == SDL_MOUSEWHEEL)
-		{
-			float inc = event.wheel.y;
-			m_pCamera->GetComponent<CameraComponent>()->Zoom(inc);
-		}
-		else if (event.type == SDL_MOUSEMOTION)
-		{
-			mouse_x = event.motion.x;
-			mouse_y = event.motion.y;
 		}
 	}
 

@@ -26,8 +26,8 @@ public:
 
 	void AddPosition (float, float);
 	void AddPosition (VectorF const&);
-	void AddMovement (VectorF const&);
-	void AddRotation (float);
+	void AddMovement (VectorF const&, float, float);
+	void AddRotation (float, float);
 	void AddShip (int ship_class);
 	void AddMass (float);
 	void AddBody (PolygonF const& poly, Uint32 color=Color::Green);
