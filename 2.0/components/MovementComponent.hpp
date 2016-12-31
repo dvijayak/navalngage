@@ -23,6 +23,7 @@ public:
 	float GetSpeed () const { return m_speed; }
 	float GetMaxSpeed () const { return m_maxSpeed; }
 
+	/// Note: direction MUST be normalized!
 	VectorF GetVelocity () const { return m_direction * m_speed; }
 
 private:

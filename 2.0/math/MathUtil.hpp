@@ -16,18 +16,16 @@ public:
 
 	static float DegreesToRadians (float angle);
 	static float RadiansToDegrees (float angle);
-
 };
 
-float MathUtil::DegreesToRadians (float angle)
+inline float MathUtil::DegreesToRadians (float angle)
 {
 	return angle * RADS_PER_DEG;
 }
 
-float MathUtil::RadiansToDegrees (float angle)
+inline float MathUtil::RadiansToDegrees (float angle)
 {
 	return angle * DEGS_PER_RAD;
 }
-
 
 #endif

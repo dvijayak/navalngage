@@ -15,8 +15,6 @@
 
 #include "MathUtil.hpp"
 
-#include "global.hpp" // TOREMOVE
-
 MouseKeyHandler* MouseKeyHandler::s_pInstance(0);
 
 MouseKeyHandler& MouseKeyHandler::Instance ()
@@ -179,7 +177,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			{
 				if (key == SDLK_w || key == SDLK_s)
 				{
-					float const inc = 2;
+					float const inc = 1;
 					SpeedAction* p = new SpeedAction();
 					p->SetSource(pPlayer);
 					p->SetChangeType(SpeedAction::ADJUST);
@@ -234,14 +232,14 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			// Spawn projectile in movement direction
 			GameObject* pGo = factory.Resolve(2);
 			VectorF const& p = pGo->GetComponent<PositionComponent>()->GetPosition();
-			VectorF const& v = pGo->GetComponent<MovementComponent>()->GetVelocity();
 			GameObject& proj = const_cast<GameObjectFactory&>(factory).Create();
 			proj.AddComponent(new PositionComponent());
-			proj.AddComponent(new MovementComponent(v.NormalizeCopy() * 250.0, 300.0));
+			VectorF const& v = pGo->GetComponent<MovementComponent>()->GetDirection();
+			proj.AddComponent(new MovementComponent(v.NormalizeCopy(), 100.0, 300.0));
 			proj.AddComponent(new BodyComponent(PolygonF::CreateTriangle(
 					PointF(p.GetX(), p.GetY()),
-					PointF(p.GetX()+10.0, p.GetY()+10.0),
-					PointF(p.GetX()-10.0, p.GetY()+10.0)
+					PointF(p.GetX()+0.5, p.GetY()+0.5),
+					PointF(p.GetX()-0.5, p.GetY()+0.5)
 				)));
 			break;
 		}

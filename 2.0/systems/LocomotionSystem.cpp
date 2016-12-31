@@ -6,9 +6,9 @@
 #include "PositionComponent.hpp"
 #include "MovementComponent.hpp"
 #include "RotationComponent.hpp"
+#include "BodyComponent.hpp"
 
-#include "MatrixF.hpp"
-#include <cmath>
+#include "MathUtil.hpp"
 
 LocomotionSystem::LocomotionSystem ()
 {}
