@@ -19,7 +19,8 @@ public:
 	/// ATTN: Caller is responsible for freeing all actions.
 	/// @param [out] - resultant vector of actions
 	/// @return bool - was at least 1 action returned?
-	virtual bool TranslateToAction (SDL_Event const&, GameObjectFactory const&, std::vector<Action*>&) = 0;
+	typedef std::vector<Action*> ResultType;
+	virtual bool TranslateToAction (SDL_Event const&, GameObjectFactory const&, ResultType&) = 0;
 };
 
 #endif

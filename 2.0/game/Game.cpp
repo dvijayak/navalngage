@@ -226,6 +226,7 @@ bool Game::ProcessEvents ()
 	// Sint32 mouse_y = 0;
 
 	static SDL_Event event; // watch out for thread-safety issues with static storage - currently should be fine since this function is only ever called on the main thread
+	std::vector<Action*> actions;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE))
@@ -233,7 +234,6 @@ bool Game::ProcessEvents ()
 			return true;
 		}
 
-		std::vector<Action*> actions(1);
 		switch (event.type)
 		{
 			case SDL_KEYDOWN:
@@ -245,15 +245,18 @@ bool Game::ProcessEvents ()
 				MouseKeyHandler::Instance().TranslateToAction(event, m_factory, actions);
 				break;
 		}
+	}
 
-		for (auto& pAction : actions)
+	// Smooth per-frame controls
+	MouseKeyHandler::Instance().TranslateToActionPerFrame(m_factory, actions);
+
+	for (auto& pAction : actions)
+	{
+		if (pAction)
 		{
-			if (pAction)
-			{
-				// TODO: Log the action, serialize for playback, etc.
-				pAction->Perform();
-				delete pAction;
-			}
+			// TODO: Log the action, serialize for playback, etc.
+			pAction->Perform();
+			delete pAction;
 		}
 	}
 
