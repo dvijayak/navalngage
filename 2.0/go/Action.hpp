@@ -1,5 +1,5 @@
-#ifndef Action_HPP
-#define Action_HPP
+#ifndef Action_hpp
+#define Action_hpp
 
 #include "GameObject.hpp"
 
@@ -11,8 +11,8 @@ public:
 
 	virtual void Perform () = 0;
 
-	void SetSource (GameObject* pGo) { m_pSource = pGo; }
-	void SetTarget (GameObject* pGo) { m_pTarget = pGo; }
+	virtual void SetSource (GameObject* pGo) { m_pSource = pGo; }
+	virtual void SetTarget (GameObject* pGo) { m_pTarget = pGo; }
 
 protected:
 	GameObject* m_pSource;

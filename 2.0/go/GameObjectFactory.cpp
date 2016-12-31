@@ -28,7 +28,7 @@ void GameObjectFactory::Add (GameObject* pGo)
 {
 	assert(pGo);
 
-	// TODO: Make thread-safe
+	// CANIMPROVE: Make thread-safe
 	pGo->m_suid = s_nextAvailableSuid++;
 
 	// First, destroy an existing GO with the same id if it exists

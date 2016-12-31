@@ -1,10 +1,8 @@
-#ifndef SpeedAction_HPP
-#define SpeedAction_HPP
+#ifndef SpeedAction_hpp
+#define SpeedAction_hpp
 
 #include "Action.hpp"
 #include "MovementComponent.hpp"
-
-#include "global.hpp"
 
 class SpeedAction : virtual public Action
 {
@@ -24,7 +22,7 @@ public:
 	void SetSpeed (float val) { m_speed = val; }
 	void SetChangeType (ChangeType type) { m_changeType = (int)type; };
 
-protected:
+private:
 	float m_speed;
 	int m_changeType;
 };

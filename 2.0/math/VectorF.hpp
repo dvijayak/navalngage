@@ -14,7 +14,7 @@ class Vector2F
 {
 public:
 	/// Good ol' rule of three
-	/// TODO: Implement rule of five, i.e. include move semantics when needed
+	/// CANIMPROVE: Implement rule of five, i.e. include move semantics when needed
 	Vector2F (float x=0.0, float y=0.0) : m_components({{x, y}}) {} // double curly braces needed in C++11 for some reason
 	Vector2F (Vector2F const& other) : m_components(other.m_components) {}
 	Vector2F& operator= (Vector2F const& other);
