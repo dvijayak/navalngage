@@ -3,8 +3,7 @@
 
 #include "IComponent.hpp"
 
-class ShipComponent
-	: virtual public IComponent
+DEFINE_COMPONENT(Ship)
 {
 public:
 	static const IComponent::Name NAME;

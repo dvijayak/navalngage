@@ -4,8 +4,7 @@
 #include "IComponent.hpp"
 #include "VectorF.hpp"
 
-class MovementComponent
-	: virtual public IComponent
+DEFINE_COMPONENT(Movement)
 {
 public:
 	static const IComponent::Name NAME;
