@@ -12,4 +12,16 @@ public:
 	virtual Name GetName () const = 0;
 };
 
+/// This macro offers a few conveniences:
+/// 1. inheritance from IComponent
+/// 2. typedef for less verbose component type names
+/// 	 For example:
+/// 	 BodyComponent => CBody
+///    go.Get<CBody>() is the same as go.Get<BodyComponent>()
+#define DEFINE_COMPONENT(x) \
+class x##Component; \
+typedef x##Component C##x; \
+class x##Component \
+	: virtual public IComponent
+
 #endif

@@ -11,8 +11,7 @@ class GameObject;
 class CameraSystem;
 class Vector2F;
 
-class CameraComponent
-	: virtual public IComponent
+DEFINE_COMPONENT(Camera)
 {
 public:
 	static const IComponent::Name NAME;

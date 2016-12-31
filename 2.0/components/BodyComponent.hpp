@@ -6,8 +6,7 @@
 #include "Color.hpp"
 #include "VectorF.hpp"
 
-class BodyComponent
-	: virtual public IComponent
+DEFINE_COMPONENT(Body)
 {
 public:
 	static const IComponent::Name NAME;
