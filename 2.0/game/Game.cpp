@@ -61,9 +61,6 @@ int Game::Run ()
 {
 	//// Create some test objects ////
 
-	// TODO: implement the systems that involve Position, Movement and Body!!!
-	// Recall: Movement affects Position, Position affects Body (surface polygon)!!
-
 	ShipBuilder sb1(m_factory);
 	sb1.MakeDefault();
 	// sb1.AddPosition(15, -25);

@@ -3,6 +3,7 @@
 
 #include "SpeedAction.hpp"
 #include "MovementComponent.hpp"
+#include "BodyComponent.hpp"
 
 #include "MatrixF.hpp"
 
@@ -34,15 +35,28 @@ void RotateAction::Perform ()
 
 	// TODO: Mass affects angle increment?
 
+	// Compute the rotation matrix
 	float cos_theta = std::cos(m_theta);
 	float sin_theta = std::sin(m_theta);
 	Matrix2F rot{{cos_theta, -sin_theta,
 					  sin_theta, cos_theta}};
-
+	
+	// Apply rotation on the object's direction
 	VectorF const& dir = m_pSource->GetComponent<MovementComponent>()->GetDirection();
 	ColMatrix2F res = rot * ColMatrix2F(dir);
-	VectorF newDir(res[0], res[1]);
-	m_pSource->GetComponent<MovementComponent>()->SetDirection(newDir);
+	m_pSource->GetComponent<MovementComponent>()->SetDirection(Vector2F(res[0], res[1]));
+
+	// Apply rotation on the object's surface polygon, if any
+	if (m_pSource->HasComponent<BodyComponent>())
+	{
+		ColMatrix2F res;
+		for (auto& v : m_pSource->GetComponent<BodyComponent>()->GetSurface().vertices)
+		{
+			res = rot * ColMatrix2F(Vector2F(v.x, v.y));
+			v.x = res[0];
+			v.y = res[1];
+		}
+	}
 }
 
 #endif
