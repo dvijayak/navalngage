@@ -3,8 +3,7 @@
 
 #include "IComponent.hpp"
 
-class MassComponent
-	: virtual public IComponent
+DEFINE_COMPONENT(Mass)
 {
 public:
 	static const IComponent::Name NAME;
