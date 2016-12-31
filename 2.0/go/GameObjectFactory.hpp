@@ -30,9 +30,9 @@ public:
 	GameObject& Create (IGameObjectBuilder&);
 
 	bool Destroy (GOSuid);
-	GameObject* Resolve (GOSuid);
+	GameObject* Resolve (GOSuid) const;
 
-	typedef std::vector<GameObject*> GOResultListType;
+	typedef std::vector<GameObject*> GOResultListType; // TODO: should be vector of GO references
 	typedef std::function<bool(GameObject const&)> FilterType;
 	GOResultListType ResolveObjects (FilterType filter=[] (GameObject const&) { return true; }) const; // Move semantics should kick in
 

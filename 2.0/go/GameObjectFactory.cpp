@@ -70,7 +70,7 @@ bool GameObjectFactory::Destroy (GOSuid id)
 	return false;
 }
 
-GameObject* GameObjectFactory::Resolve (GOSuid id)
+GameObject* GameObjectFactory::Resolve (GOSuid id) const
 {
 	auto it = m_gameObjects.find(id);
 	if (it != m_gameObjects.end())

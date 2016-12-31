@@ -159,7 +159,7 @@ Polygon<Vertex> Polygon<Vertex>::CreateTriangle (Vertex v1, Vertex v2, Vertex v3
 	p.n = 3;
 
 	// Set vertices
-	p.vertices = vertex_container_type(4);
+	p.vertices = vertex_container_type(3);
 	p.vertices[0] = v1;
 	p.vertices[1] = v2;
 	p.vertices[2] = v3;

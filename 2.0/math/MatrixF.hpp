@@ -16,6 +16,8 @@ std::ostream& operator<< (std::ostream&, const MatrixF<M, N>&);
 // Useful typedefs
 typedef MatrixF<3, 1> ColMatrix3F;
 typedef MatrixF<1, 3> RowMatrix3F;
+typedef MatrixF<2, 1> ColMatrix2F;
+typedef MatrixF<1, 2> RowMatrix2F;
 typedef MatrixF<2, 2> Matrix2F;
 typedef MatrixF<3, 3> Matrix3F;
 typedef MatrixF<4, 4> Matrix4F;
