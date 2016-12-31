@@ -231,10 +231,10 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 		{
 			// Spawn projectile in movement direction
 			GameObject* pGo = factory.Resolve(2);
-			VectorF const& p = pGo->GetComponent<PositionComponent>()->GetPosition();
+			VectorF const& p = pGo->Get<PositionComponent>().GetPosition();
 			GameObject& proj = const_cast<GameObjectFactory&>(factory).Create();
 			proj.AddComponent(new PositionComponent());
-			VectorF const& v = pGo->GetComponent<MovementComponent>()->GetDirection();
+			VectorF const& v = pGo->Get<MovementComponent>().GetDirection();
 			proj.AddComponent(new MovementComponent(v.NormalizeCopy(), 100.0, 300.0));
 			proj.AddComponent(new BodyComponent(PolygonF::CreateTriangle(
 					PointF(p.GetX(), p.GetY()),

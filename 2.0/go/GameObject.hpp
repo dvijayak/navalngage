@@ -2,6 +2,7 @@
 #define GO_HPP
 
 #include <map>
+#include <cassert>
 
 #include "IComponent.hpp"
 
@@ -18,12 +19,19 @@ public:
 
 	bool HasComponent (IComponent::Name const& name) const;
 	template <class T> bool HasComponent () const;
-	IComponent* GetComponent (IComponent::Name const& name) const; // TODO: Return ref instead of pointer. Caller must rely on HasComponent to check for existence. TIP: Add assert in method to check for null pointer - this prevents segmentation fault which would be difficult to debug down the road
+	IComponent* GetComponent (IComponent::Name const& name) const;
 	template <class T> T* GetComponent () const;
 
 	bool AddComponent (IComponent* pComp);
 	bool RemoveComponent (IComponent::Name const& name);
 	bool RemoveComponent (IComponent* pComp);
+
+	/// Convenience - exactly the same as HasComponent<T>
+	template <class T> bool Has () const;
+	/// Convenience - similar to GetComponent<T> except that it
+	/// returns a reference instead of a pointer. Callers are
+	/// expected to rely on Has<T> to check for existence.
+	template <class T> T& Get () const;
 
 private:
 	GOSuid m_suid;
@@ -40,15 +48,32 @@ private:
 	friend std::ostream& operator<< (std::ostream&, GameObject const&);
 };
 
-template <class T> T* GameObject::GetComponent () const
+template <class T>
+inline T* GameObject::GetComponent () const
 {
 	return dynamic_cast<T*>(GetComponent(T::NAME));
 }
 
-template <class T> bool GameObject::HasComponent () const
+template <class T>
+inline bool GameObject::HasComponent () const
 {
 	return HasComponent(T::NAME);
 }
 
+/// Conveniences
+
+template <class T>
+inline bool GameObject::Has () const
+{
+	return HasComponent<T>();
+}
+
+template <class T>
+inline T& GameObject::Get () const
+{
+	T* p = GetComponent<T>();
+	assert(p);
+	return *p;
+}
 
 #endif
