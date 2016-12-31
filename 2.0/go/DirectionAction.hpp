@@ -27,9 +27,9 @@ void DirectionAction::Perform ()
 
 	assert(m_pSource);
 
-	if (!m_pSource->HasComponent<MovementComponent>()) return;
+	if (!m_pSource->Has<MovementComponent>()) return;
 
-	m_pSource->GetComponent<MovementComponent>()->SetDirection(m_direction);
+	m_pSource->Get<MovementComponent>().SetDirection(m_direction);
 }
 
 #endif

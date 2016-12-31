@@ -26,7 +26,7 @@ void CameraZoomAction::Perform ()
 {
 	CameraAction::Perform();
 
-	m_pSource->GetComponent<CameraComponent>()->Zoom(m_zoom, m_zoomIsIncremental);
+	m_pSource->Get<CameraComponent>().Zoom(m_zoom, m_zoomIsIncremental);
 }
 
 #endif

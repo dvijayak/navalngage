@@ -42,7 +42,7 @@ Game::Game ()
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
 	m_pCamera->AddComponent(new MovementComponent(Vector2F(1,0), 0.0, 100.0));
-	console(m_pCamera->GetComponent<CameraComponent>())
+	console(m_pCamera->Get<CameraComponent>())
 }
 
 Game::~Game ()
@@ -291,31 +291,30 @@ void Game::DrawWorld (float dt)
 	//
 	// In the above example, note the line segments formed by lines which intersect
 	// the view rectangle (y=2, y=1, y=0, x=6, x=7 and x=8).
-	CameraComponent* pCamera = m_pCamera->GetComponent<CameraComponent>();
-	assert(pCamera);
+	CameraComponent const& camera = m_pCamera->Get<CameraComponent>();
 
 	/// 3. Point of world origin
 	PointF worldOrigin = m_world.GetOrigin();
-	if (pCamera->Includes(worldOrigin))
+	if (camera.Includes(worldOrigin))
 	{
-		pCamera->WorldToScreen(worldOrigin);
+		camera.WorldToScreen(worldOrigin);
 		m_pRenderer->DrawPoint(worldOrigin);
 	}
 
 	/// 4. World objects
 	// Draw only drawable objects that are visible by the camera
 	// For now, a drawable object is one that has a surface polygon via a BodyComponent
-	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.HasComponent<BodyComponent>() && go.HasComponent<PositionComponent>(); } ))
+	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.Has<BodyComponent>() && go.Has<PositionComponent>(); } ))
 	{
 		// Access the object's surface polygon and color
-		BodyComponent* pBody = pGo->GetComponent<BodyComponent>();
-		PolygonF p = pBody->ComputeSurface(pGo->GetComponent<PositionComponent>()->GetPosition());
-		Uint32 color = pBody->GetSurfaceColor();
+		BodyComponent const& body = pGo->Get<BodyComponent>();
+		PolygonF p = body.ComputeSurface(pGo->Get<PositionComponent>().GetPosition());
+		Uint32 color = body.GetSurfaceColor();
 
 		bool pass = false;
 		for (auto const& v : p.vertices)
 		{
-			if (pCamera->Includes(v))
+			if (camera.Includes(v))
 			{
 				pass = true;
 				break; // For now, we draw a polygon if at least one of its vertices is included
@@ -332,7 +331,7 @@ void Game::DrawWorld (float dt)
 		for (auto& v : finalPoly.vertices)
 		{
 			// v => normalized device coordinates
-			pCamera->WorldToScreen(v);			
+			camera.WorldToScreen(v);			
 		}
 
 		// Draw away!

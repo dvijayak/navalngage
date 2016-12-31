@@ -33,23 +33,23 @@ void SpeedAction::Perform ()
 
 	assert(m_pSource);
 
-	if (!m_pSource->HasComponent<MovementComponent>()) return;
+	if (!m_pSource->Has<MovementComponent>()) return;
 
 	// TODO: Mass affects velocity increment, but this needs to be handled at the command level, i.e. the point of state change
 	// TODO: Should mass affect max speed?
 
 	if (m_changeType == REPLACE)
 	{
-		m_pSource->GetComponent<MovementComponent>()->SetSpeed(m_speed);
+		m_pSource->Get<MovementComponent>().SetSpeed(m_speed);
 	}
 	else if (m_changeType == ADJUST)
 	{
 		if (m_speed != 0.0)
 		{
 			// MovementComponent takes care of speed bounds
-			float speed = m_pSource->GetComponent<MovementComponent>()->GetSpeed();
+			float speed = m_pSource->Get<MovementComponent>().GetSpeed();
 			float target = speed + m_speed;
-			m_pSource->GetComponent<MovementComponent>()->SetSpeed(target);
+			m_pSource->Get<MovementComponent>().SetSpeed(target);
 		}
 	}
 }

@@ -31,7 +31,7 @@ void RotateAction::Perform ()
 
 	assert(m_pSource);
 
-	if (!m_pSource->HasComponent<MovementComponent>()) return;
+	if (!m_pSource->Has<MovementComponent>()) return;
 
 	// TODO: Mass affects angle increment?
 
@@ -42,15 +42,15 @@ void RotateAction::Perform ()
 					  sin_theta, cos_theta}};
 	
 	// Apply rotation on the object's direction
-	VectorF const& dir = m_pSource->GetComponent<MovementComponent>()->GetDirection();
+	VectorF const& dir = m_pSource->Get<MovementComponent>().GetDirection();
 	ColMatrix2F res = rot * ColMatrix2F(dir);
-	m_pSource->GetComponent<MovementComponent>()->SetDirection(Vector2F(res[0], res[1]));
+	m_pSource->Get<MovementComponent>().SetDirection(Vector2F(res[0], res[1]));
 
 	// Apply rotation on the object's surface polygon, if any
-	if (m_pSource->HasComponent<BodyComponent>())
+	if (m_pSource->Has<BodyComponent>())
 	{
 		ColMatrix2F res;
-		for (auto& v : m_pSource->GetComponent<BodyComponent>()->GetSurface().vertices)
+		for (auto& v : m_pSource->Get<BodyComponent>().GetSurface().vertices)
 		{
 			res = rot * ColMatrix2F(Vector2F(v.x, v.y));
 			v.x = res[0];
