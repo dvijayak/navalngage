@@ -37,7 +37,7 @@ public:
 	MatrixF (const values_type&);
 	// Construct a matrix from the given 2D vector
 	MatrixF (const Vector2F&);
-	MatrixF (const MatrixF<M, N>& other) : m_nRows(other.m_nRows), m_nCols(other.m_nCols) { *this = other; }
+	MatrixF (const MatrixF<M, N>& other) : m_nRows(other.m_nRows), m_nCols(other.m_nCols), m_values({{}}) { *this = other; }
 	MatrixF& operator= (const MatrixF<M, N>&);
 	~MatrixF () {}
 
