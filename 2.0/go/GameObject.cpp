@@ -1,5 +1,7 @@
 #include "GameObject.hpp"
 
+#include "global.hpp"
+
 #include <cassert>
 #include <ostream>
 
@@ -42,7 +44,7 @@ bool GameObject::AddComponent (IComponent* pComp)
 	}
 
 	// First delete an existing component of the same name
-	// TODO: Log this
+	trclog("{} Removing component [{}]", *this, pComp->GetName());
 	RemoveComponent(pComp);
 
 	m_components[pComp->GetName()] = pComp;

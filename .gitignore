@@ -3,3 +3,4 @@ obj
 navalngage
 *.sublime-*
 debug
+*.log

@@ -22,7 +22,7 @@ std::ostream& operator<< (std::ostream& os, BodyComponent const& c)
 {
 	os << "[ BodyComponent: ";
 	os << "surface = " << c.m_surface;
-	os << ", color = " << Color::ToString(c.m_color);
+	os << ", color = " << Color::str(c.m_color);
 	os << " ]";
 	return os;
 }

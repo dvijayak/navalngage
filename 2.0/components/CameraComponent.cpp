@@ -1,9 +1,9 @@
 #include "CameraComponent.hpp"
 
 #include <cmath>
+
 #include "VectorF.hpp"
 #include "World.hpp"
-#include "global.hpp"
 
 static constexpr float MIN_VIEWSCALE = 10;
 static constexpr float MAX_VIEWSCALE = 60;
@@ -102,18 +102,18 @@ void CameraComponent::ScreenToWorld (Point2F& p) const
 	// // 1. 
 	// p.x *= m_viewRectangle.width;
 	// p.y *= m_viewRectangle.height;
-	// console(p);
+	// console("{}",p);
 
 	// 2. reflect over the x-axis 
 	// (Since screen space origin is 0,0 on top-left corner with +x rightwards 
 	// and +y downwards)
 	p.y = -p.y;
-	console(p);
+	// console("{}",p);
 
 	// 3. translate to camera position (is this what we're actually doing though???)
 	p.x += m_viewRectangle.x;
 	p.y += m_viewRectangle.y;
-	console(p);
+	// console("{}",p);
 }
 
 bool CameraComponent::Includes (Point2F const& p) const

@@ -4,8 +4,12 @@
 #include "LocomotionSystem.hpp"
 #include "CameraSystem.hpp"
 
+#include "global.hpp"
+
 int main (int argc, char** argv)
-{	
+{
+	INITIALIZE_BASIC_LOGGERS(4096)
+
 	// Initialize SDL. Singleton destruction must be explicitly stated
 	SDLManager* pSDLMgr = SDLManager::Instance("Naval Engagements 2.0", SDL_INIT_VIDEO);
 	int init = pSDLMgr->InitializeManagers();
@@ -39,6 +43,8 @@ int main (int argc, char** argv)
 
 	// Destroy managers/singletons and other resources
 	SDLManager::Destroy();
+
+	spdlog::drop_all(); 	// in Windows, this must be called before main finishes to workaround a known VS issue
 
 	return rc;
 }
