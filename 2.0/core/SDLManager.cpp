@@ -1,5 +1,7 @@
 #include "SDLManager.hpp"
 
+#include "global.hpp"
+
 SDLManager* SDLManager::s_pInstance = 0;
 
 SDLManager* SDLManager::Instance (const std::string& title, Uint32 flags)
@@ -49,7 +51,7 @@ int SDLManager::InitializeManagers ()
   m_pWindowManager = new WindowManager(m_title, MAX_WIDTH, MAX_HEIGHT, SDL_WINDOW_RESIZABLE);
   if ( !m_pWindowManager->GetWindow() )
   {
-    errlog("Could not create window:" << std::endl << SDL_GetError());
+    errlog("Could not create window: {}", SDL_GetError());
     return 1;
   }
   m_pRenderManager = new RenderManager(*m_pWindowManager, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);  

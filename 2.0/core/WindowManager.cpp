@@ -1,5 +1,7 @@
 #include "WindowManager.hpp"
 
+#include "global.hpp"
+
 WindowManager::WindowManager (std::string title, int width, int height, Uint32 flags)
 {
   trclog("Initializing window manager");

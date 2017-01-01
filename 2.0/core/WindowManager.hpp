@@ -1,9 +1,8 @@
 #ifndef WINDOWMANAGER_H
 #define WINDOWMANAGER_H
 
-#include "global.hpp"
-
 #include <string>
+#include <SDL2/SDL.h>
 
 class WindowManager
 {

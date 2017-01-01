@@ -27,7 +27,7 @@ public:
 	}
 
 	// Converts a color value to an HTML hex string
-	inline static std::string ToString (Uint32 color)
+	inline static std::string str (Uint32 color)
 	{
 		std::stringstream ss;
 		ss << "#";

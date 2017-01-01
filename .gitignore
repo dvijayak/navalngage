@@ -5,3 +5,4 @@ navalngage
 *.sublime-*
 .scon*
 debug
+*.log

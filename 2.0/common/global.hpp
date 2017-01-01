@@ -1,23 +1,26 @@
 #ifndef Global_HPP
 #define Global_HPP
 
-// STDLIB
-
-#include <cassert>
-
-#include <string>
-#include <iostream>
-
-// SDL
-
-#include <SDL2/SDL.h>
+/// This file contains utilities that would be useful across
+/// all files. Any file is encouraged to include this header.
 
 // Logging
 
-#define LOG_DATETIME  "|" << __DATE__ << "|" << __TIME__ << "|"
-#define LOG_PREFIX  LOG_DATETIME << " " << __PRETTY_FUNCTION__ << " from file " << __FILE__ << " at line " << __LINE__ 
-#define console(MESSAGE) std::cout << LOG_DATETIME << " " << MESSAGE << std::endl;
-#define trclog(MESSAGE) std::cout << LOG_PREFIX << ": " << MESSAGE << std::endl;
-#define errlog(MESSAGE) std::cerr << "ERROR! " << LOG_PREFIX << ": ERROR! " << MESSAGE << std::endl;
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+// queue size must be power of 2 as per spdlog docs
+#define TRACE_FILE "trace.log"
+#define INITIALIZE_BASIC_LOGGERS(qsize) \
+spdlog::set_async_mode(qsize); \
+spdlog::set_pattern("%Y/%m/%d %H:%M:%S.%e - %v"); \
+spdlog::stdout_logger_st("console"); \
+spdlog::basic_logger_mt("debuglog", TRACE_FILE); \
+spdlog::basic_logger_mt("trclog", TRACE_FILE); \
+spdlog::basic_logger_mt("errlog", TRACE_FILE); \
+
+#define console spdlog::get("console")->info
+#define debuglog spdlog::get("debuglog")->debug
+#define trclog spdlog::get("trclog")->info
+#define errlog spdlog::get("errlog")->error
 
 #endif

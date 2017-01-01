@@ -1,5 +1,7 @@
 #include "Game.hpp"
 
+#include "global.hpp"
+
 #include "Color.hpp"
 #include "Chrono.hpp"
 
@@ -36,7 +38,7 @@ Game::Game ()
 	, m_world(WORLD_WIDTH, WORLD_HEIGHT) // origin = (0,0)
 	, m_pCamera(0)
 {
-	console(m_world.GetRect());
+	console("{}", m_world.GetRect());
 	
 	// Construct the camera
 	PointF cameraPos = m_world.GetOrigin(); // for now, position camera at the center of the world
@@ -46,8 +48,8 @@ Game::Game ()
 	m_pCamera = &(m_factory.Create(mb, GameObjectFactory::Suids::Camera1));
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 
-	console(m_pCamera);
-	console(m_pCamera->Get<CCamera>())
+	console("{}", *m_pCamera);
+	console("{}", m_pCamera->Get<CCamera>());
 }
 
 Game::~Game ()
@@ -77,7 +79,7 @@ int Game::Run ()
 		PointF(-1, 2),
 	}), Color::Orange);
 	GameObject& ship1 = m_factory.Create(sb, GameObjectFactory::Suids::Player1);
-	console(ship1);
+	console("{}", ship1);
 
 	sb.Reset();
 	sb.MakeDefault();
@@ -91,7 +93,7 @@ int Game::Run ()
 		PointF(-2.3, 1)
 	}), Color::Red);
 	GameObject& ship2 = m_factory.Create(sb);
-	console(ship2);
+	console("{}", ship2);
 
 	sb.Reset();
 	sb.MakeDefault();
@@ -107,7 +109,7 @@ int Game::Run ()
 		PointF(-4, 4)
 	}), Color::Purple);
 	GameObject& ship3 = m_factory.Create(sb);
-	console(ship3);
+	console("{}", ship3);
 
 	//// Game loop ////
 	
@@ -128,7 +130,7 @@ int Game::Run ()
 		elapsed = current - previous;
 		lag += elapsed;
 		previous = current;
-		// console("elapsed = " << elapsed << "  lag = " << lag);
+		// console("elapsed = {}, lag = {}",  elapsed, lag);
 	
 		// Process all events in the SDL event queue; this is also the point at which the game loop can be exited
 		if (ProcessEvents()) break;

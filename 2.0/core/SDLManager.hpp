@@ -1,7 +1,7 @@
 #ifndef SDLMANAGER_H
 #define SDLMANAGER_H
 
-#include "global.hpp"
+#include <string>
 
 #include "WindowManager.hpp"
 #include "RenderManager.hpp"
