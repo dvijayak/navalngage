@@ -240,10 +240,6 @@ struct Rectangle2F
 	Rectangle2F (Vector2F const& v, float w, float h);
 	// Rectangle2F (Rectangle2F const& other) : x(other.x), y(other.y), width(other.width), height(other.height) {}
 	// Rectangle2F& operator= (Rectangle2F const& other);
-
-	// TODO:
-	// template <class Vertex>
-	// Polygon<Vertex> ToPolygon () const;
 };
 typedef Rectangle2F RectangleF;
 

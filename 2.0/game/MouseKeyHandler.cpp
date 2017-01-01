@@ -72,7 +72,7 @@ bool MouseKeyHandler::TranslateToAction (SDL_Event const& event, GameObjectFacto
 	else if (event.type == SDL_MOUSEWHEEL)
 	{
 		// Camera zooming
-		GameObject* pCamera = factory.Resolve(1);
+		GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 		if (pCamera)
 		{
 			CameraZoomAction* p = new CameraZoomAction();
@@ -103,7 +103,7 @@ bool MouseKeyHandler::TranslateToActionPerFrame (GameObjectFactory const& factor
 
 void MouseKeyHandler::HandleKeyPressed (int key, GameObjectFactory const& factory, IEventHandler::ResultType& result, bool& bTrackKey)
 {
-	GameObject* pCamera = factory.Resolve(1);
+	GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 	
 	switch (key)
 	{
@@ -148,7 +148,7 @@ void MouseKeyHandler::HandleKeyPressed (int key, GameObjectFactory const& factor
 
 			GameObject* pFollowTarget(0); // 0 => unfollow
 			if (key == SDLK_f)
-				pFollowTarget = factory.Resolve(2);
+				pFollowTarget = factory.Resolve(GameObjectFactory::Suids::Player1);
 			CameraFollowAction* p = new CameraFollowAction();
 			p->SetCamera(pCamera);
 			p->SetTarget(pFollowTarget);
@@ -170,9 +170,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 		case SDLK_s:
 		case SDLK_d:
 		{
-			// TODO: Need better way to resolve certain key
-			// objects rather than relying on brittle suids
-			GameObject* pPlayer = factory.Resolve(2);
+			GameObject* pPlayer = factory.Resolve(GameObjectFactory::Suids::Player1);
 			if (pPlayer)
 			{
 				if (key == SDLK_w || key == SDLK_s)
@@ -215,7 +213,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 		case SDLK_DOWN:
 		case SDLK_RIGHT:
 		{
-			GameObject* pCamera = factory.Resolve(1);
+			GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 			if (pCamera)
 			{
 				SpeedAction* p = new SpeedAction();
@@ -230,7 +228,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 		case SDLK_z:
 		{
 			// Spawn projectile in movement direction
-			GameObject* pGo = factory.Resolve(2);
+			GameObject* pGo = factory.Resolve(GameObjectFactory::Suids::Player1);
 			VectorF const& p = pGo->Get<PositionComponent>().GetPosition();
 			GameObject& proj = const_cast<GameObjectFactory&>(factory).Create();
 			proj.AddComponent(new PositionComponent());
@@ -256,7 +254,7 @@ void MouseKeyHandler::HandleKeyReleased (int key, GameObjectFactory const& facto
 		case SDLK_DOWN:
 		case SDLK_RIGHT:
 		{
-			GameObject* pCamera = factory.Resolve(1);
+			GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 			if (pCamera)
 			{
 				SpeedAction* p = new SpeedAction();

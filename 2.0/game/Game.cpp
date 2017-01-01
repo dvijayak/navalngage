@@ -6,6 +6,7 @@
 #include "VectorF.hpp"
 
 #include "GameObjectFactory.hpp"
+#include "MovableBuilder.hpp"
 #include "ShipBuilder.hpp"
 
 #include "CameraComponent.hpp"
@@ -37,12 +38,15 @@ Game::Game ()
 	console(m_world.GetRect());
 	
 	// Construct the camera
-	m_pCamera = &(m_factory.Create());
 	PointF cameraPos = m_world.GetOrigin(); // for now, position camera at the center of the world
+	MovableBuilder mb;
+	mb.AddPosition(cameraPos.x, cameraPos.y);
+	mb.AddMovement(Vector2F(1, 0), 0, 100);
+	m_pCamera = &(m_factory.Create(mb, GameObjectFactory::Suids::Camera1));
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
-	m_pCamera->AddComponent(new PositionComponent(cameraPos.x, cameraPos.y));
-	m_pCamera->AddComponent(new MovementComponent(Vector2F(1,0), 0.0, 100.0));
-	console(m_pCamera->Get<CameraComponent>())
+
+	console(m_pCamera);
+	console(m_pCamera->Get<CCamera>())
 }
 
 Game::~Game ()
@@ -61,38 +65,38 @@ int Game::Run ()
 {
 	//// Create some test objects ////
 
-	ShipBuilder sb1(m_factory);
-	sb1.MakeDefault();
-	// sb1.AddPosition(15, -25);
-	sb1.AddBody(PolygonF::CreateNPolygon({
+	ShipBuilder sb;
+	sb.MakeDefault();
+	// sb.AddPosition(15, -25);
+	sb.AddBody(PolygonF::CreateNPolygon({
 		PointF(0, 3),
 		PointF(1, 2),
 		PointF(0.6, -1.5),
 		PointF(-0.6, -1.5),
 		PointF(-1, 2),
 	}), Color::Orange);
-	GameObject& ship1 = m_factory.Create(sb1);
+	GameObject& ship1 = m_factory.Create(sb, GameObjectFactory::Suids::Player1);
 	console(ship1);
 
-	ShipBuilder sb2(m_factory);
-	sb2.MakeDefault();
-	sb2.AddShip(ShipComponent::FRIGATE);
-	sb2.AddPosition(-15, -25);
-	sb2.AddBody(PolygonF::CreateNPolygon({
+	sb.Reset();
+	sb.MakeDefault();
+	sb.AddShip(ShipComponent::FRIGATE);
+	sb.AddPosition(-15, -25);
+	sb.AddBody(PolygonF::CreateNPolygon({
 		PointF(0, 6),
 		PointF(2.3, 1),
 		PointF(1.6, -3),
 		PointF(-1.6, -3),
 		PointF(-2.3, 1)
 	}), Color::Red);
-	GameObject& ship2 = m_factory.Create(sb2);
+	GameObject& ship2 = m_factory.Create(sb);
 	console(ship2);
 
-	ShipBuilder sb3(m_factory);
-	sb3.MakeDefault();
-	sb3.AddShip(ShipComponent::MANOFWAR);
-	sb3.AddPosition(-50, -25);
-	sb3.AddBody(PolygonF::CreateNPolygon({
+	sb.Reset();
+	sb.MakeDefault();
+	sb.AddShip(ShipComponent::MANOFWAR);
+	sb.AddPosition(-50, -25);
+	sb.AddBody(PolygonF::CreateNPolygon({
 		PointF(0, 11),
 		PointF(4, 4),
 		PointF(4, -7),
@@ -101,7 +105,7 @@ int Game::Run ()
 		PointF(-4, -7),
 		PointF(-4, 4)
 	}), Color::Purple);
-	GameObject& ship3 = m_factory.Create(sb3);
+	GameObject& ship3 = m_factory.Create(sb);
 	console(ship3);
 
 	//// Game loop ////
@@ -265,7 +269,9 @@ void Game::DrawWorld (float dt)
 	// TODO: Use the normalized lag dt to produce a more accurate render
 
 	/// 1. Background
-	m_pRenderer->FillScreenBackground();
+	// m_pRenderer->FillScreenBackground();
+	// m_pRenderer->FillScreenBackground(Color::Mix(0x2a, 0x4d, 0xbf));
+	m_pRenderer->FillScreenBackground(Color::Mix(0x1c, 0x33, 0x7f));
 
 	/// 2. Wireframe/Axes
 	// Determine all lines which intersect the camera view rectangle.

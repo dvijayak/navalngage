@@ -3,10 +3,12 @@
 #include <cassert>
 #include <algorithm>
 
-#include "IGameObjectBuilder.hpp"
+#include "GameObjectBuilder.hpp"
+
+#include "global.hpp"
 
 bool GameObjectFactory::s_bAlreadyCreated = false;
-GOSuid GameObjectFactory::s_nextAvailableSuid = 1;
+GOSuid GameObjectFactory::s_nextAvailableSuid = 1; // Note: 0 is reserved
 
 GameObjectFactory::GameObjectFactory ()
 {
@@ -24,37 +26,46 @@ GameObjectFactory::~GameObjectFactory ()
 	}
 }
 
-void GameObjectFactory::Add (GameObject* pGo)
+void GameObjectFactory::Add (GameObject* pGo, GOSuid id)
 {
 	assert(pGo);
 
-	// CANIMPROVE: Make thread-safe
-	pGo->m_suid = s_nextAvailableSuid++;
+	if (!id) // an id was not specified by the caller
+	{
+		// CANIMPROVE: might need to be concerned about potential multi-thread problems
+		id = SDL_GetTicks();
+		if (Resolve(id))
+		{
+			++id;
+		}
+	}
+	else
+	{
+		// If a desired ID was specified, it is better to assert
+		// than to handle this silently and cause subtle bugs
+		// later on.
+		assert(!Resolve(id));
+	}
 
-	// First, destroy an existing GO with the same id if it exists
-	// Note: this situation should never arise but you never know
-	Destroy(pGo->m_suid);
+	pGo->m_suid = id;
 
-	// Then, throw the new GO into our container
+	// Finally, throw the new GO into our container
 	m_gameObjects[pGo->m_suid] = pGo;
 }
 
-GameObject& GameObjectFactory::Create (bool bAdd)
+GameObject& GameObjectFactory::Create (GOSuid id)
 {
 	GameObject* pGo = new GameObject();
-	if (bAdd)
-	{
-		Add(pGo);
-	}
+	Add(pGo, id);
+	assert(pGo);
 	return *pGo;
 }
 
-GameObject& GameObjectFactory::Create (IGameObjectBuilder& builder)
+GameObject& GameObjectFactory::Create (GameObjectBuilder& builder, GOSuid id)
 {
-	GameObject* pGo = builder.GetResult();
-	assert(pGo);
-	Add(pGo);
-	return *pGo;
+	GameObject& go = Create(id);
+	builder.GetResult(go);
+	return go;
 }
 
 bool GameObjectFactory::Destroy (GOSuid id)

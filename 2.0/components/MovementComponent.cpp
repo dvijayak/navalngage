@@ -21,3 +21,27 @@ void MovementComponent::SetSpeed (float speed)
 		m_speed = (speed > m_maxSpeed) ? m_maxSpeed : speed;
 	}
 }
+
+std::ostream& operator<< (std::ostream& os, MovementComponent const& c)
+{
+	os << "[ MovementComponent: ";
+	os << "velocity = " << c.GetVelocity();
+	os << ", direction = " << c.m_direction;
+	os << ", speed = " << c.m_speed;
+	os << ", maxSpeed = " << c.m_maxSpeed;
+	os << " ]";
+	return os;
+}
+
+std::ostream& operator<< (std::ostream& os, MovementComponent const* pC)
+{
+	if (!pC)
+	{
+		os << "[ MovementComponent: (Null) ]";
+	}
+	else
+	{
+		os << *pC;
+	}
+	return os;
+}

@@ -1,5 +1,7 @@
 #include "BodyComponent.hpp"
 
+#include "Color.hpp"
+
 const IComponent::Name BodyComponent::NAME = "BodyComponent";
 
 PolygonF BodyComponent::ComputeSurface (VectorF const& position) const
@@ -14,4 +16,26 @@ PolygonF BodyComponent::ComputeSurface (VectorF const& position) const
 	}
 
 	return PolygonF::CreateNPolygon(resultVertices);
+}
+
+std::ostream& operator<< (std::ostream& os, BodyComponent const& c)
+{
+	os << "[ BodyComponent: ";
+	os << "surface = " << c.m_surface;
+	os << ", color = " << Color::ToString(c.m_color);
+	os << " ]";
+	return os;
+}
+
+std::ostream& operator<< (std::ostream& os, BodyComponent const* pC)
+{
+	if (!pC)
+	{
+		os << "[ BodyComponent: (Null) ]";
+	}
+	else
+	{
+		os << *pC;
+	}
+	return os;
 }

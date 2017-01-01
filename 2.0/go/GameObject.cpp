@@ -41,6 +41,10 @@ bool GameObject::AddComponent (IComponent* pComp)
 		return false;
 	}
 
+	// First delete an existing component of the same name
+	// TODO: Log this
+	RemoveComponent(pComp);
+
 	m_components[pComp->GetName()] = pComp;
 
 	return true;
@@ -73,11 +77,22 @@ std::ostream& operator<< (std::ostream& os, GameObject const& go)
 {
 	os << "[";
 	os << "GameObject #" << go.m_suid;
-	if (!go.m_components.empty())
-	{
-		os << ": components = TODO";
-		// TODO: Add ostream support for all components as well
-	}
+	// CANIMPROVE: Add support for printing components from here?
+	// if (!go.m_components.empty())
+	// {}
 	os << "]";
+	return os;
+}
+
+std::ostream& operator<< (std::ostream& os, GameObject const* pGo)
+{
+	if (!pGo)
+	{
+		os << "[GameObject (Null)]";
+	}
+	else
+	{
+		os << *pGo;
+	}
 	return os;
 }
