@@ -220,7 +220,6 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 				p->SetSource(pCamera);
 				p->SetSpeed(100);
 				result.push_back(p);
-
 			}
 			break;
 		}

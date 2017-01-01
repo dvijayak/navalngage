@@ -1,6 +1,7 @@
 #include "Game.hpp"
 
 #include "Color.hpp"
+#include "Chrono.hpp"
 
 #include "Geometry.hpp"
 #include "VectorF.hpp"
@@ -113,7 +114,7 @@ int Game::Run ()
 	int rc = GameErrorCode::OK;
 
 	// Used in computing time-step
-	size_t previous = SDL_GetTicks();
+	size_t previous = Chrono::GetTicks();
 	size_t current = 0;
 	size_t elapsed = 0;
 	size_t lag = 0;
@@ -123,7 +124,7 @@ int Game::Run ()
 	{
 		// Calculate elapsed time-step
 		// (Courtesy of Game Programming Patterns by Robert Nystrom)
-		current = SDL_GetTicks();
+		current = Chrono::GetTicks();
 		elapsed = current - previous;
 		lag += elapsed;
 		previous = current;

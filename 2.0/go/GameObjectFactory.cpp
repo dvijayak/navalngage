@@ -3,12 +3,10 @@
 #include <cassert>
 #include <algorithm>
 
+#include "Chrono.hpp"
 #include "GameObjectBuilder.hpp"
 
-#include "global.hpp"
-
 bool GameObjectFactory::s_bAlreadyCreated = false;
-GOSuid GameObjectFactory::s_nextAvailableSuid = 1; // Note: 0 is reserved
 
 GameObjectFactory::GameObjectFactory ()
 {
@@ -33,8 +31,8 @@ void GameObjectFactory::Add (GameObject* pGo, GOSuid id)
 	if (!id) // an id was not specified by the caller
 	{
 		// CANIMPROVE: might need to be concerned about potential multi-thread problems
-		id = SDL_GetTicks();
-		if (Resolve(id))
+		id = Chrono::GetTicks() - Chrono::GetTicksSinceStartup();
+		while (!id || Resolve(id)) // it is possible to receive a value of 0 when computing tick count depending on the resolution thereof, so we handle this as well
 		{
 			++id;
 		}
@@ -46,6 +44,8 @@ void GameObjectFactory::Add (GameObject* pGo, GOSuid id)
 		// later on.
 		assert(!Resolve(id));
 	}
+
+	assert(id); // 0 is reserved, otherwise above logic won't work
 
 	pGo->m_suid = id;
 
