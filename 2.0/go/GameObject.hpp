@@ -6,7 +6,7 @@
 
 #include "IComponent.hpp"
 
-typedef int GOSuid;
+typedef size_t GOSuid;
 
 /// Essentially, a collection of components, along with some other information.
 /// Manages the lifecycle of its components.
@@ -46,6 +46,7 @@ private:
 	friend class GameObjectFactory;
 	
 	friend std::ostream& operator<< (std::ostream&, GameObject const&);
+	friend std::ostream& operator<< (std::ostream&, GameObject const*);
 };
 
 template <class T>

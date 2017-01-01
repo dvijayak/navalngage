@@ -3,6 +3,8 @@
 
 #include "IComponent.hpp"
 
+#include <ostream>
+
 DEFINE_COMPONENT(Mass)
 {
 public:
@@ -21,6 +23,9 @@ public:
 
 private:
 	float m_mass; // kgs
+
+	friend std::ostream& operator<< (std::ostream& os, MassComponent const& c);
+	friend std::ostream& operator<< (std::ostream& os, MassComponent const* pC);
 };
 
 #endif

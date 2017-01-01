@@ -6,6 +6,8 @@
 #include "Color.hpp"
 #include "VectorF.hpp"
 
+#include <ostream>
+
 DEFINE_COMPONENT(Body)
 {
 public:
@@ -32,6 +34,9 @@ public:
 private:
 	PolygonF m_surface;
 	Uint32 m_color;
+
+	friend std::ostream& operator<< (std::ostream& os, BodyComponent const& c);
+	friend std::ostream& operator<< (std::ostream& os, BodyComponent const* pC);
 };
 
 #endif

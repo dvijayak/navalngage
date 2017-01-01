@@ -3,6 +3,8 @@
 
 #include "IComponent.hpp"
 
+#include <ostream>
+
 DEFINE_COMPONENT(Ship)
 {
 public:
@@ -26,6 +28,9 @@ public:
 
 private:
 	int m_class;
+
+	friend std::ostream& operator<< (std::ostream& os, ShipComponent const& c);
+	friend std::ostream& operator<< (std::ostream& os, ShipComponent const* pC);
 };
 
 #endif

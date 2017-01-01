@@ -35,6 +35,6 @@ void LocomotionSystem::Update (size_t dt, GameObjectFactory const& factory)
 		VectorF& pos = pGo->Get<PositionComponent>().GetPosition();
 		pos += vel * (float(dt)/1000.0); // dt is in ms, v is in m/s
 
-		// console(*pGo << " Vel = " << vel << ", New pos = " << pos);
+		// console(*pGo << ": " << pGo->Get<CPosition>() << ", " << pGo->Get<CMovement>());
 	}
 }

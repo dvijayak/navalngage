@@ -154,5 +154,13 @@ std::ostream& operator<< (std::ostream& os, CameraComponent const& c)
 
 std::ostream& operator<< (std::ostream& os, CameraComponent const* pC)
 {
-	return os << *pC;
+	if (!pC)
+	{
+		os << "[ CameraComponent: (Null) ]";
+	}
+	else
+	{
+		os << *pC;
+	}
+	return os;
 }

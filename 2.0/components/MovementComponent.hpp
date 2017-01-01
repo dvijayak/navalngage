@@ -4,6 +4,8 @@
 #include "IComponent.hpp"
 #include "VectorF.hpp"
 
+#include <ostream>
+
 DEFINE_COMPONENT(Movement)
 {
 public:
@@ -30,6 +32,9 @@ private:
 
 	float m_speed; // m/s
 	float m_maxSpeed;
+
+	friend std::ostream& operator<< (std::ostream& os, MovementComponent const& c);
+	friend std::ostream& operator<< (std::ostream& os, MovementComponent const* pC);
 
 };
 

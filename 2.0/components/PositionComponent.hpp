@@ -4,6 +4,8 @@
 #include "IComponent.hpp"
 #include "VectorF.hpp"
 
+#include <ostream>
+
 DEFINE_COMPONENT(Position)
 {
 public:
@@ -22,6 +24,9 @@ public:
 
 private:
 	VectorF m_position;
+
+	friend std::ostream& operator<< (std::ostream& os, PositionComponent const& c);
+	friend std::ostream& operator<< (std::ostream& os, PositionComponent const* pC);
 };
 
 #endif
