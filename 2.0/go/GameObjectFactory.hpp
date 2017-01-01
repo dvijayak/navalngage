@@ -52,8 +52,6 @@ private:
 	GOContainerType m_gameObjects; // TODO: abstract away the collection implementation
 
 	static bool s_bAlreadyCreated;
-
-	static GOSuid s_nextAvailableSuid;
 };
 
 #endif
