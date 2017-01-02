@@ -258,7 +258,7 @@ bool Game::ProcessEvents ()
 	{
 		if (pAction)
 		{
-			// TODO: Log the action, serialize for playback, etc.
+			// TODO: serialize for playback, etc.
 			pAction->Perform();
 			delete pAction;
 		}

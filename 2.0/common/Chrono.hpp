@@ -14,7 +14,9 @@ public:
 	template <typename Ratio=std::milli>
 	static Tick GetTicks (TimePoint=Clock::now());
 	template <typename Ratio=std::milli>
-	static Tick GetTicksSinceStartup ();
+	static Tick GetTicksAtStartup ();
+	template <typename Ratio=std::milli>
+	static Tick GetTicksRelativeToStartup (TimePoint=Clock::now());
 
 private:
 	static const TimePoint s_ticksAtApplicationStartup;	
@@ -28,9 +30,15 @@ inline Chrono::Tick Chrono::GetTicks (Chrono::TimePoint time)
 }
 
 template <typename Ratio>
-inline Chrono::Tick Chrono::GetTicksSinceStartup ()
+inline Chrono::Tick Chrono::GetTicksAtStartup ()
 {
-	return Chrono::Tick(std::chrono::duration_cast< std::chrono::duration<double, Ratio> >(s_ticksAtApplicationStartup.time_since_epoch()).count());
+	return GetTicks<Ratio>(s_ticksAtApplicationStartup);
+}
+
+template <typename Ratio>
+inline Chrono::Tick Chrono::GetTicksRelativeToStartup (Chrono::TimePoint time)
+{
+	return GetTicks<Ratio>(time) - GetTicksAtStartup<Ratio>();
 }
 
 #endif

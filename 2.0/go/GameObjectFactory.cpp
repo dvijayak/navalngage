@@ -31,7 +31,7 @@ void GameObjectFactory::Add (GameObject* pGo, GOSuid id)
 	if (!id) // an id was not specified by the caller
 	{
 		// CANIMPROVE: might need to be concerned about potential multi-thread problems
-		id = Chrono::GetTicks() - Chrono::GetTicksSinceStartup();
+		id = Chrono::GetTicksRelativeToStartup();
 		while (!id || Resolve(id)) // it is possible to receive a value of 0 when computing tick count depending on the resolution thereof, so we handle this as well
 		{
 			++id;

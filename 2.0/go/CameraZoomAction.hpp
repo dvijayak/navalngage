@@ -3,8 +3,6 @@
 
 #include "CameraAction.hpp"
 
-#include "CameraComponent.hpp"
-
 class CameraZoomAction : virtual public CameraAction
 {
 public:
@@ -13,6 +11,7 @@ public:
 
 	/// Action
 	void Perform ();
+	std::string str () const;
 
 	void SetZoom (float zoom) { m_zoom = zoom; }
 	void SetIncremental(bool b) { m_zoomIsIncremental = b; }
@@ -21,12 +20,5 @@ private:
 	float m_zoom;
 	bool m_zoomIsIncremental;
 };
-
-void CameraZoomAction::Perform ()
-{
-	CameraAction::Perform();
-
-	m_pSource->Get<CameraComponent>().Zoom(m_zoom, m_zoomIsIncremental);
-}
 
 #endif

@@ -10,6 +10,7 @@
 #include "CameraFollowAction.hpp"
 
 #include "PositionComponent.hpp"
+#include "MovementComponent.hpp"
 #include "BodyComponent.hpp"
 #include "CameraComponent.hpp"
 
