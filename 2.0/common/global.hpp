@@ -14,9 +14,9 @@
 spdlog::set_async_mode(qsize); \
 spdlog::set_pattern("%Y/%m/%d %H:%M:%S.%e - %v"); \
 spdlog::stdout_logger_st("console"); \
-spdlog::basic_logger_mt("debuglog", TRACE_FILE); \
-spdlog::basic_logger_mt("trclog", TRACE_FILE); \
-spdlog::basic_logger_mt("errlog", TRACE_FILE); \
+spdlog::basic_logger_st("debuglog", TRACE_FILE); \
+spdlog::basic_logger_st("trclog", TRACE_FILE); \
+spdlog::basic_logger_st("errlog", TRACE_FILE); \
 
 #define console spdlog::get("console")->info
 #define debuglog spdlog::get("debuglog")->debug

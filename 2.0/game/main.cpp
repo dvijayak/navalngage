@@ -1,14 +1,30 @@
+#include "global.hpp"
+
+#include <string>
+#include <sstream>
+#include <fstream>
+
 #include "SDLManager.hpp"
 #include "Game.hpp"
+#include "ActionReplay.hpp"
 
 #include "LocomotionSystem.hpp"
 #include "CameraSystem.hpp"
 
-#include "global.hpp"
 
 int main (int argc, char** argv)
 {
 	INITIALIZE_BASIC_LOGGERS(4096)
+
+	// TODO: Proper handling of command-line arguments
+	if (argc > 1)
+	{
+		if (!ActionReplay::Instance().Activate(argv[1]))
+		{
+			console("Failed to activate action replay mode. Reverting to normal play mode."); // TODO: remove console statement once finished development/debugging
+			errlog("Failed to activate action replay mode. Reverting to normal play mode.");
+		}
+	}
 
 	// Initialize SDL. Singleton destruction must be explicitly stated
 	SDLManager* pSDLMgr = SDLManager::Instance("Naval Engagements 2.0", SDL_INIT_VIDEO);
