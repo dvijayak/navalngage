@@ -224,6 +224,24 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			}
 			break;
 		}
+		// Camera zooming
+		case SDLK_KP_PLUS:
+		case SDLK_KP_MINUS:
+		{
+			GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
+			if (pCamera)
+			{
+				CameraZoomAction* p = new CameraZoomAction();
+				p->SetCamera(pCamera);
+				float amount = 1;
+				if (key == SDLK_KP_MINUS)
+					amount = -amount;
+				p->SetZoom(amount);
+				p->SetIncremental(true);
+				result.push_back(p);
+			}
+			break;
+		}
 		// TEST: Projectile concept
 		case SDLK_z:
 		{
