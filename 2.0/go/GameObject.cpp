@@ -44,7 +44,6 @@ bool GameObject::AddComponent (IComponent* pComp)
 	}
 
 	// First delete an existing component of the same name
-	trclog("{} Removing component [{}]", *this, pComp->GetName());
 	RemoveComponent(pComp);
 
 	m_components[pComp->GetName()] = pComp;
@@ -57,6 +56,7 @@ bool GameObject::RemoveComponent (IComponent::Name const& name)
 	ComponentContainer::iterator it = m_components.find(name);
 	if (it != m_components.end())
 	{
+		trclog("{} Removing component [{}]", *this, name);
 		delete it->second;
 		m_components.erase(it);
 		return true;

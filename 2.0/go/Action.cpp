@@ -19,7 +19,7 @@ void Action::Perform ()
 	// console("{}", *this);
 	trclog("{}", *this);
 
-	ActionReplay::Instance().RecordAction(*this);
+	// TODO: Record action
 }
 
 std::string Action::str () const

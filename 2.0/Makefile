@@ -18,7 +18,7 @@ LDMATH := -lm
 
 # CXXFLAGS is lazy expanded to allow for modification of HEADERS
 # Note: -Wmissing-braces may be safely disabled as per http://stackoverflow.com/questions/13905200/is-it-wise-to-ignore-gcc-clangs-wmissing-braces-warning
-CXXFLAGS = -Wall -Wextra -Wno-missing-braces -pedantic -g -std=c++11 $(shell sdl2-config --cflags) $(HEADERS) -pthread -O3
+CXXFLAGS = -Wall -Wextra -Wno-missing-braces -pedantic -g -std=c++11 $(shell sdl2-config --cflags) $(HEADERS) -pthread
 LDFLAGS := $(LDFLAGS) $(LDSDL) -L/usr/local/lib $(LDMATH)
 AUTODEPSFLAGS = -MM $(CXXFLAGS)
 
