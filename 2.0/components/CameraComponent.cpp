@@ -6,7 +6,7 @@
 #include "World.hpp"
 
 static constexpr float MIN_VIEWSCALE = 10;
-static constexpr float MAX_VIEWSCALE = 60;
+static constexpr float MAX_VIEWSCALE = 1000;
 static constexpr float MIN_SPEED = 1; // m/s
 static constexpr float MAX_SPEED = 10; // m/s
 

@@ -16,6 +16,8 @@
 
 #include "MathUtil.hpp"
 
+const int WHEEL_FACTOR = 5;
+
 MouseKeyHandler* MouseKeyHandler::s_pInstance(0);
 
 MouseKeyHandler& MouseKeyHandler::Instance ()
@@ -78,7 +80,7 @@ bool MouseKeyHandler::TranslateToAction (SDL_Event const& event, GameObjectFacto
 		{
 			CameraZoomAction* p = new CameraZoomAction();
 			p->SetCamera(pCamera);
-			p->SetZoom(event.wheel.y);
+			p->SetZoom(event.wheel.y * WHEEL_FACTOR);
 			p->SetIncremental(true);
 			result.push_back(p);
 		}
