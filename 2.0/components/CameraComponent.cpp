@@ -4,6 +4,7 @@
 
 #include "VectorF.hpp"
 #include "World.hpp"
+#include "Clipping.hpp"
 
 static constexpr float MIN_VIEWSCALE = 10;
 static constexpr float MAX_VIEWSCALE = 1000;
@@ -20,7 +21,7 @@ CameraComponent::CameraComponent (World* pWorld, float x, float y, float scale)
 	, m_viewScale(scale)
 	, m_minMoveSpeed(MIN_SPEED)
 	, m_maxMoveSpeed(MAX_SPEED)
-	, m_pFollowTarget(0)
+	, m_pClipper(new CohenSutherlandLineClipper())
 {
 	SetViewScale(scale); // validate the provided scale before creating the view rect
 }
@@ -33,9 +34,17 @@ CameraComponent::CameraComponent (World* pWorld, RectangleF const& rect)
 	, m_viewScale(m_minViewScale)
 	, m_minMoveSpeed(MIN_SPEED)
 	, m_maxMoveSpeed(MAX_SPEED)
-	, m_pFollowTarget(0)
+	, m_pClipper(new CohenSutherlandLineClipper())
 {
 	UpdateView();
+}
+
+CameraComponent::~CameraComponent ()
+{
+	if (m_pClipper)
+	{
+		delete m_pClipper;
+	}
 }
 
 void CameraComponent::SetViewScale (float val)
@@ -81,39 +90,20 @@ void CameraComponent::Pan (Vector2F& cameraPosition, float dx, float dy)
 
 void CameraComponent::WorldToScreen (Point2F& p) const
 {
-	// 1. translate to camera position (is this what we're actually doing though???)
-	p.x -= m_viewRectangle.x;
-	p.y -= m_viewRectangle.y;
-
-	// 2. reflect over the x-axis 
-	// (Since screen space origin is 0,0 on top-left corner with +x rightwards 
-	// and +y downwards)
-	p.y = -p.y;
-
+	// TODO: I have a feeling something is wrong here...
+	// 1. translate
+	// 2. reflect over the x-axis (since screen space origin is 0,0 on top-left corner with +x rightwards and +y downwards)	
 	// 3. normalized device coordinates (we choose the range as [0,1])
-	p.x /= m_viewRectangle.width;
-	p.y /= m_viewRectangle.height;
+	p.x =  (p.x - m_viewRectangle.x) / m_viewRectangle.width;
+	p.y = -(p.y - m_viewRectangle.y) / m_viewRectangle.height;
 }
 
 void CameraComponent::ScreenToWorld (Point2F& p) const
 {
-	// This should be the reverse (inverse?) of WorldToScreen
-
-	// // 1. 
-	// p.x *= m_viewRectangle.width;
-	// p.y *= m_viewRectangle.height;
-	// console("{}",p);
-
-	// 2. reflect over the x-axis 
-	// (Since screen space origin is 0,0 on top-left corner with +x rightwards 
-	// and +y downwards)
-	p.y = -p.y;
-	// console("{}",p);
-
-	// 3. translate to camera position (is this what we're actually doing though???)
-	p.x += m_viewRectangle.x;
-	p.y += m_viewRectangle.y;
-	// console("{}",p);
+	// TODO: I have a feeling something is wrong here...
+	// Inverse of WorldToScreen, given `p` in normalized device coordinates [0,1]
+	p.x = m_viewRectangle.x + (p.x * m_viewRectangle.width);
+	p.y = m_viewRectangle.y - (p.y * m_viewRectangle.height);
 }
 
 bool CameraComponent::Includes (Point2F const& p) const
@@ -142,6 +132,16 @@ bool CameraComponent::Includes (Point2F const& p) const
 	//
 	return (p.x >= m_viewRectangle.x && p.x <= m_viewRectangle.x+m_viewRectangle.width) 
 		 && (p.y <= m_viewRectangle.y && p.y >= m_viewRectangle.y-m_viewRectangle.height);
+}
+
+ClippingTestResult CameraComponent::ClipToViewport (LineSegment2F & line) const
+{
+	if (!m_pClipper)
+	{
+		return ClippingTestResult::ERROR;
+	}
+
+	return m_pClipper->ClipLine(line, m_viewRectangle);
 }
 
 std::ostream& operator<< (std::ostream& os, CameraComponent const& c)

@@ -10,6 +10,7 @@ class World;
 class GameObject;
 class CameraSystem;
 class Vector2F;
+class ILineClipper;
 
 DEFINE_COMPONENT(Camera)
 {
@@ -18,7 +19,7 @@ public:
 
 	CameraComponent (World* pWorld=0, float x=0, float y=0, float scale=1);
 	CameraComponent (World* pWorld, RectangleF const& rect);
-	~CameraComponent () {}
+	~CameraComponent ();
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
@@ -48,6 +49,8 @@ public:
 
 	bool Includes (Point2F const&) const;
 
+	ClippingTestResult ClipToViewport (LineSegment2F & line) const;
+
 private:
 	void UpdateView ();
 
@@ -63,7 +66,9 @@ private:
 	float m_minMoveSpeed;
 	float m_maxMoveSpeed;
 
-	GameObject* m_pFollowTarget;
+	GameObject * m_pFollowTarget = 0;
+
+	ILineClipper * m_pClipper = 0;
 
 	friend CameraSystem;
 

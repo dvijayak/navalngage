@@ -256,4 +256,14 @@ std::ostream& operator<< (std::ostream& os, Rectangle2F const& rect);
 
 // LineSegment2F CalculateIntersection (Rectangle2F const&, )
 
+////
+
+enum ClippingTestResult
+{
+	TRIVIAL_ACCEPT,
+	TRIVIAL_REJECT,
+	NON_TRIVIAL,
+	ERROR
+};
+
 #endif

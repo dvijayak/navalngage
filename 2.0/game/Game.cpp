@@ -225,10 +225,6 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 
 bool Game::ProcessEvents ()
 {
-	// // Mouse state
-	// Sint32 mouse_x = 0;
-	// Sint32 mouse_y = 0;
-
 	static SDL_Event event; // watch out for thread-safety issues with static storage - currently should be fine since this function is only ever called on the main thread
 	std::vector<Action*> actions;
 	while (SDL_PollEvent(&event))
@@ -236,7 +232,7 @@ bool Game::ProcessEvents ()
 		if (event.type == SDL_QUIT || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE))
 		{
 			return true;
-		}
+		}		
 
 		switch (event.type)
 		{
@@ -302,6 +298,13 @@ void Game::DrawWorld (float dt)
 	// the view rectangle (y=2, y=1, y=0, x=6, x=7 and x=8).
 	CameraComponent const& camera = m_pCamera->Get<CameraComponent>();
 
+	// Sint32 mouseStateX = 0, mouseStateY = 0;
+	// SDL_GetMouseState(&mouseStateX, &mouseStateY);
+	// console("Mouse: {}, {}", mouseStateX, mouseStateY);	
+	// Point2F mouse(mouseStateX, mouseStateY);
+	// camera.ScreenToWorld(mouse);
+	// console("{}", mouse);
+
 	/// 3. Point of world origin
 	PointF worldOrigin = m_world.GetOrigin();
 	if (camera.Includes(worldOrigin))
@@ -327,6 +330,7 @@ void Game::DrawWorld (float dt)
 			{
 				pass = true;
 				break; // For now, we draw a polygon if at least one of its vertices is included
+				// TODO: This is incorrect...consider the case when you are zoomed in so much that you can't see any vertices of the polygon but you CAN see the edges...I need to handle this!
 			}
 		}
 
@@ -335,16 +339,24 @@ void Game::DrawWorld (float dt)
 			continue;
 		}
 
-		// Apply transformations to all vertices
 		PolygonF finalPoly(p);
-		for (auto& v : finalPoly.vertices)
+		std::vector<LineSegmentF> edges;
+		finalPoly.ComputeEdges(edges);
+		for (auto & edge : edges)
 		{
-			// v => normalized device coordinates
-			camera.WorldToScreen(v);			
-		}
+			auto result = camera.ClipToViewport(edge);
+			if (result == ClippingTestResult::TRIVIAL_REJECT)
+			{
+				continue;
+			}
 
-		// Draw away!
-		m_pRenderer->DrawPolygon(finalPoly, color);
+			// Transform clipped edge to screen space
+			camera.WorldToScreen(edge.start);
+			camera.WorldToScreen(edge.end);
+
+			// Draw away!
+			m_pRenderer->DrawLine(edge, color);
+		}
 	}
 
 	// Final step - send the frame buffer to the video device
