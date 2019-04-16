@@ -323,25 +323,8 @@ void Game::DrawWorld (float dt)
 		PolygonF p = body.ComputeSurface(pGo->Get<PositionComponent>().GetPosition());
 		Uint32 color = body.GetSurfaceColor();
 
-		bool pass = false;
-		for (auto const& v : p.vertices)
-		{
-			if (camera.Includes(v))
-			{
-				pass = true;
-				break; // For now, we draw a polygon if at least one of its vertices is included
-				// TODO: This is incorrect...consider the case when you are zoomed in so much that you can't see any vertices of the polygon but you CAN see the edges...I need to handle this!
-			}
-		}
-
-		if (!pass)
-		{
-			continue;
-		}
-
-		PolygonF finalPoly(p);
 		std::vector<LineSegmentF> edges;
-		finalPoly.ComputeEdges(edges);
+		p.ComputeEdges(edges);
 		for (auto & edge : edges)
 		{
 			auto result = camera.ClipToViewport(edge);
