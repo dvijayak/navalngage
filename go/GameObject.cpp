@@ -11,14 +11,7 @@ GameObject::GameObject ()
 }
 
 GameObject::~GameObject ()
-{
-	// Delete all extant components
-	for (auto& el : m_components)
-	{
-		assert(el.second);
-		delete el.second;
-	}
-}
+{}
 
 bool GameObject::HasComponent (IComponent::Name const& name) const
 {
@@ -30,7 +23,7 @@ IComponent* GameObject::GetComponent (IComponent::Name const& name) const
 	ComponentContainer::const_iterator it = m_components.find(name);
 	if (it != m_components.end())
 	{
-		return it->second;
+		return it->second.get();
 	}
 
 	return 0;
@@ -43,10 +36,10 @@ bool GameObject::AddComponent (IComponent* pComp)
 		return false;
 	}
 
-	// First delete an existing component of the same name
+	// First remove an existing component of the same name
 	RemoveComponent(pComp);
 
-	m_components[pComp->GetName()] = pComp;
+	m_components[pComp->GetName()] = std::unique_ptr<IComponent>(pComp);
 
 	return true;
 }
@@ -57,7 +50,6 @@ bool GameObject::RemoveComponent (IComponent::Name const& name)
 	if (it != m_components.end())
 	{
 		trclog("{} Removing component [{}]", *this, name);
-		delete it->second;
 		m_components.erase(it);
 		return true;
 	}

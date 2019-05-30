@@ -3,6 +3,8 @@
 
 #include "global.hpp"
 
+#include <vector>
+
 #include "Color.hpp"
 #include "Geometry.hpp"
 
@@ -35,14 +37,14 @@ private:
 	size_t m_HEIGHT;
 
 	// We possess ownership of screen pixels, screen texture and screen renderer
-	Uint32* m_pPixels;
+	std::vector<Uint32> m_pixels;
 	SDL_Renderer* m_pRenderer;
 	SDL_Texture* m_pTexture;
 };
 
 inline void RenderManager::SetPixel (size_t index, Uint32 color)
 {
-	m_pPixels[index] = color;
+	m_pixels[index] = color;
 }
 
 inline void RenderManager::SetPixel (size_t x, size_t y, Uint32 color)

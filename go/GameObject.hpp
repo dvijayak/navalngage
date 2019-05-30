@@ -1,6 +1,7 @@
 #ifndef GO_HPP
 #define GO_HPP
 
+#include <memory>
 #include <map>
 #include <cassert>
 
@@ -38,7 +39,7 @@ private:
 
 	// TODO: Abstract away the components collection into a Component Manager. (Maybe not necessary?)
 	// Components are indexed in the container by their name
-	typedef std::map<IComponent::Name, IComponent*> ComponentContainer;
+	typedef std::map<IComponent::Name, std::unique_ptr<IComponent>> ComponentContainer;
 	ComponentContainer m_components;
 
 	/// Construction is always done at the factory

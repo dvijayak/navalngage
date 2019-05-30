@@ -1,6 +1,7 @@
 #ifndef GameObjectFactory_HPP
 #define GameObjectFactory_HPP
 
+#include <memory>
 #include <map>
 #include <vector>
 #include <functional>
@@ -16,7 +17,7 @@ public:
 	GameObjectFactory ();
 	~GameObjectFactory ();
 
-	typedef std::map<GOSuid, GameObject*> GOContainerType;
+	typedef std::map<GOSuid, std::unique_ptr<GameObject>> GOContainerType;
 
 	/// Constructs a new empty game object. The caller must then add components.
 	/// A suid may be specified or the factory will figure out

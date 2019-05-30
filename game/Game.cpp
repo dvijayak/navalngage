@@ -8,6 +8,8 @@
 #include "Geometry.hpp"
 #include "VectorF.hpp"
 
+#include "IEventHandler.hpp"
+
 #include "GameObjectFactory.hpp"
 #include "MovableBuilder.hpp"
 #include "ShipBuilder.hpp"
@@ -54,11 +56,6 @@ Game::Game ()
 
 Game::~Game ()
 {
-	for (auto& p : m_systems)
-	{
-		delete p.second;
-	}
-
 	// Destroy relevant singletons/managers
 	MouseKeyHandler::Destroy();
 }
@@ -187,13 +184,13 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 		case SystemUpdateOrder::FIRST:
 		{
 			// Make this system the new foremost system to be run
-			m_systems.insert(m_systems.begin(), std::make_pair(order, pSystem));		
+			m_systems.insert(m_systems.begin(), std::make_pair(order, std::unique_ptr<ISystem>(pSystem)));		
 			break;
 		}
 		case SystemUpdateOrder::LAST:
 		{
 			// Make this system the new last-most system to be run
-			m_systems.push_back(std::make_pair(order, pSystem));		
+			m_systems.push_back(std::make_pair(order, std::unique_ptr<ISystem>(pSystem)));		
 			break;
 		}
 		case SystemUpdateOrder::MIDDLE:
@@ -207,7 +204,7 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 				// first => order, second => system pointer
 				if (it == m_systems.end() || it->first == SystemUpdateOrder::LAST)
 				{
-					m_systems.insert(it, std::make_pair(order, pSystem));				
+					m_systems.insert(it, std::make_pair(order, std::unique_ptr<ISystem>(pSystem)));				
 					break;
 				}
 			}
@@ -226,7 +223,7 @@ bool Game::RegisterSystem (ISystem* pSystem, int order)
 bool Game::ProcessEvents ()
 {
 	static SDL_Event event; // watch out for thread-safety issues with static storage - currently should be fine since this function is only ever called on the main thread
-	std::vector<Action*> actions;
+	IEventHandler::ResultType actions;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE))
@@ -256,7 +253,6 @@ bool Game::ProcessEvents ()
 		{
 			// TODO: serialize for playback, etc.
 			pAction->Perform();
-			delete pAction;
 		}
 	}
 

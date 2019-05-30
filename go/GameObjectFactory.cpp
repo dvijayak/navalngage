@@ -17,11 +17,6 @@ GameObjectFactory::GameObjectFactory ()
 
 GameObjectFactory::~GameObjectFactory ()
 {
-	// Simply destroy all extant GOs
-	for (auto& p : m_gameObjects)
-	{
-		delete p.second;
-	}
 }
 
 void GameObjectFactory::Add (GameObject* pGo, GOSuid id)
@@ -50,7 +45,7 @@ void GameObjectFactory::Add (GameObject* pGo, GOSuid id)
 	pGo->m_suid = id;
 
 	// Finally, throw the new GO into our container
-	m_gameObjects[pGo->m_suid] = pGo;
+	m_gameObjects[pGo->m_suid] = std::unique_ptr<GameObject>(pGo);
 }
 
 GameObject& GameObjectFactory::Create (GOSuid id)
@@ -73,7 +68,6 @@ bool GameObjectFactory::Destroy (GOSuid id)
 	auto it = m_gameObjects.find(id);
 	if (it != m_gameObjects.end())
 	{
-		delete it->second;
 		m_gameObjects.erase(it);
 		return true;
 	}
@@ -87,7 +81,7 @@ GameObject* GameObjectFactory::Resolve (GOSuid id) const
 	if (it != m_gameObjects.end())
 	{
 		assert(it->second); // we should never have a null GO in the factory
-		return it->second;
+		return it->second.get();
 	}
 
 	return 0;
@@ -103,7 +97,7 @@ GameObjectFactory::GOResultListType GameObjectFactory::ResolveObjects (FilterTyp
 		assert(p.second);
 		if (filter(*(p.second)))
 		{
-			result.push_back(p.second);
+			result.push_back(p.second.get());
 		}
 	}
 

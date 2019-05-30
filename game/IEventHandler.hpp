@@ -1,6 +1,7 @@
 #ifndef IEventHandler_HPP
 #define IEventHandler_HPP
 
+#include <memory>
 #include <vector>
 #include <SDL2/SDL.h>
 
@@ -19,7 +20,7 @@ public:
 	/// ATTN: Caller is responsible for freeing all actions.
 	/// @param [out] - resultant vector of actions
 	/// @return bool - was at least 1 action returned?
-	typedef std::vector<Action*> ResultType;
+	typedef std::vector<std::unique_ptr<Action>> ResultType;
 	virtual bool TranslateToAction (SDL_Event const&, GameObjectFactory const&, ResultType&) = 0;
 };
 

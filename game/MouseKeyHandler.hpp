@@ -3,6 +3,7 @@
 
 #include "IEventHandler.hpp"
 
+#include <memory>
 #include <set>
 
 class Action;
@@ -49,7 +50,7 @@ private:
 
 	bool KeyIsBeingHeld (int) const;
 
-	static MouseKeyHandler* s_pInstance;
+	static std::unique_ptr<MouseKeyHandler> s_pInstance;
 };
 
 inline bool MouseKeyHandler::KeyIsBeingHeld (int key) const 

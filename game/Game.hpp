@@ -1,6 +1,7 @@
 #ifndef Game_HPP
 #define Game_HPP
 
+#include <memory>
 #include <utility> // for std::pair
 #include <vector>
 
@@ -56,7 +57,7 @@ public:
 private:
 	GameObjectFactory m_factory;
 
-	typedef std::vector< std::pair<int, ISystem*> > SystemListType;
+	typedef std::vector< std::pair<int, std::unique_ptr<ISystem>> > SystemListType;
 	SystemListType m_systems;
 
 	size_t m_targetFrameRate; // FPS

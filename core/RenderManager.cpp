@@ -25,7 +25,7 @@ RenderManager::RenderManager (const WindowManager& windowManager, Uint32 flags)
 		);
 
 	// Raw buffer
-	m_pPixels = new Uint32[m_WIDTH * m_HEIGHT];
+	m_pixels = std::vector<Uint32>(m_WIDTH * m_HEIGHT);
 
 	trclog("Render manager initialized.");
 }
@@ -33,8 +33,7 @@ RenderManager::RenderManager (const WindowManager& windowManager, Uint32 flags)
 RenderManager::~RenderManager ()
 {
 	trclog("Destroying render manager...");
-	
-	delete[] m_pPixels;
+
 	SDL_DestroyTexture(m_pTexture);
 	SDL_DestroyRenderer(m_pRenderer);
 
@@ -53,7 +52,7 @@ SDL_Texture* RenderManager::GetTexture () const
 
 void RenderManager::Render () const
 {
-	SDL_UpdateTexture(m_pTexture, 0, m_pPixels, m_WIDTH * sizeof(Uint32));
+	SDL_UpdateTexture(m_pTexture, 0, m_pixels.data(), m_WIDTH * sizeof(Uint32));
 
 	SDL_RenderClear(m_pRenderer);
 	SDL_RenderCopy(m_pRenderer, m_pTexture, 0, 0);

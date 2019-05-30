@@ -40,12 +40,7 @@ CameraComponent::CameraComponent (World* pWorld, RectangleF const& rect)
 }
 
 CameraComponent::~CameraComponent ()
-{
-	if (m_pClipper)
-	{
-		delete m_pClipper;
-	}
-}
+{}
 
 void CameraComponent::SetViewScale (float val)
 {

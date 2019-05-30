@@ -18,25 +18,20 @@
 
 const int WHEEL_FACTOR = 5;
 
-MouseKeyHandler* MouseKeyHandler::s_pInstance(0);
+std::unique_ptr<MouseKeyHandler> MouseKeyHandler::s_pInstance;
 
 MouseKeyHandler& MouseKeyHandler::Instance ()
 {
 	if (!s_pInstance)
 	{		
-		s_pInstance = new MouseKeyHandler();
+		s_pInstance = std::unique_ptr<MouseKeyHandler>(new MouseKeyHandler());
 	}
 
 	return *s_pInstance;
 }
 
 void MouseKeyHandler::Destroy ()
-{
-	if (s_pInstance)
-	{
-		delete s_pInstance;
-	}
-}
+{}
 
 MouseKeyHandler::MouseKeyHandler ()
 {}
@@ -78,11 +73,11 @@ bool MouseKeyHandler::TranslateToAction (SDL_Event const& event, GameObjectFacto
 		GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 		if (pCamera)
 		{
-			CameraZoomAction* p = new CameraZoomAction();
+			std::unique_ptr<CameraZoomAction> p(new CameraZoomAction());
 			p->SetCamera(pCamera);
 			p->SetZoom(event.wheel.y * WHEEL_FACTOR);
 			p->SetIncremental(true);
-			result.push_back(p);
+			result.push_back(std::move(p));
 		}
 	}
 
@@ -116,7 +111,7 @@ void MouseKeyHandler::HandleKeyPressed (int key, GameObjectFactory const& factor
 		case SDLK_RIGHT:
 		case SDLK_DOWN:
 		{
-			DirectionAction* p = new DirectionAction();
+			std::unique_ptr<DirectionAction> p(new DirectionAction());
 			p->SetSource(pCamera);
 			float x, y;
 			switch (key)
@@ -141,7 +136,7 @@ void MouseKeyHandler::HandleKeyPressed (int key, GameObjectFactory const& factor
 					assert(false); // should never reach here
 			}
 			p->SetDirection(VectorF(x, y));
-			result.push_back(p);
+			result.push_back(std::move(p));
 			break;
 		}
 		// Camera follow/unfollow target
@@ -152,10 +147,10 @@ void MouseKeyHandler::HandleKeyPressed (int key, GameObjectFactory const& factor
 			GameObject* pFollowTarget(0); // 0 => unfollow
 			if (key == SDLK_f)
 				pFollowTarget = factory.Resolve(GameObjectFactory::Suids::Player1);
-			CameraFollowAction* p = new CameraFollowAction();
+			std::unique_ptr<CameraFollowAction> p(new CameraFollowAction());
 			p->SetCamera(pCamera);
 			p->SetTarget(pFollowTarget);
-			result.push_back(p);
+			result.push_back(std::move(p));
 
 			bTrackKey = false;
 			break;
@@ -179,7 +174,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 				if (key == SDLK_w || key == SDLK_s)
 				{
 					float const inc = 1;
-					SpeedAction* p = new SpeedAction();
+					std::unique_ptr<SpeedAction> p(new SpeedAction());
 					p->SetSource(pPlayer);
 					p->SetChangeType(SpeedAction::ADJUST);
 					if (key == SDLK_w)
@@ -190,12 +185,12 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 					{
 						p->SetSpeed(-inc);
 					}
-					result.push_back(p);
+					result.push_back(std::move(p));
 				}
 				else if (key == SDLK_a || key == SDLK_d)
 				{
 					float const inc = MathUtil::DegreesToRadians(3);
-					RotateAction* p = new RotateAction();
+					std::unique_ptr<RotateAction> p(new RotateAction());
 					p->SetSource(pPlayer);
 					if (key == SDLK_a) // counter-clockwise
 					{
@@ -205,7 +200,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 					{
 						p->SetAngle(-inc);
 					}
-					result.push_back(p);
+					result.push_back(std::move(p));
 				}
 			}
 			break;
@@ -219,10 +214,10 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 			if (pCamera)
 			{
-				SpeedAction* p = new SpeedAction();
+				std::unique_ptr<SpeedAction> p(new SpeedAction());
 				p->SetSource(pCamera);
 				p->SetSpeed(100);
-				result.push_back(p);
+				result.push_back(std::move(p));
 			}
 			break;
 		}
@@ -233,14 +228,14 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 			if (pCamera)
 			{
-				CameraZoomAction* p = new CameraZoomAction();
+				std::unique_ptr<CameraZoomAction> p(new CameraZoomAction());
 				p->SetCamera(pCamera);
 				float amount = 1;
 				if (key == SDLK_KP_MINUS)
 					amount = -amount;
 				p->SetZoom(amount);
 				p->SetIncremental(true);
-				result.push_back(p);
+				result.push_back(std::move(p));
 			}
 			break;
 		}
@@ -277,10 +272,10 @@ void MouseKeyHandler::HandleKeyReleased (int key, GameObjectFactory const& facto
 			GameObject* pCamera = factory.Resolve(GameObjectFactory::Suids::Camera1);
 			if (pCamera)
 			{
-				SpeedAction* p = new SpeedAction();
+				std::unique_ptr<SpeedAction> p(new SpeedAction());
 				p->SetSource(pCamera);
 				p->SetSpeed(0);
-				result.push_back(p);
+				result.push_back(std::move(p));
 			}
 			break;
 		}

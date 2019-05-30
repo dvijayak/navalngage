@@ -4,6 +4,7 @@
 #include "IComponent.hpp"
 #include "Geometry.hpp"
 
+#include <memory>
 #include <ostream>
 
 class World;
@@ -19,7 +20,7 @@ public:
 
 	CameraComponent (World* pWorld=0, float x=0, float y=0, float scale=1);
 	CameraComponent (World* pWorld, RectangleF const& rect);
-	~CameraComponent ();
+	virtual ~CameraComponent ();
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
@@ -68,7 +69,7 @@ private:
 
 	GameObject * m_pFollowTarget = 0;
 
-	ILineClipper * m_pClipper = 0;
+	std::unique_ptr<ILineClipper> m_pClipper;
 
 	friend CameraSystem;
 
