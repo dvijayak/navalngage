@@ -3,31 +3,29 @@
 
 #include "IComponent.hpp"
 
-/// DEPRECATED
+#include <ostream>
 
-class RotationComponent
-	: virtual public IComponent
+DEFINE_COMPONENT(Rotation)
 {
 public:
-	static const IComponent::Name NAME;
+   static const IComponent::Name NAME;
 
-	RotationComponent (float omega = 0.0, float max = 15.0)
-		: m_angularSpeed(omega)
-		, m_maxAngularSpeed(max)
-	{}
-	~RotationComponent () {}
+   RotationComponent (float const theta)
+      : m_theta(theta)
+   {}
+   ~RotationComponent () {}
 
-	/// IComponent
-	IComponent::Name GetName () const { return NAME; }
+   /// IComponent
+   IComponent::Name GetName () const { return NAME; }
 
-	void SetAngularSpeed (float);
-	float GetAngularSpeed () const { return m_angularSpeed; }
-
-	float GetMaxAngularSpeed () const { return m_maxAngularSpeed; }
+   void SetRotationAngle (float const theta) { m_theta = theta; }
+   float GetRotationAngle () const { return m_theta; }
 
 private:
-	float m_angularSpeed; // rads/s, +ve = clockwise; -ve = counter-clockwise; 0 = no rotation
-	float m_maxAngularSpeed;
+   float m_theta; // in radians
+
+   friend std::ostream& operator<< (std::ostream& os, RotationComponent const& c);
+   friend std::ostream& operator<< (std::ostream& os, RotationComponent const* pC);
 };
 
 #endif

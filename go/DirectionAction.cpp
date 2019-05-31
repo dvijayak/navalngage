@@ -2,7 +2,9 @@
 
 #include <sstream>
 
-#include "MovementComponent.hpp"
+#include "RotationComponent.hpp"
+
+#include "MathUtil.hpp"
 
 void DirectionAction::Perform ()
 {
@@ -10,9 +12,9 @@ void DirectionAction::Perform ()
 
 	assert(m_pSource);
 
-	if (!m_pSource->Has<MovementComponent>()) return;
+	if (!m_pSource->Has<RotationComponent>()) return;
 
-	m_pSource->Get<MovementComponent>().SetDirection(m_direction);
+	m_pSource->Get<RotationComponent>().SetRotationAngle(m_direction);
 }
 
 std::string DirectionAction::str () const
@@ -20,7 +22,6 @@ std::string DirectionAction::str () const
 	std::stringstream ss;
 	ss << Action::str() << STR_SEP << "DirectionAction";
 	ss << Action::str_base();
-	ss << STR_SEP << "x=" << m_direction.GetX();
-	ss << STR_SEP << "y=" << m_direction.GetY();
+	ss << STR_SEP << "direction=" << MathUtil::RadiansToDegrees(m_direction) << "°";
 	return ss.str();
 }

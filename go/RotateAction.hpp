@@ -6,7 +6,7 @@
 class RotateAction : virtual public Action
 {
 public:
-	RotateAction () : Action(), m_theta(0) {}
+	RotateAction (float const theta=0) : Action(), m_theta(theta) {}
 	~RotateAction () {}
 
 	/// Angle is in radians

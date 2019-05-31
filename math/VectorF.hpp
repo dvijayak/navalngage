@@ -39,6 +39,8 @@ public:
 	// We define "Multiplication" with another vector as the dot product between the two
 	float operator* (Vector2F const& other) const { return Dot(other); }
 
+	bool operator== (Vector2F const& other) { return GetX() == other.GetX() && GetY() == other.GetY(); }
+
 	/// Computes the inner angle (in radians) between the two vectors
 	float Angle (Vector2F const& other) const;
 

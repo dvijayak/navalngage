@@ -1,7 +1,7 @@
 #include "SpeedAction.hpp"
 
 #include <sstream>
-#include "MovementComponent.hpp"
+#include "SpeedComponent.hpp"
 
 void SpeedAction::Perform ()
 {
@@ -9,23 +9,23 @@ void SpeedAction::Perform ()
 
 	assert(m_pSource);
 
-	if (!m_pSource->Has<MovementComponent>()) return;
+	if (!m_pSource->Has<SpeedComponent>()) return;
 
 	// TODO: Mass affects velocity increment, but this needs to be handled at the command level, i.e. the point of state change
 	// TODO: Should mass affect max speed?
 
 	if (m_changeType == REPLACE)
 	{
-		m_pSource->Get<MovementComponent>().SetSpeed(m_speed);
+		m_pSource->Get<SpeedComponent>().SetSpeed(m_speed);
 	}
 	else if (m_changeType == ADJUST)
 	{
 		if (m_speed != 0.0)
 		{
-			// MovementComponent takes care of speed bounds
-			float speed = m_pSource->Get<MovementComponent>().GetSpeed();
+			// SpeedComponent takes care of speed bounds
+			float speed = m_pSource->Get<SpeedComponent>().GetSpeed();
 			float target = speed + m_speed;
-			m_pSource->Get<MovementComponent>().SetSpeed(target);
+			m_pSource->Get<SpeedComponent>().SetSpeed(target);
 		}
 	}
 }

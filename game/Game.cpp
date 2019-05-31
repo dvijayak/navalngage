@@ -7,6 +7,7 @@
 
 #include "Geometry.hpp"
 #include "VectorF.hpp"
+#include "MathUtil.hpp"
 
 #include "IEventHandler.hpp"
 
@@ -16,7 +17,7 @@
 
 #include "CameraComponent.hpp"
 #include "PositionComponent.hpp"
-#include "MovementComponent.hpp"
+#include "RotationComponent.hpp"
 #include "BodyComponent.hpp"
 
 #include "ShipComponent.hpp"
@@ -46,7 +47,8 @@ Game::Game ()
 	PointF cameraPos = m_world.GetOrigin(); // for now, position camera at the center of the world
 	MovableBuilder mb;
 	mb.AddPosition(cameraPos.x, cameraPos.y);
-	mb.AddMovement(Vector2F(1, 0), 0, 100);
+	mb.AddSpeed(0, 100);
+	mb.AddRotation(0);
 	m_pCamera = &(m_factory.Create(mb, GameObjectFactory::Suids::Camera1));
 	m_pCamera->AddComponent(new CameraComponent(&m_world, cameraPos.x, cameraPos.y));
 
@@ -314,9 +316,11 @@ void Game::DrawWorld (float dt)
 	// For now, a drawable object is one that has a surface polygon via a BodyComponent
 	for (auto const& pGo : m_factory.ResolveObjects( [] (GameObject const& go) { return go.Has<BodyComponent>() && go.Has<PositionComponent>(); } ))
 	{
+		float theta = pGo->Has<RotationComponent>() ? pGo->Get<CRotation>().GetRotationAngle() : MathUtil::DegreesToRadians(90);
+
 		// Access the object's surface polygon and color
 		BodyComponent const& body = pGo->Get<BodyComponent>();
-		PolygonF p = body.ComputeSurface(pGo->Get<PositionComponent>().GetPosition());
+		PolygonF p = body.ComputeSurfaceWorld(pGo->Get<PositionComponent>().GetPosition(), theta);
 		Uint32 color = body.GetSurfaceColor();
 
 		std::vector<LineSegmentF> edges;

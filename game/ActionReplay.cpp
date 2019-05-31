@@ -126,7 +126,7 @@ void ActionReplay::ProcessReplayFileLine (std::string& line)
 	std::regex_search(line, matches1, r1);
 	// console("timestamp = {} type = {}", matches1[1], matches1[2]);
 
-	std::string const& fields = matches1[3];
+	// std::string const& fields = matches1[3];
 	static std::regex r2("(\\w+=\\w+)");
 	if (matches1[2] == "RotateAction")
 	{

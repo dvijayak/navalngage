@@ -18,7 +18,8 @@ public:
 
 	virtual void AddPosition (float, float);
 	virtual void AddPosition (VectorF const&);
-	virtual void AddMovement (VectorF const&, float, float);
+	virtual void AddSpeed (float speed, float maxSpeed);
+	virtual void AddRotation (float theta);
 	virtual void AddBody (PolygonF const& poly, Uint32 color=Color::Green);
 };
 

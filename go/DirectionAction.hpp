@@ -14,10 +14,10 @@ public:
 	void Perform ();
 	std::string str () const;
 
-	void SetDirection (VectorF const& v) { m_direction = v; }
+	void SetDirection (float const theta) { m_direction = theta; }
 
 private:
-	VectorF m_direction;
+	float m_direction;
 };
 
 #endif

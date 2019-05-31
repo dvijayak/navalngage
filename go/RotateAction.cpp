@@ -3,10 +3,8 @@
 #include <cmath>
 #include <sstream>
 
-#include "MovementComponent.hpp"
+#include "RotationComponent.hpp"
 #include "BodyComponent.hpp"
-
-#include "MatrixF.hpp"
 
 void RotateAction::Perform ()
 {
@@ -14,22 +12,13 @@ void RotateAction::Perform ()
 
 	assert(m_pSource);
 
-	if (!m_pSource->Has<CMovement>()) return;
+	if (!m_pSource->Has<CRotation>()) return;
 
 	// TODO: Mass affects angle increment?
-	
-	// Apply rotation on the object's direction vector
-	VectorF const& dir = m_pSource->Get<CMovement>().GetDirection();
-	m_pSource->Get<CMovement>().SetDirection(dir.Rotate(m_theta));
 
-	// Apply rotation on the object's surface polygon, if any
-	if (m_pSource->Has<CBody>())
-	{
-		for (auto& v : m_pSource->Get<CBody>().GetSurface().vertices)
-		{
-			v = v.Rotate(m_theta);
-		}
-	}
+	// Update object's rotation/direction	
+	float const current = m_pSource->Get<CRotation>().GetRotationAngle();
+	m_pSource->Get<CRotation>().SetRotationAngle(current + m_theta);
 }
 
 std::string RotateAction::str () const

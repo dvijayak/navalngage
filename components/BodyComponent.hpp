@@ -21,15 +21,17 @@ public:
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
 
-	PolygonF const& GetSurface () const { return m_surface; }
-	PolygonF& GetSurface () { return m_surface; }
+	PolygonF const& GetSurfaceLocal () const { return m_surface; }
+	PolygonF& GetSurfaceLocal () { return m_surface; }
 	void SetSurface (PolygonF const& surface) { m_surface = surface; }
 
 	Uint32 GetSurfaceColor () const { return m_color; }
 
-	/// Given a position in world space, transform the local space surface polygon
-	/// vertices to world space.
-	PolygonF ComputeSurface (VectorF const& position) const;
+	/// Given:
+	///   - position in world space;
+	///   - rotation angle, in radians;
+	/// transform the  local space surface polygon vertices to world space.
+	PolygonF ComputeSurfaceWorld (VectorF const& position, float const theta=0) const;
 
 private:
 	PolygonF m_surface;

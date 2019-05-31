@@ -2,16 +2,23 @@
 
 const IComponent::Name RotationComponent::NAME = "RotationComponent";
 
-void RotationComponent::SetAngularSpeed (float omega)
+std::ostream& operator<< (std::ostream& os, RotationComponent const& c)
 {
-	float minAngularSpeed = -m_maxAngularSpeed;
-	if (omega < minAngularSpeed)
-	{
-		m_angularSpeed = minAngularSpeed;
-	}
-	else
-	{
-		// Apply max speed upper bound
-		m_angularSpeed = (omega > m_maxAngularSpeed) ? m_maxAngularSpeed : omega;
-	}
+   os << "[ RotationComponent: ";
+   os << "theta = " << c.m_theta;
+   os << " ]";
+   return os;
+}
+
+std::ostream& operator<< (std::ostream& os, RotationComponent const* pC)
+{
+   if (!pC)
+   {
+      os << "[ RotationComponent: (Null) ]";
+   }
+   else
+   {
+      os << *pC;
+   }
+   return os;
 }

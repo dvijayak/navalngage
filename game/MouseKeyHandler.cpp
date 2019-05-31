@@ -2,6 +2,7 @@
 
 #include "GameObject.hpp"
 #include "GameObjectFactory.hpp"
+#include "MovableBuilder.hpp"
 
 #include "SpeedAction.hpp"
 #include "DirectionAction.hpp"
@@ -10,7 +11,7 @@
 #include "CameraFollowAction.hpp"
 
 #include "PositionComponent.hpp"
-#include "MovementComponent.hpp"
+#include "RotationComponent.hpp"
 #include "BodyComponent.hpp"
 #include "CameraComponent.hpp"
 
@@ -113,29 +114,25 @@ void MouseKeyHandler::HandleKeyPressed (int key, GameObjectFactory const& factor
 		{
 			std::unique_ptr<DirectionAction> p(new DirectionAction());
 			p->SetSource(pCamera);
-			float x, y;
+			float theta;
 			switch (key)
 			{
 				case SDLK_UP:
-					x = 0;
-					y = 1;
+					theta = MathUtil::DegreesToRadians(90);
 					break;
 				case SDLK_LEFT:
-					x = -1;
-					y = 0;
+					theta = MathUtil::DegreesToRadians(180);
 					break;
 				case SDLK_RIGHT:
-					x = 1;
-					y = 0;
+					theta = MathUtil::DegreesToRadians(0);
 					break;
 				case SDLK_DOWN:
-					x = 0;
-					y = -1;
+					theta = MathUtil::DegreesToRadians(-90);
 					break;
 				default:
 					assert(false); // should never reach here
 			}
-			p->SetDirection(VectorF(x, y));
+			p->SetDirection(theta);
 			result.push_back(std::move(p));
 			break;
 		}
@@ -245,13 +242,15 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			// Spawn projectile in movement direction
 			GameObject* pGo = factory.Resolve(GameObjectFactory::Suids::Player1);
 			VectorF const& p = pGo->Get<PositionComponent>().GetPosition();
-			GameObject& proj = const_cast<GameObjectFactory&>(factory).Create();
-			proj.AddComponent(new PositionComponent(p));
-			VectorF const& v = pGo->Get<MovementComponent>().GetDirection();
-			proj.AddComponent(new MovementComponent(v.Normalize(), 100.0, 300.0));
-			proj.AddComponent(new BodyComponent(PolygonF::CreateRect(
-					-1, 0, 2, 2
-				)));
+
+			MovableBuilder mb;
+			mb.AddPosition(p);
+			mb.AddSpeed(100.0, 300.0);
+			mb.AddRotation(pGo->Get<RotationComponent>().GetRotationAngle());
+			mb.AddBody(PolygonF::CreateRect(
+				-1, 0, 2, 2
+			));
+			const_cast<GameObjectFactory&>(factory).Create(mb);
 
 			break;
 		}
