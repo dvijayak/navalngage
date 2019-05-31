@@ -5,6 +5,8 @@
 
 #include <ostream>
 
+#include "VectorF.hpp"
+
 DEFINE_COMPONENT(Rotation)
 {
 public:
@@ -20,6 +22,8 @@ public:
 
    void SetRotationAngle (float const theta) { m_theta = theta; }
    float GetRotationAngle () const { return m_theta; }
+
+   VectorF GetDirection () const { return VectorF(1, 0).Rotate(m_theta); }
 
 private:
    float m_theta; // in radians

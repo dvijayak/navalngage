@@ -9,6 +9,7 @@
 #include "RotateAction.hpp"
 #include "CameraZoomAction.hpp"
 #include "CameraFollowAction.hpp"
+#include "FireWeaponAction.hpp"
 
 #include "PositionComponent.hpp"
 #include "RotationComponent.hpp"
@@ -186,7 +187,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 				}
 				else if (key == SDLK_a || key == SDLK_d)
 				{
-					float const inc = MathUtil::DegreesToRadians(3);
+					float const inc = MathUtil::DegreesToRadians(6);
 					std::unique_ptr<RotateAction> p(new RotateAction());
 					p->SetSource(pPlayer);
 					if (key == SDLK_a) // counter-clockwise
@@ -236,22 +237,13 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			}
 			break;
 		}
-		// TEST: Projectile concept
+		// TEST: Fire basic weapon
 		case SDLK_z:
 		{
-			// Spawn projectile in movement direction
-			GameObject* pGo = factory.Resolve(GameObjectFactory::Suids::Player1);
-			VectorF const& p = pGo->Get<PositionComponent>().GetPosition();
-
-			MovableBuilder mb;
-			mb.AddPosition(p);
-			mb.AddSpeed(100.0, 300.0);
-			mb.AddRotation(pGo->Get<RotationComponent>().GetRotationAngle());
-			mb.AddBody(PolygonF::CreateRect(
-				-1, 0, 2, 2
-			));
-			const_cast<GameObjectFactory&>(factory).Create(mb);
-
+			GameObject* pGo = factory.Resolve(GameObjectFactory::Suids::Player1); // TODO: remove when we start mounting weapons on ships
+			std::unique_ptr<FireWeaponAction> p(new FireWeaponAction());
+			p->SetSource(pGo);
+			result.push_back(std::move(p));
 			break;
 		}
 	}

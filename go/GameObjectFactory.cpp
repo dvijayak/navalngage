@@ -84,7 +84,7 @@ GameObject* GameObjectFactory::Resolve (GOSuid id) const
 		return it->second.get();
 	}
 
-	return 0;
+	return nullptr;
 }
 
 GameObjectFactory::GOResultListType GameObjectFactory::ResolveObjects (FilterType filter) const

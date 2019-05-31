@@ -20,6 +20,9 @@
 #include "RotationComponent.hpp"
 #include "BodyComponent.hpp"
 
+#include "WeaponComponent.hpp"
+#include "CannonWeapon.hpp"
+
 #include "ShipComponent.hpp"
 
 #include "Action.hpp"
@@ -77,7 +80,8 @@ int Game::Run ()
 		PointF(-0.6, -1.5),
 		PointF(-1, 2),
 	}), Color::Orange);
-	GameObject& ship1 = m_factory.Create(sb, GameObjectFactory::Suids::Player1);
+	// GameObject& ship1 = m_factory.Create(sb, GameObjectFactory::Suids::Player1);
+	GameObject& ship1 = m_factory.Create(sb);
 	console("{}", ship1);
 
 	sb.Reset();
@@ -109,6 +113,31 @@ int Game::Run ()
 	}), Color::Purple);
 	GameObject& ship3 = m_factory.Create(sb);
 	console("{}", ship3);
+
+	// Test weapon
+	MovableBuilder mb;
+	mb.MakeDefault();
+	mb.AddPosition(0, -50);
+	{
+		PointF p1 (-1, -10);
+		PointF p2 (p1.x - 2, p1.y + 3);
+		PointF p3 (p2.x, p2.y + 3);
+		PointF p4 (p1.x, p3.y + 3);
+		PointF p5 (p1.x, p4.y + 10);
+		PointF p6 (p1.x + 2, p5.y);
+		PointF p7 (p6.x, p6.y - 10);
+		PointF p8 (p7.x + 2, p7.y - 3);
+		PointF p9 (p8.x, p8.y - 3);
+		PointF p10(p6.x, p1.y);
+
+		mb.AddBody(PolygonF::CreateNPolygon({
+			p1, p2, p3, p4, p5, p6, p7, p8, p9, p10
+		}), Color::Yellow);
+	}
+	// GameObject& cannon1 = m_factory.Create(mb);
+	GameObject& cannon1 = m_factory.Create(mb, GameObjectFactory::Suids::Player1);
+	cannon1.AddComponent(new WeaponComponent(std::unique_ptr<Weapon>(new CannonWeapon(50, 1, 100))));
+	console("{}", cannon1);
 
 	//// Game loop ////
 	

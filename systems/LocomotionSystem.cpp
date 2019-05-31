@@ -16,7 +16,7 @@ LocomotionSystem::LocomotionSystem ()
 LocomotionSystem::~LocomotionSystem ()
 {}
 
-void LocomotionSystem::Update (size_t dt, GameObjectFactory const& factory)
+void LocomotionSystem::Update (size_t dt, GameObjectFactory & factory)
 {
 	const auto filter = [] (GameObject const& go) { return 
 		go.Has<PositionComponent>() &&

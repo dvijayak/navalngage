@@ -13,7 +13,7 @@ public:
 	~LocomotionSystem ();
 
 	/// ISystem
-	virtual void Update (size_t dt, GameObjectFactory const& factory);
+	virtual void Update (size_t dt, GameObjectFactory & factory);
 
 private:
 };

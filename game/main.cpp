@@ -10,6 +10,7 @@
 
 #include "LocomotionSystem.hpp"
 #include "CameraSystem.hpp"
+#include "WeaponsSystem.hpp"
 
 
 int main (int argc, char** argv)
@@ -37,6 +38,7 @@ int main (int argc, char** argv)
 		// System registration (order is significant!)
 		game.RegisterSystem(new LocomotionSystem());
 		game.RegisterSystem(new CameraSystem());
+		game.RegisterSystem(new WeaponsSystem());
 
 		// Configuration
 		game.SetRenderer(pRM);

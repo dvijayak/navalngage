@@ -12,7 +12,7 @@ CameraSystem::CameraSystem ()
 CameraSystem::~CameraSystem ()
 {}
 
-void CameraSystem::Update (size_t dt, GameObjectFactory const& factory)
+void CameraSystem::Update (size_t dt, GameObjectFactory & factory)
 {
 	const auto filter = [] (GameObject const& go) { return 
 		go.Has<PositionComponent>() &&

@@ -13,7 +13,7 @@ public:
 	/// Update the state of game objects belonging to the given factory by 
 	/// the dt time-step value.
 	/// CANIMPROVE: Sending the entire factory seems overkill.
-	virtual void Update (size_t dt, GameObjectFactory const& factory) = 0;
+	virtual void Update (size_t dt, GameObjectFactory & factory) = 0;
 };
 
 #endif
