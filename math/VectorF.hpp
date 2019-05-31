@@ -58,6 +58,9 @@ public:
 	Vector2F& Normalize ();
 	Vector2F NormalizeCopy () const;
 
+	/// Apply rotation on the vector
+	Vector2F Rotate (float const theta) const;
+
 	inline bool IsOrthogonalTo (Vector2F const& other) const { return Dot(other) == 0.0; }
 
 	/// Convenient access to the vector's components

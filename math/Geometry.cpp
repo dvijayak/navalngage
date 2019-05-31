@@ -21,6 +21,12 @@ Rectangle2F::Rectangle2F (Vector2F const& v, float w, float h)
 	, height(h)
 {}
 
+Point2F Point2F::Rotate (float const theta) const
+{
+	auto rotated = Vector2F(x, y).Rotate(theta);
+	return Point2F(rotated.GetX(), rotated.GetY());
+}
+
 std::ostream& operator<< (std::ostream& os, Rectangle2F const& rect)
 {
 	os << "[ ";

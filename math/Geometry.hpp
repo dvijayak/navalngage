@@ -14,6 +14,9 @@ struct Point2F
 	Point2F& operator= (Point2F const& other) { x = other.x; y = other.y; return *this; }
 	~Point2F () {}
 
+	/// Convenience
+	Point2F Rotate (float const theta) const;
+
 	float x, y;
 };
 
