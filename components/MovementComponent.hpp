@@ -11,12 +11,13 @@ DEFINE_COMPONENT(Movement)
 public:
 	static const IComponent::Name NAME;
 
-	MovementComponent (VectorF const& direction=VectorF(1,0), float speed=0.0, float maxSpeed=30.0) : m_direction(direction.NormalizeCopy()), m_speed(speed), m_maxSpeed(maxSpeed) {}
+	MovementComponent (VectorF const& direction=VectorF(1,0), float speed=0.0, float maxSpeed=30.0) : m_direction(direction.Normalize()), m_speed(speed), m_maxSpeed(maxSpeed) {}
 	~MovementComponent () {}
 
 	/// IComponent
 	IComponent::Name GetName () const { return NAME; }
 
+	/// Normalizes the given vector
 	void SetDirection (VectorF const&);
 	VectorF const& GetDirection () const { return m_direction; }
 
@@ -28,7 +29,7 @@ public:
 	VectorF GetVelocity () const { return m_direction * m_speed; }
 
 private:
-	VectorF m_direction; // ideally a unit vector
+	VectorF m_direction; // must be a normalized vector; recommended to be updated via `MovementComponent::SetDirection`
 
 	float m_speed; // m/s
 	float m_maxSpeed;

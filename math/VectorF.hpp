@@ -56,7 +56,7 @@ public:
 	/// its direction stays the same. This is very useful when you want a vector
 	/// for representing direction alone, such that the magnitude is irrelevant.
 	Vector2F& Normalize ();
-	Vector2F NormalizeCopy () const;
+	Vector2F Normalize () const;
 
 	/// Apply rotation on the vector
 	Vector2F Rotate (float const theta) const;
@@ -146,7 +146,7 @@ inline Vector2F& Vector2F::Normalize ()
 	return *this;
 }
 
-inline Vector2F Vector2F::NormalizeCopy () const
+inline Vector2F Vector2F::Normalize () const
 {
 	float norm = Norm();
 	return operator/(norm);

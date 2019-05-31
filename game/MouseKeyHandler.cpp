@@ -248,7 +248,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			GameObject& proj = const_cast<GameObjectFactory&>(factory).Create();
 			proj.AddComponent(new PositionComponent(p));
 			VectorF const& v = pGo->Get<MovementComponent>().GetDirection();
-			proj.AddComponent(new MovementComponent(v.NormalizeCopy(), 100.0, 300.0));
+			proj.AddComponent(new MovementComponent(v.Normalize(), 100.0, 300.0));
 			proj.AddComponent(new BodyComponent(PolygonF::CreateRect(
 					-1, 0, 2, 2
 				)));

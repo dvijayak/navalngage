@@ -6,7 +6,7 @@ const IComponent::Name MovementComponent::NAME = "MovementComponent";
 
 void MovementComponent::SetDirection (VectorF const& direction)
 {
-	m_direction = direction.NormalizeCopy();
+	m_direction = direction.Normalize();
 }
 
 void MovementComponent::SetSpeed (float speed)
