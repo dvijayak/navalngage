@@ -15,9 +15,14 @@ std::unique_ptr<MovableBuilder> CannonWeapon::Fire ()
    std::unique_ptr<MovableBuilder> builder(new MovableBuilder());
 
    builder->AddSpeed(m_speed, m_speed);
-   builder->AddBody(PolygonF::CreateRect(
+   auto poly = PolygonF::CreateRect(
       -1, 0, 2, 2
-   ));
+   );
+   for (auto & v : poly.vertices)
+   {
+      v.x *= 0.5, v.y *= 0.5;
+   }
+   builder->AddBody(poly);
 
    return std::move(builder);
 }

@@ -43,7 +43,8 @@ public:
 	enum Suids
 	{
 		Camera1 = 1,
-		Player1 = 2
+		Player1 = 2,
+		Cannon1 = 3
 	};
 
 private:

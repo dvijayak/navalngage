@@ -187,7 +187,7 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 				}
 				else if (key == SDLK_a || key == SDLK_d)
 				{
-					float const inc = MathUtil::DegreesToRadians(6);
+					float const inc = MathUtil::DegreesToRadians(3);
 					std::unique_ptr<RotateAction> p(new RotateAction());
 					p->SetSource(pPlayer);
 					if (key == SDLK_a) // counter-clockwise
@@ -237,10 +237,37 @@ void MouseKeyHandler::HandleKeyHeld (int key, GameObjectFactory const& factory, 
 			}
 			break;
 		}
+		// TEST: Rotate mounted weapon
+		case SDLK_q:
+		case SDLK_e:
+		{
+			float const inc = MathUtil::DegreesToRadians(6);
+			std::unique_ptr<RotateAction> p(new RotateAction());
+			auto pGo = factory.Resolve(GameObjectFactory::Suids::Cannon1);
+			if (!pGo)
+			{
+				break;
+			}
+			p->SetSource(pGo);
+			if (key == SDLK_q) // counter-clockwise
+			{
+				p->SetAngle(inc);
+			}
+			else // clockwise
+			{
+				p->SetAngle(-inc);
+			}
+			result.push_back(std::move(p));
+			break;
+		}
 		// TEST: Fire basic weapon
 		case SDLK_z:
 		{
-			GameObject* pGo = factory.Resolve(GameObjectFactory::Suids::Player1); // TODO: remove when we start mounting weapons on ships
+			GameObject* pGo = factory.Resolve(GameObjectFactory::Suids::Cannon1); // TODO: remove when we start mounting weapons on ships
+			if (!pGo)
+			{
+				break;
+			}
 			std::unique_ptr<FireWeaponAction> p(new FireWeaponAction());
 			p->SetSource(pGo);
 			result.push_back(std::move(p));

@@ -23,4 +23,10 @@ typedef class x##Component C##x; \
 class x##Component \
 	: virtual public IComponent
 
+#define DEFINE_COMPONENT_ESSENTIALS(x) \
+public: \
+   static const IComponent::Name NAME; \
+   IComponent::Name GetName () const { return NAME; } \
+
+
 #endif

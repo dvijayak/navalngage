@@ -18,7 +18,7 @@ DEFINE_COMPONENT(Camera)
 public:
 	static const IComponent::Name NAME;
 
-	CameraComponent (World* pWorld=0, float x=0, float y=0, float scale=1);
+	CameraComponent (World* pWorld=0, float x=0, float y=0, float scale=50);
 	CameraComponent (World* pWorld, RectangleF const& rect);
 	virtual ~CameraComponent ();
 

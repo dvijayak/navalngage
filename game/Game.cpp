@@ -19,14 +19,15 @@
 #include "PositionComponent.hpp"
 #include "RotationComponent.hpp"
 #include "BodyComponent.hpp"
-
 #include "WeaponComponent.hpp"
 #include "CannonWeapon.hpp"
-
 #include "ShipComponent.hpp"
+#include "MountComponent.hpp"
 
 #include "Action.hpp"
 #include "MouseKeyHandler.hpp"
+
+#include <algorithm>
 
 constexpr size_t MAX_FPS = 240;
 constexpr size_t MIN_FPS = 15;
@@ -80,7 +81,6 @@ int Game::Run ()
 		PointF(-0.6, -1.5),
 		PointF(-1, 2),
 	}), Color::Orange);
-	// GameObject& ship1 = m_factory.Create(sb, GameObjectFactory::Suids::Player1);
 	GameObject& ship1 = m_factory.Create(sb);
 	console("{}", ship1);
 
@@ -95,7 +95,7 @@ int Game::Run ()
 		PointF(-1.6, -3),
 		PointF(-2.3, 1)
 	}), Color::Red);
-	GameObject& ship2 = m_factory.Create(sb);
+	GameObject& ship2 = m_factory.Create(sb, GameObjectFactory::Suids::Player1);
 	console("{}", ship2);
 
 	sb.Reset();
@@ -119,24 +119,33 @@ int Game::Run ()
 	mb.MakeDefault();
 	mb.AddPosition(0, -50);
 	{
-		PointF p1 (-1, -10);
-		PointF p2 (p1.x - 2, p1.y + 3);
-		PointF p3 (p2.x, p2.y + 3);
-		PointF p4 (p1.x, p3.y + 3);
-		PointF p5 (p1.x, p4.y + 10);
-		PointF p6 (p1.x + 2, p5.y);
-		PointF p7 (p6.x, p6.y - 10);
-		PointF p8 (p7.x + 2, p7.y - 3);
-		PointF p9 (p8.x, p8.y - 3);
+		std::vector<float> c{0, 0, 1.5, 1, 0.5, 10};
+		std::transform(c.begin(), c.end(), c.begin(), [](float f) -> float { return f/2; });
+		PointF p1 (-c[4], c[1]);
+		PointF p2 (p1.x - c[3], p1.y + c[2]);
+		PointF p3 (p2.x, p2.y + c[2]);
+		PointF p4 (p1.x, p3.y + c[2]);
+		PointF p5 (p1.x, p4.y + c[5]);
+		PointF p6 (p1.x + c[3], p5.y);
+		PointF p7 (p6.x, p6.y - c[5]);
+		PointF p8 (p7.x + c[3], p7.y - c[2]);
+		PointF p9 (p8.x, p8.y - c[2]);
 		PointF p10(p6.x, p1.y);
 
 		mb.AddBody(PolygonF::CreateNPolygon({
 			p1, p2, p3, p4, p5, p6, p7, p8, p9, p10
 		}), Color::Yellow);
 	}
-	// GameObject& cannon1 = m_factory.Create(mb);
-	GameObject& cannon1 = m_factory.Create(mb, GameObjectFactory::Suids::Player1);
-	cannon1.AddComponent(new WeaponComponent(std::unique_ptr<Weapon>(new CannonWeapon(200, 1, 100))));
+	GameObject & cannon1 = m_factory.Create(mb, GameObjectFactory::Suids::Cannon1);
+	cannon1.AddComponent(new WeaponComponent(std::unique_ptr<Weapon>(new CannonWeapon(75, 1, 100))));
+	{
+		// Establish a link between this cannon and the player ship
+		GameObject * pPlayerShip = m_factory.Resolve(GameObjectFactory::Suids::Player1);
+		assert(pPlayerShip);
+		std::vector<GOSuid> mountedObjs{cannon1.GetSuid()};
+		pPlayerShip->AddComponent(new MountComponent(mountedObjs));
+		console("{}", pPlayerShip->Get<MountComponent>());
+	}
 	console("{}", cannon1);
 
 	//// Game loop ////
