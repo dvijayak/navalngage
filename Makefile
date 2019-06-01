@@ -116,10 +116,15 @@ $(foreach dir,$(SRCDIRS),$(eval $(call COMPILE_TEMPLATE,$(dir)/$(SRCDIR),$(dir)/
 
 ### Main rules ###
 
-.PHONY: default vg run build clean
+.PHONY: default vg run build debug clean
 
+ifeq ($(DEBUG),gdb)
+debug: build
+	$(DEBUG) -tui -f $(EXE) --command=dbg_input
+else
 debug:
-	$(DEBUG) -f $(EXE) -s lldb
+	$(error Debugging is currently only supported via gdb. The selected compiler $(CXX) does not use gdb, sadly. Please change to a supported compiler.)
+endif
 
 vg: build
 	@echo "\033[90mRunning memcheck on $(EXE)...\033[0m"

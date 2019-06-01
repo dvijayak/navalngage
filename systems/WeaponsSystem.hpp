@@ -4,7 +4,7 @@
 #include "ISystem.hpp"
 
 #include <map>
-#include <queue>
+#include <list>
 #include <functional>
 
 #include "GameObject.hpp"
@@ -24,7 +24,7 @@ public:
 private:
    using DestroyEvaluator = std::function<bool (GameObject const&)>;
    using DestroyCandidate = std::pair<GOSuid, DestroyEvaluator>;
-   std::queue<DestroyCandidate> m_objectsToBeDestroyed;
+   std::list<DestroyCandidate> m_objectsToBeDestroyed; // need container iterators to be valid when erasing during iteration, so we use list
 };
 
 #endif

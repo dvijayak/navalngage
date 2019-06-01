@@ -136,7 +136,7 @@ int Game::Run ()
 	}
 	// GameObject& cannon1 = m_factory.Create(mb);
 	GameObject& cannon1 = m_factory.Create(mb, GameObjectFactory::Suids::Player1);
-	cannon1.AddComponent(new WeaponComponent(std::unique_ptr<Weapon>(new CannonWeapon(50, 1, 100))));
+	cannon1.AddComponent(new WeaponComponent(std::unique_ptr<Weapon>(new CannonWeapon(200, 1, 100))));
 	console("{}", cannon1);
 
 	//// Game loop ////

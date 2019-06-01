@@ -22,16 +22,23 @@ void WeaponsSystem::Update (size_t dt, GameObjectFactory & factory)
 {
    // First, destroy projectiles that need to be deleted
    // CANIMPROVE: Could be made generic to all systems?
-   while (!m_objectsToBeDestroyed.empty())
+   for (auto candidate = m_objectsToBeDestroyed.begin(); candidate != m_objectsToBeDestroyed.end();)
    {
-      auto & candidate = m_objectsToBeDestroyed.front();
-      m_objectsToBeDestroyed.pop();
-      
-      auto suid = candidate.first;
+      auto suid = candidate->first;
       auto pGo = factory.Resolve(suid);
-      if (pGo && (candidate.second)(*pGo))
+      if (pGo && (candidate->second)(*pGo))
       {
-         factory.Destroy(suid);
+         factory.Destroy(suid);         
+
+         // Remove the element and update the iterator to the next one
+         // Note: must use a container where iterators for the rest of the container
+         // are not invalidated after a successful erase call
+         candidate = m_objectsToBeDestroyed.erase(candidate);
+      }
+      else
+      {
+         // Nothing to be done, so just move to the next candidate
+         ++candidate;
       }
    }
 
@@ -44,7 +51,7 @@ void WeaponsSystem::Update (size_t dt, GameObjectFactory & factory)
    for (auto & pGo : factory.ResolveObjects(filter))
    {
       auto const& pos = pGo->Get<PositionComponent>().GetPosition();
-      VectorF dir = pGo->Get<RotationComponent>().GetDirection();
+      auto dir = pGo->Get<RotationComponent>().GetDirection();
       auto & weapon = pGo->Get<WeaponComponent>().GetWeapon();
 
       // Fire away!
@@ -56,13 +63,15 @@ void WeaponsSystem::Update (size_t dt, GameObjectFactory & factory)
 
       // Queue projectile for deletion when it has consumed its range
       float range = weapon.GetRange();
-      DestroyEvaluator destroyEvaluator = [pos, dir, range](GameObject const& go) {
+      DestroyEvaluator destroyEvaluator = [=](GameObject const& go) {
          // TODO: this will ONLY work with linear projectiles that do NOT change direction at all along the projectile path
+         // TODO: To work with non-linear paths, do a circle inclusion test instead,
+         // where the circle is centered on the launch point (pos) and has radius range.
          VectorF newDir = go.Get<RotationComponent>().GetDirection();
          assert(dir.GetX() == newDir.GetX() && dir.GetY() == newDir.GetY());
          auto displacement = go.Get<PositionComponent>().GetPosition() - pos;
          return displacement.Norm() >= range;
       };
-      m_objectsToBeDestroyed.push(std::make_pair(go.GetSuid(), destroyEvaluator));
+      m_objectsToBeDestroyed.push_back(std::make_pair(go.GetSuid(), destroyEvaluator));
    }
 }
