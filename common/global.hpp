@@ -6,6 +6,7 @@
 
 // Logging
 
+#include <iostream>
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 // queue size must be power of 2 as per spdlog docs

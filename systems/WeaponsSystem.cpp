@@ -2,6 +2,8 @@
 
 #include "VectorF.hpp"
 
+#include "TimerManager.hpp"
+
 #include "GameObjectFactory.hpp"
 #include "MovableBuilder.hpp"
 
@@ -50,16 +52,35 @@ void WeaponsSystem::Update (size_t dt, GameObjectFactory & factory)
    };
    for (auto & pGo : factory.ResolveObjects(filter))
    {
+      auto & weapon = pGo->Get<WeaponComponent>().GetWeapon();
+
+      if (!weapon.IsReady())
+      {
+         weapon.ClearFire();
+         continue;
+      }
+
       auto const& pos = pGo->Get<PositionComponent>().GetPosition();
       auto dir = pGo->Get<RotationComponent>().GetDirection();
-      auto & weapon = pGo->Get<WeaponComponent>().GetWeapon();
 
       // Fire away!
       auto builder = weapon.Fire();
       builder->AddPosition(pos);
       builder->AddRotation(pGo->Get<RotationComponent>().GetRotationAngle());
-      auto & go = factory.Create(*builder);
+      auto & projectile = factory.Create(*builder);
       weapon.ClearFire();
+
+      // Queue cooldown refresh
+      weapon.SetReady(false); // disable weapon during cooldown
+      float cooldown = weapon.GetCooldownPeriod();
+      auto weaponSuid = pGo->GetSuid();
+      auto timerId = TimerManager::Instance().StartTimer(cooldown, [=, &factory](void) {
+         auto pWeapon = factory.Resolve(weaponSuid);
+         if (pWeapon && pWeapon->Has<WeaponComponent>()) // protect against deletion
+         {
+            pWeapon->Get<WeaponComponent>().GetWeapon().SetReady(true);
+         }
+      });
 
       // Queue projectile for deletion when it has consumed its range
       float range = weapon.GetRange();
@@ -72,6 +93,6 @@ void WeaponsSystem::Update (size_t dt, GameObjectFactory & factory)
          auto displacement = go.Get<PositionComponent>().GetPosition() - pos;
          return displacement.Norm() >= range;
       };
-      m_objectsToBeDestroyed.push_back(std::make_pair(go.GetSuid(), destroyEvaluator));
+      m_objectsToBeDestroyed.push_back(std::make_pair(projectile.GetSuid(), destroyEvaluator));
    }
 }

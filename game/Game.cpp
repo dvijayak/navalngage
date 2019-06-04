@@ -26,6 +26,7 @@
 
 #include "Action.hpp"
 #include "MouseKeyHandler.hpp"
+#include "TimerManager.hpp"
 
 #include <algorithm>
 
@@ -281,6 +282,18 @@ bool Game::ProcessEvents ()
 			case SDL_MOUSEWHEEL:
 				MouseKeyHandler::Instance().TranslateToAction(event, m_factory, actions);
 				break;
+
+			case SDL_USEREVENT:
+			{
+				// TODO: Assume it's always a TIMEOUT for now, but not for too long
+				assert(event.user.data1);
+				auto wrapper = static_cast<TimerManager::Timeout *>(event.user.data1);
+				assert(wrapper);
+				wrapper->handler();
+				delete wrapper; // SUPER IMPORTANT to be freed by calling code (us)!
+
+				break;
+			}
 		}
 	}
 
