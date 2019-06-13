@@ -22,3 +22,7 @@ local cannon1 = factory.Create()
                   .Weapon(CannonWeapon({range = 75, rof = 1, speed = 100}))
 ship1.Container({cannon1})
 
+-- "game" will be a global table: {GOFactory = C++ function proxy which returns a full userdata proxy to the GameObjectFactory singleton}
+-- Later on, we will improve this metatable to support configuration options read from a conf.lua file. These options will be represented as keys in the index table that will be implemented in C++ as functions which set the corresponding values on the Game singleton object
+
+-- the factory userdata proxy will
