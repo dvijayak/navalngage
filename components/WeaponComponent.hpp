@@ -11,14 +11,11 @@
 
 DEFINE_COMPONENT(Weapon)
 {
+   DEFINE_COMPONENT_ESSENTIALS(Weapon);
 public:
-   static const IComponent::Name NAME;
 
    WeaponComponent (std::unique_ptr<Weapon> pWeapon=nullptr); // warning: makes no sense to create this component without an actual weapon - this is asserted for throughout
    virtual ~WeaponComponent () {}
-
-   /// IComponent
-   IComponent::Name GetName () const { return NAME; }
 
    Weapon & GetWeapon () { assert(m_pWeapon); return *m_pWeapon; }
    Weapon const& GetWeapon () const { assert(m_pWeapon); return *m_pWeapon; }

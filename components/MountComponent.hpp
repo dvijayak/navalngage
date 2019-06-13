@@ -9,8 +9,8 @@
 
 DEFINE_COMPONENT(Mount)
 {
-public:
    DEFINE_COMPONENT_ESSENTIALS(Mount)   
+public:
 
    MountComponent (std::vector<GOSuid> const& mountedObjs);
    virtual ~MountComponent ();

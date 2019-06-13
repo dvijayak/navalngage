@@ -1,7 +1,5 @@
 #include "MassComponent.hpp"
 
-const IComponent::Name MassComponent::NAME = "MassComponent";
-
 std::ostream& operator<< (std::ostream& os, MassComponent const& c)
 {
 	os << "[ MassComponent: ";

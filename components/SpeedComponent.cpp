@@ -1,7 +1,5 @@
 #include "SpeedComponent.hpp"
 
-const IComponent::Name SpeedComponent::NAME = "SpeedComponent";
-
 void SpeedComponent::SetSpeed (float speed)
 {
    if (speed < 0.0) // a negative speed is nonsensical as speed is after all the magnitude of the velocity vector

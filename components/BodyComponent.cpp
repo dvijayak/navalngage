@@ -4,8 +4,6 @@
 
 #include "Color.hpp"
 
-const IComponent::Name BodyComponent::NAME = "BodyComponent";
-
 // It is more intuitive to design objects in local space with the
 // unit circle rotated by 90 degrees, so we will "undo" this
 // whenever we transform from local to world space

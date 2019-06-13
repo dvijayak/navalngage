@@ -1,7 +1,5 @@
 #include "ShipComponent.hpp"
 
-const IComponent::Name ShipComponent::NAME = "ShipComponent";
-
 std::ostream& operator<< (std::ostream& os, ShipComponent const& c)
 {
 	os << "[ ShipComponent: ";

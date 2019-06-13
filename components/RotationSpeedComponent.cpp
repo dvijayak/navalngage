@@ -1,7 +1,5 @@
 #include "RotationSpeedComponent.hpp"
 
-const IComponent::Name RotationSpeedComponent::NAME = "RotationSpeedComponent";
-
 void RotationSpeedComponent::SetAngularSpeed (float omega)
 {
 	float minAngularSpeed = -m_maxAngularSpeed;

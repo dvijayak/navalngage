@@ -2,8 +2,6 @@
 
 #include "Weapon.hpp"
 
-const IComponent::Name WeaponComponent::NAME = "WeaponComponent";
-
 WeaponComponent::WeaponComponent (std::unique_ptr<Weapon> pWeapon)
    : m_pWeapon(std::move(pWeapon))
 {

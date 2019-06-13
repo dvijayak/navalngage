@@ -53,13 +53,13 @@ private:
 template <class T>
 inline T* GameObject::GetComponent () const
 {
-	return dynamic_cast<T*>(GetComponent(T::NAME));
+	return dynamic_cast<T*>(GetComponent(ComponentMeta<T>::Name));
 }
 
 template <class T>
 inline bool GameObject::HasComponent () const
 {
-	return HasComponent(T::NAME);
+	return HasComponent(ComponentMeta<T>::Name);
 }
 
 /// Conveniences

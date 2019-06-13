@@ -9,16 +9,13 @@
 
 DEFINE_COMPONENT(Rotation)
 {
+   DEFINE_COMPONENT_ESSENTIALS(Rotation);
 public:
-   static const IComponent::Name NAME;
 
    RotationComponent (float const theta)
       : m_theta(theta)
    {}
    ~RotationComponent () {}
-
-   /// IComponent
-   IComponent::Name GetName () const { return NAME; }
 
    void SetRotationAngle (float const theta) { m_theta = theta; }
    float GetRotationAngle () const { return m_theta; }

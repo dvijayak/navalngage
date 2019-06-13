@@ -7,17 +7,14 @@
 
 DEFINE_COMPONENT(RotationSpeed)
 {
+	DEFINE_COMPONENT_ESSENTIALS(RotationSpeed);
 public:
-	static const IComponent::Name NAME;
 
 	RotationSpeedComponent (float omega = 0.0, float max = 15.0)
 		: m_angularSpeed(omega)
 		, m_maxAngularSpeed(max)
 	{}
 	~RotationSpeedComponent () {}
-
-	/// IComponent
-	IComponent::Name GetName () const { return NAME; }
 
 	void SetAngularSpeed (float);
 	float GetAngularSpeed () const { return m_angularSpeed; }

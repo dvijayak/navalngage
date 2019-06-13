@@ -7,8 +7,8 @@
 
 DEFINE_COMPONENT(Ship)
 {
+	DEFINE_COMPONENT_ESSENTIALS(Ship);
 public:
-	static const IComponent::Name NAME;
 
 	enum Class
 	{
@@ -19,9 +19,6 @@ public:
 
 	ShipComponent (int klass = SLOOP) : m_class(klass)	{}
 	~ShipComponent () {}
-
-	/// IComponent
-	IComponent::Name GetName () const { return NAME; }
 
 	int GetShipClass () const { return m_class; }
 	void SetShipClass (int klass) { m_class = klass; }

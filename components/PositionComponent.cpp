@@ -1,7 +1,5 @@
 #include "PositionComponent.hpp"
 
-const IComponent::Name PositionComponent::NAME = "PositionComponent";
-
 std::ostream& operator<< (std::ostream& os, PositionComponent const& c)
 {
 	os << "[ PositionComponent: ";

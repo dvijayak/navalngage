@@ -8,15 +8,12 @@
 
 DEFINE_COMPONENT(Position)
 {
+	DEFINE_COMPONENT_ESSENTIALS(Position);
 public:
-	static const IComponent::Name NAME;
 
 	PositionComponent (float x = 0.0f, float y = 0.0f) : m_position(x, y) {}
 	PositionComponent (VectorF const& pos) : m_position(pos) {}
 	~PositionComponent () {}
-
-	/// IComponent
-	IComponent::Name GetName () const { return NAME; }
 
 	VectorF const& GetPosition () const { return m_position; }
 	VectorF& GetPosition () { return m_position; }

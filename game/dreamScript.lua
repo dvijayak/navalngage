@@ -1,4 +1,6 @@
-local ship1 = GameObject(1)
+local factory = game.GOFactory()
+
+local ship1 = factory.Create(1)
                .Position(3, 4)
                .Speed(0, 30)
                .Rotation(90)
@@ -10,7 +12,7 @@ local ship1 = GameObject(1)
                   {-1, 2}
                }, Color("red"))
 
-local cannon1 = GameObject()
+local cannon1 = factory.Create()
                   .Position(0, 0)
                   .RelativePosition(0, 0)
                   .Rotation(90)

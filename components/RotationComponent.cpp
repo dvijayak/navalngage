@@ -1,7 +1,5 @@
 #include "RotationComponent.hpp"
 
-const IComponent::Name RotationComponent::NAME = "RotationComponent";
-
 std::ostream& operator<< (std::ostream& os, RotationComponent const& c)
 {
    os << "[ RotationComponent: ";

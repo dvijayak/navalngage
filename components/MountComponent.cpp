@@ -2,8 +2,6 @@
 
 #include "Util.hpp"
 
-IComponent::Name const MountComponent::NAME = "MountComponent";
-
 MountComponent::MountComponent (std::vector<GOSuid> const& objs)
    : m_mountedObjs(objs)
 {}

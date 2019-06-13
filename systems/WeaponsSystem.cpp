@@ -74,7 +74,7 @@ void WeaponsSystem::Update (size_t dt, GameObjectFactory & factory)
       weapon.SetReady(false); // disable weapon during cooldown
       float cooldown = weapon.GetCooldownPeriod();
       auto weaponSuid = pGo->GetSuid();
-      auto timerId = TimerManager::Instance().StartTimer(cooldown, [=, &factory](void) {
+      TimerManager::Instance().StartTimer(cooldown, [=, &factory](void) {
          auto pWeapon = factory.Resolve(weaponSuid);
          if (pWeapon && pWeapon->Has<WeaponComponent>()) // protect against deletion
          {

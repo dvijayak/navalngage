@@ -15,15 +15,12 @@ class ILineClipper;
 
 DEFINE_COMPONENT(Camera)
 {
+	DEFINE_COMPONENT_ESSENTIALS(Camera);
 public:
-	static const IComponent::Name NAME;
 
 	CameraComponent (World* pWorld=0, float x=0, float y=0, float scale=50);
 	CameraComponent (World* pWorld, RectangleF const& rect);
 	virtual ~CameraComponent ();
-
-	/// IComponent
-	IComponent::Name GetName () const { return NAME; }
 
 	/// Should be used mostly by initializing code
 	void SetViewScale (float val);

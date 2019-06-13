@@ -10,16 +10,13 @@
 
 DEFINE_COMPONENT(Body)
 {
+	DEFINE_COMPONENT_ESSENTIALS(Body);
 public:
-	static const IComponent::Name NAME;
 
 	/// The surface vertices are expected to be in local coordinates. Note that the
 	// origin is always (0,0) in local space.
 	BodyComponent (PolygonF const& surface, Uint32 color=Color::Green) : m_surface(surface), m_color(color) {}
 	~BodyComponent () {}
-
-	/// IComponent
-	IComponent::Name GetName () const { return NAME; }
 
 	PolygonF const& GetSurfaceLocal () const { return m_surface; }
 	PolygonF& GetSurfaceLocal () { return m_surface; }

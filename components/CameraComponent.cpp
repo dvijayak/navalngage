@@ -11,8 +11,6 @@ static constexpr float MAX_VIEWSCALE = 1000;
 static constexpr float MIN_SPEED = 1; // m/s
 static constexpr float MAX_SPEED = 10; // m/s
 
-const IComponent::Name CameraComponent::NAME = "CameraComponent";
-
 CameraComponent::CameraComponent (World* pWorld, float x, float y, float scale)
 	: m_pWorld(pWorld)
 	, m_viewRectangle(x, y, 0, 0)

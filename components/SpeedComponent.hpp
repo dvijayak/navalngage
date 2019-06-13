@@ -7,17 +7,14 @@
 
 DEFINE_COMPONENT(Speed)
 {
+   DEFINE_COMPONENT_ESSENTIALS(Speed);
 public:
-   static const IComponent::Name NAME;
 
    SpeedComponent (float speed=0.0, float maxSpeed=30.0)
       : m_speed(speed)
       , m_maxSpeed(maxSpeed)
    {}
    ~SpeedComponent () {}
-
-   /// IComponent
-   IComponent::Name GetName () const { return NAME; }
 
    void SetSpeed (float speed);
    float GetSpeed () const { return m_speed; }
