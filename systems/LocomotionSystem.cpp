@@ -5,6 +5,7 @@
 #include "GameObjectFactory.hpp"
 
 #include "PositionComponent.hpp"
+#include "RelativePositionComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "RotationComponent.hpp"
 #include "MountComponent.hpp"
@@ -51,7 +52,15 @@ void LocomotionSystem::Update (size_t dt, GameObjectFactory & factory)
 				auto pGo = factory.Resolve(suid);
 				if (pGo && pGo->Has<PositionComponent>())
 				{
-					pGo->Get<PositionComponent>().SetPosition(pos);
+					if (pGo->Has<RelativePositionComponent>())
+					{
+						pGo->Get<PositionComponent>().SetPosition(pos + pGo->Get<RelativePositionComponent>().GetRelativePosition());
+					}
+					else
+					{
+						// By default, center the linked object
+						pGo->Get<PositionComponent>().SetPosition(pos);
+					}
 				}
 			}
 		}

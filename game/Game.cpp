@@ -17,6 +17,7 @@
 
 #include "CameraComponent.hpp"
 #include "PositionComponent.hpp"
+#include "RelativePositionComponent.hpp"
 #include "RotationComponent.hpp"
 #include "BodyComponent.hpp"
 #include "WeaponComponent.hpp"
@@ -118,9 +119,8 @@ int Game::Run ()
 	// Test weapon
 	MovableBuilder mb;
 	mb.MakeDefault();
-	mb.AddPosition(0, -50);
 	{
-		std::vector<float> c{0, 0, 1.5, 1, 0.5, 10};
+		std::vector<float> c{0, -2, 1.5, 1, 0.5, 10};
 		std::transform(c.begin(), c.end(), c.begin(), [](float f) -> float { return f/2; });
 		PointF p1 (-c[4], c[1]);
 		PointF p2 (p1.x - c[3], p1.y + c[2]);
@@ -141,6 +141,7 @@ int Game::Run ()
 	cannon1.AddComponent(new WeaponComponent(std::unique_ptr<Weapon>(new CannonWeapon(75, 1, 100))));
 	{
 		// Establish a link between this cannon and the player ship
+		cannon1.AddComponent(new RelativePositionComponent(0, 0));
 		GameObject * pPlayerShip = m_factory.Resolve(GameObjectFactory::Suids::Player1);
 		assert(pPlayerShip);
 		std::vector<GOSuid> mountedObjs{cannon1.GetSuid()};
